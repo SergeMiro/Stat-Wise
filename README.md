@@ -1,2 +1,3 @@
 # Stat-Wise
-Make better life decisions with data. Prenez de meilleures décisions grâce aux données.
+** Make better life decisions with data. 
+** Prenez de meilleures décisions grâce aux données.
