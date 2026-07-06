@@ -10,6 +10,7 @@ import { ENGINE_VERSION } from "./constants";
 import { deriveWeights } from "./weights";
 
 export { ENGINE_VERSION } from "./constants";
+export { runFamilySimulation, type FamilyRunOptions } from "./runFamilySimulation";
 
 export type RunOptions = {
   datasetVersion: string;

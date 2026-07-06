@@ -202,3 +202,47 @@ export type SimulationResult = {
   rankedAreas: AreaScore[];
   excludedAreas: ExcludedArea[];
 };
+
+// ---------------------------------------------------------------------------
+// Family ("Grandir ici") result contracts
+// ---------------------------------------------------------------------------
+
+/** The eight axes the family simulator compares — mirrors FamilyPriorities. */
+export const FAMILY_CATEGORY_KEYS = [
+  "earlyChildhood",
+  "education",
+  "health",
+  "sportsAndLeisure",
+  "nature",
+  "mobility",
+  "tranquillity",
+  "dailyServices",
+] as const;
+
+export type FamilyCategoryKey = (typeof FAMILY_CATEGORY_KEYS)[number];
+
+export type FamilyAreaScore = {
+  areaId: string;
+  areaName: string;
+  areaType: AreaType;
+  /** 0..100 within the compared set, or null when no weighted category had data. */
+  overallScore: number | null;
+  confidence: DataConfidence;
+  categoryScores: Record<FamilyCategoryKey, number | null>;
+  strengths: string[];
+  /** Things the user must confirm manually (school sector, crèche place, …). */
+  actionsToVerify: string[];
+  caveats: string[];
+  missingData: string[];
+  sources: SourceRef[];
+};
+
+export type FamilySimulationResult = {
+  simulationType: "family";
+  engineVersion: string;
+  datasetVersion: string;
+  generatedAt: string;
+  childAgeGroup: ChildAgeGroup;
+  /** The compared areas, ranked best-first for the chosen age group (1..3). */
+  comparedAreas: FamilyAreaScore[];
+};

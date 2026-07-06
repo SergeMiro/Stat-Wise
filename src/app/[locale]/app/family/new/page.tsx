@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation";
 import { getDictionary, isLocale } from "@/lib/i18n";
-import { ComingSoon } from "@/components/layout/coming-soon";
+import { listCities } from "@/lib/mock/cities";
+import { FamilyWizard } from "@/components/family/family-wizard";
 
 export default async function FamilyNewPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
-  return <ComingSoon title={dict.wizard.familyTitle} locale={locale} dict={dict} />;
+
+  return <FamilyWizard locale={locale} dict={dict} cities={listCities()} />;
 }
