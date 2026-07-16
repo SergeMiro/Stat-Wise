@@ -6,5 +6,13 @@ export default async function SimulationsPage({ params }: { params: Promise<{ lo
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
-  return <ComingSoon title={dict.nav.results} locale={locale} dict={dict} />;
+  return (
+    <ComingSoon
+      title={dict.nav.results}
+      locale={locale}
+      dict={dict}
+      description={dict.emptyStates.historyDesc}
+      illustration="/illustrations/empty-states/history.svg"
+    />
+  );
 }

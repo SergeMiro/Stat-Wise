@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300" role="img" aria-labelledby="title desc">
+<title id="title">Empty favourites state</title>
+<desc id="desc">Editorial data illustration for the StatWise interface.</desc>
+<defs>
+  <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+    <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#18343A" flood-opacity=".12"/>
+  </filter>
+  <linearGradient id="tealGrad" x1="0" x2="1" y1="0" y2="1">
+    <stop stop-color="#47AAA2"/>
+    <stop offset="1" stop-color="#207A77"/>
+  </linearGradient>
+  <linearGradient id="skyGrad" x1="0" x2="0" y1="0" y2="1">
+    <stop stop-color="#F1FBFA"/>
+    <stop offset="1" stop-color="#E5F4F2"/>
+  </linearGradient>
+</defs>
+
+<rect x="20" y="20" width="360" height="260" rx="28" fill="#F5FAFA"/>
+<g filter="url(#shadow)"><rect x="77" y="61" width="246" height="176" rx="23" fill="#FFFFFF"/></g>
+<path d="M200 192 C166 168 132 145 132 112 C132 89 148 76 169 76 C184 76 196 84 200 96 C205 84 217 76 232 76 C253 76 269 89 269 112 C269 145 234 168 200 192Z"
+      fill="#FFE8EC" stroke="#D96C7A" stroke-width="5"/>
+<circle cx="104" cy="207" r="24" fill="#DDF3F0"/><path d="M104 218 C92 201 92 188 104 181 C116 188 116 201 104 218Z" fill="#2B8F8A"/>
+<circle cx="296" cy="88" r="18" fill="#FFF0D6"/>
+
+</svg>

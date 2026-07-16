@@ -49,9 +49,18 @@ export const fr = {
       "Comparez jusqu'à trois quartiers à travers les besoins d'un enfant et du quotidien.",
     howTitle: "Comment ça marche",
     steps: [
-      { title: "Décrivez votre situation", desc: "Ville, budget, mode de vie et priorités. Quelques étapes courtes." },
-      { title: "Nous analysons les zones", desc: "Un calcul transparent à partir de données officielles, sans boîte noire." },
-      { title: "Vous obtenez des zones à explorer", desc: "Un classement expliqué, avec ses limites et ce qu'il faut vérifier." },
+      {
+        title: "Décrivez votre situation",
+        desc: "Ville, budget, mode de vie et priorités. Quelques étapes courtes.",
+      },
+      {
+        title: "Nous analysons les zones",
+        desc: "Un calcul transparent à partir de données officielles, sans boîte noire.",
+      },
+      {
+        title: "Vous obtenez des zones à explorer",
+        desc: "Un classement expliqué, avec ses limites et ce qu'il faut vérifier.",
+      },
     ],
     dataTitle: "Des données officielles, expliquées",
     dataDesc:
@@ -143,7 +152,10 @@ export const fr = {
   confidence: {
     high: { label: "Données solides", desc: "Bon volume et niveau géographique adapté." },
     medium: { label: "Données partielles", desc: "Une partie des données est au niveau communal." },
-    low: { label: "Données limitées", desc: "Peu de transactions ou de points, ou données anciennes." },
+    low: {
+      label: "Données limitées",
+      desc: "Peu de transactions ou de points, ou données anciennes.",
+    },
     unavailable: { label: "Données indisponibles", desc: "Pas de données — ce n'est pas un zéro." },
   },
   result: {
@@ -171,6 +183,15 @@ export const fr = {
     saveCta: "Enregistrer cette simulation",
     saveHint: "Créez un compte pour retrouver vos simulations. (Bientôt)",
     topMatch: "Meilleure correspondance",
+    summaryTitle: "Aperçu du résultat",
+    summaryNote: "Aperçu visuel du produit — ce n'est pas une carte géographique exacte.",
+    summaryAreas: "{count} zone(s) analysée(s)",
+    tryAnotherScenarioTitle: "Et si votre situation changeait ?",
+    tryAnotherScenarioDescription: "Relancez l'analyse en modifiant un seul paramètre.",
+    scenarioBudgetTighter: "Budget réduit de 10 %",
+    scenarioWithoutCar: "Sans voiture",
+    scenarioMoreNature: "Plus de nature",
+    scenarioBuyInstead: "Acheter au lieu de louer",
   },
   explanations: {
     strengths: {
@@ -202,16 +223,36 @@ export const fr = {
   pages: {
     methodology: {
       title: "Méthodologie",
-      intro:
-        "Comment StatWise calcule un classement, ce qu'il mesure et ce qu'il ne mesure pas.",
+      intro: "Comment StatWise calcule un classement, ce qu'il mesure et ce qu'il ne mesure pas.",
       sections: [
-        { title: "Ce que nous calculons", body: "Un classement des zones d'une ville selon vos priorités, à partir d'indicateurs officiels normalisés à l'intérieur de la ville choisie." },
-        { title: "Ce que nous ne calculons pas", body: "Aucun « meilleur quartier » absolu, aucune garantie de sécurité, de place en crèche ou de prix exact d'un logement précis." },
-        { title: "Niveaux géographiques", body: "IRIS quand c'est possible, sinon commune. Le niveau réel est toujours affiché. Une zone IRIS est appelée « zone analysée »." },
-        { title: "Fiabilité des données", body: "Chaque zone reçoit un niveau de fiabilité (solides, partielles, limitées, indisponibles) selon la couverture des indicateurs que vous avez jugés importants." },
-        { title: "Pondération", body: "Vos priorités (de « pas important » à « essentiel ») deviennent des poids. Seuls les thèmes qui comptent pour vous pèsent dans le score." },
-        { title: "Données manquantes", body: "Une donnée absente n'est jamais remplacée par zéro : elle réduit la fiabilité et est signalée." },
-        { title: "Ne pas mélanger les indicateurs", body: "Salaire, revenu médian, loyer et prix d'achat sont des mesures distinctes, avec des méthodes et des précisions différentes." },
+        {
+          title: "Ce que nous calculons",
+          body: "Un classement des zones d'une ville selon vos priorités, à partir d'indicateurs officiels normalisés à l'intérieur de la ville choisie.",
+        },
+        {
+          title: "Ce que nous ne calculons pas",
+          body: "Aucun « meilleur quartier » absolu, aucune garantie de sécurité, de place en crèche ou de prix exact d'un logement précis.",
+        },
+        {
+          title: "Niveaux géographiques",
+          body: "IRIS quand c'est possible, sinon commune. Le niveau réel est toujours affiché. Une zone IRIS est appelée « zone analysée ».",
+        },
+        {
+          title: "Fiabilité des données",
+          body: "Chaque zone reçoit un niveau de fiabilité (solides, partielles, limitées, indisponibles) selon la couverture des indicateurs que vous avez jugés importants.",
+        },
+        {
+          title: "Pondération",
+          body: "Vos priorités (de « pas important » à « essentiel ») deviennent des poids. Seuls les thèmes qui comptent pour vous pèsent dans le score.",
+        },
+        {
+          title: "Données manquantes",
+          body: "Une donnée absente n'est jamais remplacée par zéro : elle réduit la fiabilité et est signalée.",
+        },
+        {
+          title: "Ne pas mélanger les indicateurs",
+          body: "Salaire, revenu médian, loyer et prix d'achat sont des mesures distinctes, avec des méthodes et des précisions différentes.",
+        },
       ],
       engineVersion: "Version du moteur de calcul",
     },
@@ -222,7 +263,8 @@ export const fr = {
     },
     coverage: {
       title: "Couverture",
-      intro: "Où StatWise dispose de données suffisantes, et où les résultats restent au niveau communal.",
+      intro:
+        "Où StatWise dispose de données suffisantes, et où les résultats restent au niveau communal.",
       richTitle: "Villes pilotes",
       richDesc: "Couverture par zone (IRIS) pour la V1.",
       limitedTitle: "Couverture limitée",
@@ -263,6 +305,13 @@ export const fr = {
     title: "Page introuvable",
     body: "Cette page n'existe pas ou a été déplacée.",
     home: "Retour à l'accueil",
+  },
+  emptyStates: {
+    favoritesDesc:
+      "Vos quartiers préférés apparaîtront ici. Lancez une simulation pour en ajouter.",
+    historyDesc: "Vos simulations récentes apparaîtront ici, prêtes à être relancées.",
+    accountDesc:
+      "Bientôt : sauvegarde de vos résultats et favoris, synchronisés entre vos appareils. Vous pouvez lancer une simulation sans compte.",
   },
   family: {
     title: "Grandir ici",
@@ -341,11 +390,13 @@ export const fr = {
       visit_area: "Visitez le quartier à différents moments de la journée.",
       confirm_creche_place: "Confirmez la disponibilité d'une place en crèche auprès de la mairie.",
       verify_school_sector: "Vérifiez la sectorisation scolaire exacte auprès de la mairie.",
-      check_transport_autonomy: "Testez les trajets en transport pour l'autonomie de l'adolescent·e.",
+      check_transport_autonomy:
+        "Testez les trajets en transport pour l'autonomie de l'adolescent·e.",
       check_health_access: "Vérifiez les délais et la disponibilité des professionnels de santé.",
     },
     caveats: {
-      family_no_guarantee: "Aucune garantie de place, de sectorisation, de sécurité ou de réussite scolaire.",
+      family_no_guarantee:
+        "Aucune garantie de place, de sectorisation, de sécurité ou de réussite scolaire.",
       creche_not_guaranteed: "La présence de crèches ne garantit pas une place.",
       school_sector_not_guaranteed: "La présence d'écoles ne garantit pas la sectorisation.",
       crime_commune_level: "La donnée de délinquance est au niveau communal.",

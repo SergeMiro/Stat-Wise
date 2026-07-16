@@ -6,5 +6,13 @@ export default async function FavoritesPage({ params }: { params: Promise<{ loca
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
-  return <ComingSoon title={dict.nav.favorites} locale={locale} dict={dict} />;
+  return (
+    <ComingSoon
+      title={dict.nav.favorites}
+      locale={locale}
+      dict={dict}
+      description={dict.emptyStates.favoritesDesc}
+      illustration="/illustrations/empty-states/favorites.svg"
+    />
+  );
 }

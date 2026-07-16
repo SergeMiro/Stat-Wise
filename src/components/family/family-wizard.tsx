@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -37,6 +38,7 @@ import { ChoiceGroup } from "@/components/quartier/choice-group";
 import { PrioritySelector } from "@/components/quartier/priority-selector";
 import { TextEffect } from "@/components/motion-primitives/text-effect";
 import { AnimatedGroup } from "@/components/motion-primitives/animated-group";
+import { AgeIllustration } from "@/components/visuals/age-illustration";
 import GradientButton from "@/components/kokonutui/gradient-button";
 
 const STEP_KEYS = ["areas", "child", "priorities"] as const;
@@ -72,6 +74,7 @@ export function FamilyWizard({
   cities: City[];
 }) {
   const router = useRouter();
+  const reduceMotion = useReducedMotion();
   const [step, setStep] = useState(0);
   const [draft, setDraft, hydrated] = useHydratedState<FamilyDraft>(defaultFamilyDraft, () => {
     const stored = loadFamilyDraft();
@@ -131,13 +134,15 @@ export function FamilyWizard({
     <div className="mx-auto max-w-xl px-4 py-5">
       {/* Progress header */}
       <div className="mb-4 space-y-2">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <div className="text-muted-foreground flex items-center justify-between text-xs">
           <span>{fill(dict.wizard.stepOf, { current: step + 1, total })}</span>
-          {hydrated && draft.selectedAreaIds.length > 0 ? <span>{dict.wizard.draftSaved}</span> : null}
+          {hydrated && draft.selectedAreaIds.length > 0 ? (
+            <span>{dict.wizard.draftSaved}</span>
+          ) : null}
         </div>
-        <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
+        <div className="bg-muted h-1 w-full overflow-hidden rounded-full">
           <div
-            className="h-full rounded-full bg-primary transition-all duration-300"
+            className="bg-primary h-full rounded-full transition-all duration-300"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -153,7 +158,7 @@ export function FamilyWizard({
         >
           {stepMeta.title}
         </TextEffect>
-        <p className="mt-1 text-sm text-muted-foreground">{stepMeta.desc}</p>
+        <p className="text-muted-foreground mt-1 text-sm">{stepMeta.desc}</p>
       </div>
 
       <Card>
@@ -164,7 +169,7 @@ export function FamilyWizard({
               {!draft.cityId ? (
                 <div className="space-y-3">
                   <div className="relative">
-                    <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                    <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
                     <Input
                       value={cityQuery}
                       onChange={(e) => setCityQuery(e.target.value)}
@@ -179,15 +184,15 @@ export function FamilyWizard({
                         <button
                           type="button"
                           onClick={() => update({ cityId: c.id, selectedAreaIds: [] })}
-                          className="flex w-full items-center justify-between gap-3 rounded-xl border p-3 text-left transition-colors hover:bg-muted/60"
+                          className="hover:bg-muted/60 flex w-full items-center justify-between gap-3 rounded-xl border p-3 text-left transition-colors"
                         >
                           <span className="min-w-0">
                             <span className="block text-sm font-medium">{c.name}</span>
-                            <span className="block text-xs text-muted-foreground">
+                            <span className="text-muted-foreground block text-xs">
                               {c.postalCodes.join(", ")} · {c.department}
                             </span>
                           </span>
-                          <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
+                          <ArrowRight className="text-muted-foreground size-4 shrink-0" />
                         </button>
                       </li>
                     ))}
@@ -197,7 +202,7 @@ export function FamilyWizard({
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
                     <span className="inline-flex items-center gap-1.5 text-sm font-medium">
-                      <MapPin className="size-4 text-primary" />
+                      <MapPin className="text-primary size-4" />
                       {cities.find((c) => c.id === draft.cityId)?.name}
                     </span>
                     <Button
@@ -208,7 +213,7 @@ export function FamilyWizard({
                       {f.steps.areas.changeCity}
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     {f.steps.areas.selectHint}{" "}
                     <span className="text-foreground">
                       {fill(f.steps.areas.selectedCount, { count: draft.selectedAreaIds.length })}
@@ -228,15 +233,17 @@ export function FamilyWizard({
                           className={cn(
                             "flex w-full items-center justify-between gap-3 rounded-xl border p-3 text-left transition-colors",
                             selected
-                              ? "border-primary bg-accent/60 ring-1 ring-primary"
+                              ? "border-primary bg-accent/60 ring-primary ring-1"
                               : "hover:bg-muted/60",
                             !selected && atMax && "cursor-not-allowed opacity-50",
                           )}
                         >
                           <span className="min-w-0">
                             <span className="block text-sm font-medium">{a.areaName}</span>
-                            <span className="block text-xs text-muted-foreground">
-                              {a.areaType === "commune" ? dict.result.commune : dict.result.analysedArea}
+                            <span className="text-muted-foreground block text-xs">
+                              {a.areaType === "commune"
+                                ? dict.result.commune
+                                : dict.result.analysedArea}
                             </span>
                           </span>
                           <span
@@ -289,6 +296,19 @@ export function FamilyWizard({
                     icon: AGE_ICONS[age],
                   }))}
                 />
+                <div className="bg-muted/40 rounded-2xl p-4">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={draft.childAgeGroup}
+                      initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      <AgeIllustration age={draft.childAgeGroup} />
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
           )}

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480" role="img" aria-labelledby="title desc">
+<title id="title">StatWise France coverage map</title>
+<desc id="desc">Editorial data illustration for the StatWise interface.</desc>
+<defs>
+  <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+    <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#18343A" flood-opacity=".12"/>
+  </filter>
+  <linearGradient id="tealGrad" x1="0" x2="1" y1="0" y2="1">
+    <stop stop-color="#47AAA2"/>
+    <stop offset="1" stop-color="#207A77"/>
+  </linearGradient>
+  <linearGradient id="skyGrad" x1="0" x2="0" y1="0" y2="1">
+    <stop stop-color="#F1FBFA"/>
+    <stop offset="1" stop-color="#E5F4F2"/>
+  </linearGradient>
+</defs>
+
+<rect x="20" y="20" width="440" height="440" rx="32" fill="#F5FAFA"/>
+<path d="M227 58 L294 88 L343 143 L336 205 L376 250 L336 330 L283 380 L210 410 L145 373 L105 318 L73 248 L100 190 L91 132 L151 91Z"
+      fill="#DDF3F0" stroke="#2B8F8A" stroke-width="4" stroke-linejoin="round"/>
+<path d="M150 91 L178 141 L143 191 L100 190 M178 141 L235 118 L276 161 L253 215 L194 225 L143 191
+         M235 118 L294 88 M276 161 L336 205 M253 215 L311 263 L283 319 L214 300 L194 225
+         M143 191 L151 259 L105 318 M151 259 L214 300 L145 373 M214 300 L210 410 M283 319 L336 330"
+      fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<g filter="url(#shadow)">
+      <path d="M 222 235.5 C 207.75 216.75, 208.5 198.75, 222 198.75
+               C 235.5 198.75, 236.25 216.75, 222 235.5 Z" fill="#2B8F8A"/>
+      <circle cx="222" cy="215.25" r="7.5" fill="#fff" opacity=".18"/>
+      
+    </g>
+<g filter="url(#shadow)">
+      <path d="M 278 298.6 C 264.7 281.1, 265.4 264.3, 278 264.3
+               C 290.6 264.3, 291.3 281.1, 278 298.6 Z" fill="#4C78D8"/>
+      <circle cx="278" cy="279.7" r="7.0" fill="#fff" opacity=".18"/>
+      
+    </g>
+<g filter="url(#shadow)">
+      <path d="M 273 152.24 C 260.08 135.24, 260.76 118.92, 273 118.92
+               C 285.24 118.92, 285.92 135.24, 273 152.24 Z" fill="#DB9B34"/>
+      <circle cx="273" cy="133.88" r="6.800000000000001" fill="#fff" opacity=".18"/>
+      
+    </g>
+<g filter="url(#shadow)">
+      <path d="M 184 322.24 C 171.07999999999998 305.24, 171.76 288.92, 184 288.92
+               C 196.24 288.92, 196.92000000000002 305.24, 184 322.24 Z" fill="#8B63D9"/>
+      <circle cx="184" cy="303.88" r="6.800000000000001" fill="#fff" opacity=".18"/>
+      
+    </g>
+<g filter="url(#shadow)">
+      <path d="M 316 206.16 C 304.22 190.66, 304.84 175.78, 316 175.78
+               C 327.16 175.78, 327.78 190.66, 316 206.16 Z" fill="#4FA66A"/>
+      <circle cx="316" cy="189.42" r="6.2" fill="#fff" opacity=".18"/>
+      
+    </g>
+<g transform="translate(75 405)">
+ <circle cx="8" cy="8" r="8" fill="#2B8F8A"/><rect x="24" y="3" width="78" height="10" rx="5" fill="#D9E5E7"/>
+ <circle cx="132" cy="8" r="8" fill="#DB9B34"/><rect x="148" y="3" width="78" height="10" rx="5" fill="#D9E5E7"/>
+ <circle cx="256" cy="8" r="8" fill="#6F7F86" opacity=".4"/><rect x="272" y="3" width="78" height="10" rx="5" fill="#D9E5E7"/>
+</g>
+
+</svg>

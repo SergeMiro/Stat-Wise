@@ -44,15 +44,23 @@ export const en: Dictionary = {
     startQuartier: "Find my neighbourhood",
     startFamily: "Raising a child here",
     quartierTitle: "Find my neighbourhood",
-    quartierDesc:
-      "Rank the areas of a city by your budget, your commute and your priorities.",
+    quartierDesc: "Rank the areas of a city by your budget, your commute and your priorities.",
     familyTitle: "Raising a child here",
     familyDesc: "Compare up to three areas through the needs of a child and daily life.",
     howTitle: "How it works",
     steps: [
-      { title: "Describe your situation", desc: "City, budget, lifestyle and priorities — a few short steps." },
-      { title: "We analyse the areas", desc: "A transparent calculation from official data, no black box." },
-      { title: "You get areas to explore", desc: "An explained ranking, with its limits and what to verify." },
+      {
+        title: "Describe your situation",
+        desc: "City, budget, lifestyle and priorities — a few short steps.",
+      },
+      {
+        title: "We analyse the areas",
+        desc: "A transparent calculation from official data, no black box.",
+      },
+      {
+        title: "You get areas to explore",
+        desc: "An explained ranking, with its limits and what to verify.",
+      },
     ],
     dataTitle: "Official data, explained",
     dataDesc:
@@ -172,6 +180,15 @@ export const en: Dictionary = {
     saveCta: "Save this simulation",
     saveHint: "Create an account to keep your simulations. (Coming soon)",
     topMatch: "Best match",
+    summaryTitle: "Result preview",
+    summaryNote: "Visual product preview — not an exact geographic map.",
+    summaryAreas: "{count} area(s) analysed",
+    tryAnotherScenarioTitle: "What if your situation changed?",
+    tryAnotherScenarioDescription: "Re-run the analysis by changing a single parameter.",
+    scenarioBudgetTighter: "Budget cut by 10%",
+    scenarioWithoutCar: "Without a car",
+    scenarioMoreNature: "More nature",
+    scenarioBuyInstead: "Buy instead of rent",
   },
   explanations: {
     strengths: {
@@ -205,13 +222,34 @@ export const en: Dictionary = {
       title: "Methodology",
       intro: "How StatWise builds a ranking, what it measures and what it does not.",
       sections: [
-        { title: "What we calculate", body: "A ranking of a city's areas by your priorities, from official indicators normalised within the chosen city." },
-        { title: "What we do not calculate", body: "No absolute 'best neighbourhood', no guarantee of safety, of a crèche place, or of the exact price of a specific home." },
-        { title: "Geographic levels", body: "IRIS where possible, otherwise commune. The real level is always shown. An IRIS zone is called an 'analysed area'." },
-        { title: "Data confidence", body: "Each area gets a confidence level (strong, partial, limited, unavailable) based on the coverage of the indicators you marked important." },
-        { title: "Weighting", body: "Your priorities (from 'not important' to 'critical') become weights. Only the themes that matter to you count toward the score." },
-        { title: "Missing data", body: "A missing value is never replaced with zero: it lowers confidence and is flagged." },
-        { title: "Don't mix indicators", body: "Salary, median income, rent and purchase price are distinct measures with different methods and precision." },
+        {
+          title: "What we calculate",
+          body: "A ranking of a city's areas by your priorities, from official indicators normalised within the chosen city.",
+        },
+        {
+          title: "What we do not calculate",
+          body: "No absolute 'best neighbourhood', no guarantee of safety, of a crèche place, or of the exact price of a specific home.",
+        },
+        {
+          title: "Geographic levels",
+          body: "IRIS where possible, otherwise commune. The real level is always shown. An IRIS zone is called an 'analysed area'.",
+        },
+        {
+          title: "Data confidence",
+          body: "Each area gets a confidence level (strong, partial, limited, unavailable) based on the coverage of the indicators you marked important.",
+        },
+        {
+          title: "Weighting",
+          body: "Your priorities (from 'not important' to 'critical') become weights. Only the themes that matter to you count toward the score.",
+        },
+        {
+          title: "Missing data",
+          body: "A missing value is never replaced with zero: it lowers confidence and is flagged.",
+        },
+        {
+          title: "Don't mix indicators",
+          body: "Salary, median income, rent and purchase price are distinct measures with different methods and precision.",
+        },
       ],
       engineVersion: "Scoring engine version",
     },
@@ -263,6 +301,12 @@ export const en: Dictionary = {
     title: "Page not found",
     body: "This page doesn't exist or has moved.",
     home: "Back to home",
+  },
+  emptyStates: {
+    favoritesDesc: "Your favourite neighbourhoods will appear here. Run a simulation to add some.",
+    historyDesc: "Your recent simulations will appear here, ready to re-run.",
+    accountDesc:
+      "Coming soon: save your results and favourites, synced across your devices. You can run a simulation without an account.",
   },
   family: {
     title: "Growing up here",

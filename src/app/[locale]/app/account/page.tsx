@@ -6,5 +6,12 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
-  return <ComingSoon title={dict.nav.account} locale={locale} dict={dict} />;
+  return (
+    <ComingSoon
+      title={dict.nav.account}
+      locale={locale}
+      dict={dict}
+      description={dict.emptyStates.accountDesc}
+    />
+  );
 }
