@@ -1,0 +1,3 @@
+# Raw source downloads — regenerate via the build-*.mjs scripts, never commit
+*
+!.gitignore

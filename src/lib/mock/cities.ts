@@ -1,4 +1,5 @@
 import type { AreaProfile } from "@/domain/types";
+import { getDijonAreas } from "@/lib/data/dijon";
 
 /**
  * Mock pilot-city data for V1. In production these AreaProfiles are produced by
@@ -234,6 +235,9 @@ export function findCity(cityId: string): City | undefined {
 }
 
 export function getCityAreas(cityId: string): AreaProfile[] {
+  // Dijon runs on real official open data (DVF + BPE); other pilot cities are
+  // still deterministic mock until their ETL lands.
+  if (cityId === "dijon") return getDijonAreas();
   if (AREA_CACHE.has(cityId)) return AREA_CACHE.get(cityId)!;
   const spec = CITY_SPECS.find((c) => c.city.id === cityId);
   if (!spec) return [];

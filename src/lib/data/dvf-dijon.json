@@ -1,0 +1,1791 @@
+{
+  "source": {
+    "code": "dvf",
+    "label": "DVF — Demandes de valeurs foncières géolocalisées (DGFiP / Etalab)",
+    "url": "https://files.data.gouv.fr/geo-dvf/latest/csv/",
+    "irisContours": "opendatasoft georef-france-iris (IGN)",
+    "method": "single-lot Vente, €/m² = valeur_fonciere / surface_reelle_bati, PIP→IRIS",
+    "ppm2Bounds": [
+      300,
+      25000
+    ]
+  },
+  "commune": "21231",
+  "communeName": "Dijon",
+  "years": [
+    2022,
+    2023,
+    2024
+  ],
+  "totalTransactions": 9304,
+  "generatedFromYears": [
+    2022,
+    2023,
+    2024
+  ],
+  "areas": [
+    {
+      "irisCode": "212310704",
+      "irisName": "Abattoirs",
+      "centroid": {
+        "latitude": 47.2981,
+        "longitude": 5.07733
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 110,
+          "min": 1108,
+          "p25": 2417,
+          "median": 2837,
+          "p75": 3313,
+          "max": 4167
+        },
+        "house": {
+          "count": 17,
+          "min": 350,
+          "p25": 2643,
+          "median": 3203,
+          "p75": 3674,
+          "max": 7342
+        }
+      },
+      "sampleSize": {
+        "apartment": 110,
+        "house": 17
+      }
+    },
+    {
+      "irisCode": "212311302",
+      "irisName": "Arquebuse",
+      "centroid": {
+        "latitude": 47.31881,
+        "longitude": 5.02624
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 158,
+          "min": 345,
+          "p25": 2108,
+          "median": 2512,
+          "p75": 2970,
+          "max": 6558
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 158,
+        "house": 1
+      }
+    },
+    {
+      "irisCode": "212310901",
+      "irisName": "Arsenal",
+      "centroid": {
+        "latitude": 47.30417,
+        "longitude": 5.02435
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 94,
+          "min": 824,
+          "p25": 2139,
+          "median": 2400,
+          "p75": 2642,
+          "max": 4408
+        },
+        "house": {
+          "count": 40,
+          "min": 1485,
+          "p25": 2625,
+          "median": 3002,
+          "p75": 3577,
+          "max": 5881
+        }
+      },
+      "sampleSize": {
+        "apartment": 94,
+        "house": 40
+      }
+    },
+    {
+      "irisCode": "212311701",
+      "irisName": "Balzac",
+      "centroid": {
+        "latitude": 47.34183,
+        "longitude": 5.05114
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 106,
+          "min": 692,
+          "p25": 2032,
+          "median": 2373,
+          "p75": 2832,
+          "max": 3676
+        },
+        "house": {
+          "count": 42,
+          "min": 1022,
+          "p25": 3064,
+          "median": 3615,
+          "p75": 4270,
+          "max": 6804
+        }
+      },
+      "sampleSize": {
+        "apartment": 106,
+        "house": 42
+      }
+    },
+    {
+      "irisCode": "212311001",
+      "irisName": "Bel-Air",
+      "centroid": {
+        "latitude": 47.30996,
+        "longitude": 5.00641
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 56,
+          "min": 818,
+          "p25": 1434,
+          "median": 1690,
+          "p75": 1794,
+          "max": 3075
+        },
+        "house": {
+          "count": 42,
+          "min": 1263,
+          "p25": 2692,
+          "median": 3161,
+          "p75": 3813,
+          "max": 5679
+        }
+      },
+      "sampleSize": {
+        "apartment": 56,
+        "house": 42
+      }
+    },
+    {
+      "irisCode": "212311004",
+      "irisName": "Bourroches Est",
+      "centroid": {
+        "latitude": 47.30951,
+        "longitude": 5.01945
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 106,
+          "min": 1294,
+          "p25": 1810,
+          "median": 2080,
+          "p75": 2368,
+          "max": 3737
+        },
+        "house": {
+          "count": 33,
+          "min": 690,
+          "p25": 2129,
+          "median": 2794,
+          "p75": 3489,
+          "max": 5114
+        }
+      },
+      "sampleSize": {
+        "apartment": 106,
+        "house": 33
+      }
+    },
+    {
+      "irisCode": "212311003",
+      "irisName": "Bourroches Ouest",
+      "centroid": {
+        "latitude": 47.30874,
+        "longitude": 5.01562
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 100,
+          "min": 811,
+          "p25": 1839,
+          "median": 2136,
+          "p75": 2619,
+          "max": 3212
+        },
+        "house": {
+          "count": 38,
+          "min": 628,
+          "p25": 1798,
+          "median": 2786,
+          "p75": 3583,
+          "max": 4908
+        }
+      },
+      "sampleSize": {
+        "apartment": 100,
+        "house": 38
+      }
+    },
+    {
+      "irisCode": "212311402",
+      "irisName": "Carrières Bacquin",
+      "centroid": {
+        "latitude": 47.3263,
+        "longitude": 5.02166
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 237,
+          "min": 685,
+          "p25": 2163,
+          "median": 2697,
+          "p75": 3054,
+          "max": 5463
+        },
+        "house": {
+          "count": 29,
+          "min": 1140,
+          "p25": 3168,
+          "median": 3929,
+          "p75": 4847,
+          "max": 6483
+        }
+      },
+      "sampleSize": {
+        "apartment": 237,
+        "house": 29
+      }
+    },
+    {
+      "irisCode": "212310803",
+      "irisName": "Carrousel",
+      "centroid": {
+        "latitude": 47.30524,
+        "longitude": 5.04578
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 75,
+          "min": 517,
+          "p25": 2400,
+          "median": 2955,
+          "p75": 3364,
+          "max": 5875
+        },
+        "house": {
+          "count": 27,
+          "min": 2717,
+          "p25": 3381,
+          "median": 3913,
+          "p75": 4479,
+          "max": 5857
+        }
+      },
+      "sampleSize": {
+        "apartment": 75,
+        "house": 27
+      }
+    },
+    {
+      "irisCode": "212311703",
+      "irisName": "Casernes",
+      "centroid": {
+        "latitude": 47.33479,
+        "longitude": 5.04639
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 251,
+          "min": 585,
+          "p25": 2151,
+          "median": 2670,
+          "p75": 3031,
+          "max": 4829
+        },
+        "house": {
+          "count": 15,
+          "min": 1750,
+          "p25": 2202,
+          "median": 2700,
+          "p75": 3088,
+          "max": 6291
+        }
+      },
+      "sampleSize": {
+        "apartment": 251,
+        "house": 15
+      }
+    },
+    {
+      "irisCode": "212310801",
+      "irisName": "Castel",
+      "centroid": {
+        "latitude": 47.31101,
+        "longitude": 5.03796
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 137,
+          "min": 948,
+          "p25": 2100,
+          "median": 2531,
+          "p75": 2891,
+          "max": 6132
+        },
+        "house": {
+          "count": 7,
+          "min": 2188,
+          "p25": 3728,
+          "median": 4041,
+          "p75": 4226,
+          "max": 4667
+        }
+      },
+      "sampleSize": {
+        "apartment": 137,
+        "house": 7
+      }
+    },
+    {
+      "irisCode": "212311804",
+      "irisName": "Castelnau",
+      "centroid": {
+        "latitude": 47.33036,
+        "longitude": 5.06764
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 19,
+          "min": 1153,
+          "p25": 1883,
+          "median": 2288,
+          "p75": 2816,
+          "max": 3276
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 19,
+        "house": 3
+      }
+    },
+    {
+      "irisCode": "212311204",
+      "irisName": "Champ Perdrix",
+      "centroid": {
+        "latitude": 47.3199,
+        "longitude": 5.00285
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 149,
+          "min": 342,
+          "p25": 740,
+          "median": 854,
+          "p75": 952,
+          "max": 1438
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 149,
+        "house": 0
+      }
+    },
+    {
+      "irisCode": "212310503",
+      "irisName": "Champmaillot",
+      "centroid": {
+        "latitude": 47.31773,
+        "longitude": 5.0592
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 146,
+          "min": 435,
+          "p25": 2198,
+          "median": 2743,
+          "p75": 3552,
+          "max": 5972
+        },
+        "house": {
+          "count": 53,
+          "min": 1250,
+          "p25": 3167,
+          "median": 3650,
+          "p75": 4110,
+          "max": 8621
+        }
+      },
+      "sampleSize": {
+        "apartment": 146,
+        "house": 53
+      }
+    },
+    {
+      "irisCode": "212312001",
+      "irisName": "Charles de Gaulle",
+      "centroid": {
+        "latitude": 47.35078,
+        "longitude": 5.03964
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 59,
+          "min": 1933,
+          "p25": 2634,
+          "median": 2891,
+          "p75": 3137,
+          "max": 3583
+        },
+        "house": {
+          "count": 10,
+          "min": 1980,
+          "p25": 2775,
+          "median": 3037,
+          "p75": 3186,
+          "max": 3682
+        }
+      },
+      "sampleSize": {
+        "apartment": 59,
+        "house": 10
+      }
+    },
+    {
+      "irisCode": "212311301",
+      "irisName": "Chartreuse",
+      "centroid": {
+        "latitude": 47.31955,
+        "longitude": 5.01929
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 136,
+          "min": 1327,
+          "p25": 2019,
+          "median": 2306,
+          "p75": 2588,
+          "max": 4711
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 136,
+        "house": 0
+      }
+    },
+    {
+      "irisCode": "212310304",
+      "irisName": "Clemenceau",
+      "centroid": {
+        "latitude": 47.32748,
+        "longitude": 5.04925
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 109,
+          "min": 765,
+          "p25": 2189,
+          "median": 2435,
+          "p75": 2950,
+          "max": 4932
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 109,
+        "house": 0
+      }
+    },
+    {
+      "irisCode": "212312003",
+      "irisName": "Clos de Pouilly",
+      "centroid": {
+        "latitude": 47.34935,
+        "longitude": 5.05091
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 146,
+          "min": 1278,
+          "p25": 2791,
+          "median": 3031,
+          "p75": 3305,
+          "max": 4316
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 146,
+        "house": 4
+      }
+    },
+    {
+      "irisCode": "212319901",
+      "irisName": "Combe à la Serpent Le Lac",
+      "centroid": {
+        "latitude": 47.3211,
+        "longitude": 4.98809
+      },
+      "priceM2": {
+        "apartment": null,
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 1,
+        "house": 1
+      }
+    },
+    {
+      "irisCode": "212312002",
+      "irisName": "Concorde",
+      "centroid": {
+        "latitude": 47.35106,
+        "longitude": 5.04274
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 91,
+          "min": 1727,
+          "p25": 2716,
+          "median": 2923,
+          "p75": 3165,
+          "max": 4000
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 91,
+        "house": 0
+      }
+    },
+    {
+      "irisCode": "212310102",
+      "irisName": "Cordeliers",
+      "centroid": {
+        "latitude": 47.31942,
+        "longitude": 5.03855
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 245,
+          "min": 696,
+          "p25": 2632,
+          "median": 3097,
+          "p75": 3714,
+          "max": 10568
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 245,
+        "house": 4
+      }
+    },
+    {
+      "irisCode": "212310301",
+      "irisName": "Darcy",
+      "centroid": {
+        "latitude": 47.32532,
+        "longitude": 5.03403
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 242,
+          "min": 407,
+          "p25": 2396,
+          "median": 3035,
+          "p75": 3690,
+          "max": 6425
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 242,
+        "house": 0
+      }
+    },
+    {
+      "irisCode": "212310305",
+      "irisName": "Davout",
+      "centroid": {
+        "latitude": 47.32508,
+        "longitude": 5.05145
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 213,
+          "min": 319,
+          "p25": 2267,
+          "median": 2622,
+          "p75": 3190,
+          "max": 5053
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 213,
+        "house": 3
+      }
+    },
+    {
+      "irisCode": "212310403",
+      "irisName": "Docteur Lavalle",
+      "centroid": {
+        "latitude": 47.31274,
+        "longitude": 5.04584
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 231,
+          "min": 707,
+          "p25": 2367,
+          "median": 2833,
+          "p75": 3317,
+          "max": 9747
+        },
+        "house": {
+          "count": 8,
+          "min": 2456,
+          "p25": 2669,
+          "median": 3170,
+          "p75": 3857,
+          "max": 4533
+        }
+      },
+      "sampleSize": {
+        "apartment": 231,
+        "house": 8
+      }
+    },
+    {
+      "irisCode": "212311203",
+      "irisName": "Édouard Belin",
+      "centroid": {
+        "latitude": 47.32156,
+        "longitude": 4.99854
+      },
+      "priceM2": {
+        "apartment": null,
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 0,
+        "house": 0
+      }
+    },
+    {
+      "irisCode": "212311503",
+      "irisName": "Eugène Spuller",
+      "centroid": {
+        "latitude": 47.32953,
+        "longitude": 5.02929
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 180,
+          "min": 1154,
+          "p25": 2440,
+          "median": 2821,
+          "p75": 3201,
+          "max": 5005
+        },
+        "house": {
+          "count": 23,
+          "min": 3000,
+          "p25": 4016,
+          "median": 4276,
+          "p75": 5093,
+          "max": 8073
+        }
+      },
+      "sampleSize": {
+        "apartment": 180,
+        "house": 23
+      }
+    },
+    {
+      "irisCode": "212311602",
+      "irisName": "Fauconnet",
+      "centroid": {
+        "latitude": 47.33659,
+        "longitude": 5.03889
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 98,
+          "min": 770,
+          "p25": 2072,
+          "median": 2461,
+          "p75": 2878,
+          "max": 4878
+        },
+        "house": {
+          "count": 45,
+          "min": 1778,
+          "p25": 3383,
+          "median": 3825,
+          "p75": 4558,
+          "max": 7018
+        }
+      },
+      "sampleSize": {
+        "apartment": 98,
+        "house": 45
+      }
+    },
+    {
+      "irisCode": "212311501",
+      "irisName": "François Pompon",
+      "centroid": {
+        "latitude": 47.33445,
+        "longitude": 5.02102
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 174,
+          "min": 1136,
+          "p25": 2051,
+          "median": 2473,
+          "p75": 2898,
+          "max": 5488
+        },
+        "house": {
+          "count": 27,
+          "min": 2195,
+          "p25": 3663,
+          "median": 4500,
+          "p75": 5434,
+          "max": 10803
+        }
+      },
+      "sampleSize": {
+        "apartment": 174,
+        "house": 27
+      }
+    },
+    {
+      "irisCode": "212310201",
+      "irisName": "Grangier",
+      "centroid": {
+        "latitude": 47.32378,
+        "longitude": 5.03682
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 241,
+          "min": 732,
+          "p25": 2571,
+          "median": 3100,
+          "p75": 3710,
+          "max": 15526
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 241,
+        "house": 2
+      }
+    },
+    {
+      "irisCode": "212311803",
+      "irisName": "Grésilles Centre",
+      "centroid": {
+        "latitude": 47.33451,
+        "longitude": 5.06809
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 23,
+          "min": 944,
+          "p25": 1857,
+          "median": 2239,
+          "p75": 2519,
+          "max": 2905
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 23,
+        "house": 0
+      }
+    },
+    {
+      "irisCode": "212310804",
+      "irisName": "Greuze",
+      "centroid": {
+        "latitude": 47.30052,
+        "longitude": 5.04264
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 62,
+          "min": 1000,
+          "p25": 1741,
+          "median": 2013,
+          "p75": 2254,
+          "max": 3615
+        },
+        "house": {
+          "count": 21,
+          "min": 1850,
+          "p25": 2644,
+          "median": 3105,
+          "p75": 3647,
+          "max": 6421
+        }
+      },
+      "sampleSize": {
+        "apartment": 62,
+        "house": 21
+      }
+    },
+    {
+      "irisCode": "212310202",
+      "irisName": "Jean-Jacques Rousseau",
+      "centroid": {
+        "latitude": 47.32397,
+        "longitude": 5.04635
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 316,
+          "min": 353,
+          "p25": 2472,
+          "median": 2958,
+          "p75": 3667,
+          "max": 9873
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 316,
+        "house": 4
+      }
+    },
+    {
+      "irisCode": "212311604",
+      "irisName": "Jouvence Est",
+      "centroid": {
+        "latitude": 47.33095,
+        "longitude": 5.04116
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 232,
+          "min": 627,
+          "p25": 2353,
+          "median": 2721,
+          "p75": 3132,
+          "max": 6520
+        },
+        "house": {
+          "count": 14,
+          "min": 2226,
+          "p25": 2830,
+          "median": 3309,
+          "p75": 4188,
+          "max": 9167
+        }
+      },
+      "sampleSize": {
+        "apartment": 232,
+        "house": 14
+      }
+    },
+    {
+      "irisCode": "212311603",
+      "irisName": "Jouvence Ouest",
+      "centroid": {
+        "latitude": 47.33142,
+        "longitude": 5.03596
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 96,
+          "min": 1308,
+          "p25": 1972,
+          "median": 2359,
+          "p75": 2772,
+          "max": 4619
+        },
+        "house": {
+          "count": 34,
+          "min": 1200,
+          "p25": 3122,
+          "median": 4078,
+          "p75": 4813,
+          "max": 8099
+        }
+      },
+      "sampleSize": {
+        "apartment": 96,
+        "house": 34
+      }
+    },
+    {
+      "irisCode": "212311601",
+      "irisName": "La Charmette",
+      "centroid": {
+        "latitude": 47.34351,
+        "longitude": 5.04052
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 95,
+          "min": 372,
+          "p25": 2015,
+          "median": 2571,
+          "p75": 3048,
+          "max": 4963
+        },
+        "house": {
+          "count": 55,
+          "min": 1105,
+          "p25": 2732,
+          "median": 3412,
+          "p75": 4554,
+          "max": 7129
+        }
+      },
+      "sampleSize": {
+        "apartment": 95,
+        "house": 55
+      }
+    },
+    {
+      "irisCode": "212319803",
+      "irisName": "La Gare",
+      "centroid": {
+        "latitude": 47.3195,
+        "longitude": 5.02542
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 7,
+          "min": 1494,
+          "p25": 2200,
+          "median": 2722,
+          "p75": 4015,
+          "max": 4444
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 7,
+        "house": 0
+      }
+    },
+    {
+      "irisCode": "212311101",
+      "irisName": "La Montagne",
+      "centroid": {
+        "latitude": 47.31121,
+        "longitude": 4.98627
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 40,
+          "min": 1270,
+          "p25": 1719,
+          "median": 2869,
+          "p75": 3138,
+          "max": 3897
+        },
+        "house": {
+          "count": 92,
+          "min": 1188,
+          "p25": 2671,
+          "median": 3299,
+          "p75": 3679,
+          "max": 19873
+        }
+      },
+      "sampleSize": {
+        "apartment": 40,
+        "house": 92
+      }
+    },
+    {
+      "irisCode": "212319801",
+      "irisName": "La Toison d'Or",
+      "centroid": {
+        "latitude": 47.36253,
+        "longitude": 5.04974
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 97,
+          "min": 548,
+          "p25": 2696,
+          "median": 2956,
+          "p75": 3203,
+          "max": 4444
+        },
+        "house": {
+          "count": 19,
+          "min": 493,
+          "p25": 2495,
+          "median": 2530,
+          "p75": 2897,
+          "max": 3526
+        }
+      },
+      "sampleSize": {
+        "apartment": 97,
+        "house": 19
+      }
+    },
+    {
+      "irisCode": "212311002",
+      "irisName": "Larrey",
+      "centroid": {
+        "latitude": 47.31555,
+        "longitude": 5.01755
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 156,
+          "min": 1485,
+          "p25": 2109,
+          "median": 2414,
+          "p75": 2789,
+          "max": 3722
+        },
+        "house": {
+          "count": 26,
+          "min": 1546,
+          "p25": 2982,
+          "median": 3659,
+          "p75": 3947,
+          "max": 7883
+        }
+      },
+      "sampleSize": {
+        "apartment": 156,
+        "house": 26
+      }
+    },
+    {
+      "irisCode": "212319804",
+      "irisName": "Le Bocage",
+      "centroid": {
+        "latitude": 47.31965,
+        "longitude": 5.0693
+      },
+      "priceM2": {
+        "apartment": null,
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 0,
+        "house": 0
+      }
+    },
+    {
+      "irisCode": "212311202",
+      "irisName": "Le Lac",
+      "centroid": {
+        "latitude": 47.32039,
+        "longitude": 5.00593
+      },
+      "priceM2": {
+        "apartment": null,
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 1,
+        "house": 0
+      }
+    },
+    {
+      "irisCode": "212310701",
+      "irisName": "Lentillères",
+      "centroid": {
+        "latitude": 47.30788,
+        "longitude": 5.05319
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 159,
+          "min": 833,
+          "p25": 2149,
+          "median": 2612,
+          "p75": 3134,
+          "max": 5490
+        },
+        "house": {
+          "count": 23,
+          "min": 1812,
+          "p25": 2938,
+          "median": 3359,
+          "p75": 4008,
+          "max": 5192
+        }
+      },
+      "sampleSize": {
+        "apartment": 159,
+        "house": 23
+      }
+    },
+    {
+      "irisCode": "212311502",
+      "irisName": "Les Hauts de Montchapet",
+      "centroid": {
+        "latitude": 47.33312,
+        "longitude": 5.03063
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 110,
+          "min": 1020,
+          "p25": 2226,
+          "median": 2749,
+          "p75": 3222,
+          "max": 4971
+        },
+        "house": {
+          "count": 24,
+          "min": 3189,
+          "p25": 3704,
+          "median": 4751,
+          "p75": 5668,
+          "max": 6410
+        }
+      },
+      "sampleSize": {
+        "apartment": 110,
+        "house": 24
+      }
+    },
+    {
+      "irisCode": "212310302",
+      "irisName": "Les Roses",
+      "centroid": {
+        "latitude": 47.3274,
+        "longitude": 5.03546
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 237,
+          "min": 302,
+          "p25": 2424,
+          "median": 2947,
+          "p75": 3488,
+          "max": 7210
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 237,
+        "house": 3
+      }
+    },
+    {
+      "irisCode": "212311006",
+      "irisName": "Les Valendons",
+      "centroid": {
+        "latitude": 47.30401,
+        "longitude": 5.00868
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 17,
+          "min": 1125,
+          "p25": 1470,
+          "median": 1559,
+          "p75": 1748,
+          "max": 1806
+        },
+        "house": {
+          "count": 53,
+          "min": 597,
+          "p25": 2471,
+          "median": 2687,
+          "p75": 3015,
+          "max": 4080
+        }
+      },
+      "sampleSize": {
+        "apartment": 17,
+        "house": 53
+      }
+    },
+    {
+      "irisCode": "212311802",
+      "irisName": "Lochères",
+      "centroid": {
+        "latitude": 47.33351,
+        "longitude": 5.06398
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 17,
+          "min": 1394,
+          "p25": 2032,
+          "median": 2738,
+          "p75": 3005,
+          "max": 3255
+        },
+        "house": {
+          "count": 5,
+          "min": 1899,
+          "p25": 2206,
+          "median": 2407,
+          "p75": 2607,
+          "max": 2626
+        }
+      },
+      "sampleSize": {
+        "apartment": 17,
+        "house": 5
+      }
+    },
+    {
+      "irisCode": "212310501",
+      "irisName": "Lyautey",
+      "centroid": {
+        "latitude": 47.32841,
+        "longitude": 5.06264
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 156,
+          "min": 755,
+          "p25": 1944,
+          "median": 2280,
+          "p75": 2705,
+          "max": 4698
+        },
+        "house": {
+          "count": 6,
+          "min": 2457,
+          "p25": 2698,
+          "median": 3034,
+          "p75": 4463,
+          "max": 5476
+        }
+      },
+      "sampleSize": {
+        "apartment": 156,
+        "house": 6
+      }
+    },
+    {
+      "irisCode": "212310703",
+      "irisName": "Mansart",
+      "centroid": {
+        "latitude": 47.30723,
+        "longitude": 5.06044
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 108,
+          "min": 1426,
+          "p25": 2645,
+          "median": 3026,
+          "p75": 3390,
+          "max": 4574
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 108,
+        "house": 4
+      }
+    },
+    {
+      "irisCode": "212310101",
+      "irisName": "Monge",
+      "centroid": {
+        "latitude": 47.31936,
+        "longitude": 5.03589
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 261,
+          "min": 455,
+          "p25": 2500,
+          "median": 3000,
+          "p75": 3567,
+          "max": 7500
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 261,
+        "house": 2
+      }
+    },
+    {
+      "irisCode": "212310502",
+      "irisName": "Parc des Sports",
+      "centroid": {
+        "latitude": 47.32512,
+        "longitude": 5.06451
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 147,
+          "min": 378,
+          "p25": 2288,
+          "median": 2669,
+          "p75": 3090,
+          "max": 4806
+        },
+        "house": {
+          "count": 13,
+          "min": 2837,
+          "p25": 3100,
+          "median": 3469,
+          "p75": 3861,
+          "max": 5245
+        }
+      },
+      "sampleSize": {
+        "apartment": 147,
+        "house": 13
+      }
+    },
+    {
+      "irisCode": "212310401",
+      "irisName": "Petit Cîteaux",
+      "centroid": {
+        "latitude": 47.3144,
+        "longitude": 5.03635
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 164,
+          "min": 1282,
+          "p25": 2228,
+          "median": 2628,
+          "p75": 3000,
+          "max": 10455
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 164,
+        "house": 4
+      }
+    },
+    {
+      "irisCode": "212310702",
+      "irisName": "Petites Roches",
+      "centroid": {
+        "latitude": 47.31264,
+        "longitude": 5.05781
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 126,
+          "min": 691,
+          "p25": 1929,
+          "median": 2172,
+          "p75": 2552,
+          "max": 4731
+        },
+        "house": {
+          "count": 10,
+          "min": 1296,
+          "p25": 2662,
+          "median": 3123,
+          "p75": 3338,
+          "max": 5000
+        }
+      },
+      "sampleSize": {
+        "apartment": 126,
+        "house": 10
+      }
+    },
+    {
+      "irisCode": "212311401",
+      "irisName": "Providence",
+      "centroid": {
+        "latitude": 47.3281,
+        "longitude": 5.01799
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 194,
+          "min": 986,
+          "p25": 2270,
+          "median": 2611,
+          "p75": 3073,
+          "max": 4684
+        },
+        "house": {
+          "count": 37,
+          "min": 911,
+          "p25": 3401,
+          "median": 4009,
+          "p75": 4737,
+          "max": 5961
+        }
+      },
+      "sampleSize": {
+        "apartment": 194,
+        "house": 37
+      }
+    },
+    {
+      "irisCode": "212310303",
+      "irisName": "République",
+      "centroid": {
+        "latitude": 47.32784,
+        "longitude": 5.04393
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 231,
+          "min": 837,
+          "p25": 2466,
+          "median": 2926,
+          "p75": 3485,
+          "max": 20000
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 231,
+        "house": 2
+      }
+    },
+    {
+      "irisCode": "212311704",
+      "irisName": "Sacré-Cœur",
+      "centroid": {
+        "latitude": 47.3339,
+        "longitude": 5.05283
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 100,
+          "min": 1026,
+          "p25": 1959,
+          "median": 2538,
+          "p75": 2914,
+          "max": 5326
+        },
+        "house": {
+          "count": 66,
+          "min": 911,
+          "p25": 3042,
+          "median": 3530,
+          "p75": 4099,
+          "max": 7222
+        }
+      },
+      "sampleSize": {
+        "apartment": 100,
+        "house": 66
+      }
+    },
+    {
+      "irisCode": "212310103",
+      "irisName": "Saint-Michel",
+      "centroid": {
+        "latitude": 47.31979,
+        "longitude": 5.04751
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 195,
+          "min": 500,
+          "p25": 2538,
+          "median": 3011,
+          "p75": 3510,
+          "max": 7051
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 195,
+        "house": 2
+      }
+    },
+    {
+      "irisCode": "212310402",
+      "irisName": "Saint-Pierre",
+      "centroid": {
+        "latitude": 47.31359,
+        "longitude": 5.04159
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 203,
+          "min": 364,
+          "p25": 2186,
+          "median": 2574,
+          "p75": 3061,
+          "max": 5917
+        },
+        "house": {
+          "count": 10,
+          "min": 2624,
+          "p25": 2897,
+          "median": 3611,
+          "p75": 4540,
+          "max": 6282
+        }
+      },
+      "sampleSize": {
+        "apartment": 203,
+        "house": 10
+      }
+    },
+    {
+      "irisCode": "212311702",
+      "irisName": "Stalingrad",
+      "centroid": {
+        "latitude": 47.34448,
+        "longitude": 5.05318
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 74,
+          "min": 800,
+          "p25": 1833,
+          "median": 2192,
+          "p75": 3044,
+          "max": 3791
+        },
+        "house": {
+          "count": 13,
+          "min": 2086,
+          "p25": 2242,
+          "median": 2864,
+          "p75": 3357,
+          "max": 3611
+        }
+      },
+      "sampleSize": {
+        "apartment": 74,
+        "house": 13
+      }
+    },
+    {
+      "irisCode": "212310802",
+      "irisName": "Stéarinerie",
+      "centroid": {
+        "latitude": 47.30534,
+        "longitude": 5.03592
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 110,
+          "min": 983,
+          "p25": 1713,
+          "median": 2104,
+          "p75": 2550,
+          "max": 5000
+        },
+        "house": {
+          "count": 34,
+          "min": 1771,
+          "p25": 2691,
+          "median": 3500,
+          "p75": 4116,
+          "max": 5720
+        }
+      },
+      "sampleSize": {
+        "apartment": 110,
+        "house": 34
+      }
+    },
+    {
+      "irisCode": "212311303",
+      "irisName": "Tanneries",
+      "centroid": {
+        "latitude": 47.31176,
+        "longitude": 5.02853
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 73,
+          "min": 549,
+          "p25": 2285,
+          "median": 2576,
+          "p75": 2878,
+          "max": 9359
+        },
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 73,
+        "house": 4
+      }
+    },
+    {
+      "irisCode": "212311201",
+      "irisName": "Tire-Pesseau",
+      "centroid": {
+        "latitude": 47.31844,
+        "longitude": 5.00067
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 100,
+          "min": 542,
+          "p25": 1063,
+          "median": 1197,
+          "p75": 1411,
+          "max": 2300
+        },
+        "house": {
+          "count": 5,
+          "min": 1220,
+          "p25": 1339,
+          "median": 1613,
+          "p75": 2347,
+          "max": 2934
+        }
+      },
+      "sampleSize": {
+        "apartment": 100,
+        "house": 5
+      }
+    },
+    {
+      "irisCode": "212311005",
+      "irisName": "Trois Forgerons",
+      "centroid": {
+        "latitude": 47.3123,
+        "longitude": 5.02328
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 93,
+          "min": 681,
+          "p25": 2179,
+          "median": 2600,
+          "p75": 3162,
+          "max": 5250
+        },
+        "house": {
+          "count": 22,
+          "min": 1042,
+          "p25": 2900,
+          "median": 3597,
+          "p75": 3931,
+          "max": 5853
+        }
+      },
+      "sampleSize": {
+        "apartment": 93,
+        "house": 22
+      }
+    },
+    {
+      "irisCode": "212310601",
+      "irisName": "Universités",
+      "centroid": {
+        "latitude": 47.31076,
+        "longitude": 5.07401
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 30,
+          "min": 1216,
+          "p25": 1680,
+          "median": 1912,
+          "p75": 2545,
+          "max": 22000
+        },
+        "house": {
+          "count": 9,
+          "min": 2625,
+          "p25": 2688,
+          "median": 3000,
+          "p75": 3724,
+          "max": 10033
+        }
+      },
+      "sampleSize": {
+        "apartment": 30,
+        "house": 9
+      }
+    },
+    {
+      "irisCode": "212310404",
+      "irisName": "Voltaire",
+      "centroid": {
+        "latitude": 47.31655,
+        "longitude": 5.04954
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 156,
+          "min": 861,
+          "p25": 2334,
+          "median": 2755,
+          "p75": 3379,
+          "max": 4570
+        },
+        "house": {
+          "count": 6,
+          "min": 1100,
+          "p25": 1431,
+          "median": 1787,
+          "p75": 2370,
+          "max": 3734
+        }
+      },
+      "sampleSize": {
+        "apartment": 156,
+        "house": 6
+      }
+    },
+    {
+      "irisCode": "212311801",
+      "irisName": "York",
+      "centroid": {
+        "latitude": 47.33254,
+        "longitude": 5.06167
+      },
+      "priceM2": {
+        "apartment": {
+          "count": 88,
+          "min": 906,
+          "p25": 1782,
+          "median": 2119,
+          "p75": 2437,
+          "max": 4051
+        },
+        "house": {
+          "count": 24,
+          "min": 1899,
+          "p25": 2239,
+          "median": 2612,
+          "p75": 3228,
+          "max": 5050
+        }
+      },
+      "sampleSize": {
+        "apartment": 88,
+        "house": 24
+      }
+    },
+    {
+      "irisCode": "212319802",
+      "irisName": "Z.I. Nord-Est",
+      "centroid": {
+        "latitude": 47.34697,
+        "longitude": 5.06933
+      },
+      "priceM2": {
+        "apartment": null,
+        "house": null
+      },
+      "sampleSize": {
+        "apartment": 0,
+        "house": 0
+      }
+    }
+  ]
+}

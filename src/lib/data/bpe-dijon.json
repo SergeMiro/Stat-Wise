@@ -1,0 +1,1288 @@
+{
+  "source": {
+    "code": "insee_bpe",
+    "label": "INSEE — Base permanente des équipements (BPE) 2025",
+    "url": "https://www.insee.fr/fr/statistiques/8217525",
+    "method": "TYPEQU→category map (scripts/etl/lib/bpe-mapping.mjs), grouped by DCIRIS",
+    "limits": "no parks layer; transport = rail+taxi floor only"
+  },
+  "commune": "21231",
+  "communeName": "Dijon",
+  "year": 2025,
+  "totalMappedEquipments": 1928,
+  "areas": [
+    {
+      "irisCode": "21231_IND",
+      "poi": {
+        "transport": 15,
+        "shops": 14,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 2,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310101",
+      "poi": {
+        "transport": 0,
+        "shops": 118,
+        "pharmacies": 3,
+        "adminServices": 0,
+        "sport": 6,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 4,
+        "medicalCenters": 0,
+        "creches": 2,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 1,
+        "college": 1,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310102",
+      "poi": {
+        "transport": 1,
+        "shops": 66,
+        "pharmacies": 1,
+        "adminServices": 5,
+        "sport": 1,
+        "culture": 5,
+        "libraries": 3,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 3,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310103",
+      "poi": {
+        "transport": 0,
+        "shops": 15,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 5,
+        "culture": 2,
+        "libraries": 1,
+        "doctors": 5,
+        "medicalCenters": 2,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 1,
+        "lycee": 2
+      }
+    },
+    {
+      "irisCode": "212310201",
+      "poi": {
+        "transport": 1,
+        "shops": 169,
+        "pharmacies": 3,
+        "adminServices": 2,
+        "sport": 3,
+        "culture": 3,
+        "libraries": 0,
+        "doctors": 16,
+        "medicalCenters": 2,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 1,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310202",
+      "poi": {
+        "transport": 1,
+        "shops": 67,
+        "pharmacies": 1,
+        "adminServices": 1,
+        "sport": 4,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 1,
+        "medicalCenters": 0,
+        "creches": 2,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 1,
+        "college": 1,
+        "lycee": 1
+      }
+    },
+    {
+      "irisCode": "212310301",
+      "poi": {
+        "transport": 1,
+        "shops": 11,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 1,
+        "culture": 1,
+        "libraries": 0,
+        "doctors": 10,
+        "medicalCenters": 4,
+        "creches": 1,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310302",
+      "poi": {
+        "transport": 0,
+        "shops": 7,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 1,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 2,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310303",
+      "poi": {
+        "transport": 1,
+        "shops": 12,
+        "pharmacies": 0,
+        "adminServices": 2,
+        "sport": 3,
+        "culture": 1,
+        "libraries": 0,
+        "doctors": 18,
+        "medicalCenters": 3,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 2,
+        "college": 1,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310304",
+      "poi": {
+        "transport": 0,
+        "shops": 12,
+        "pharmacies": 1,
+        "adminServices": 9,
+        "sport": 2,
+        "culture": 1,
+        "libraries": 0,
+        "doctors": 2,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310305",
+      "poi": {
+        "transport": 1,
+        "shops": 3,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 0,
+        "culture": 1,
+        "libraries": 0,
+        "doctors": 1,
+        "medicalCenters": 0,
+        "creches": 1,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310401",
+      "poi": {
+        "transport": 2,
+        "shops": 9,
+        "pharmacies": 1,
+        "adminServices": 1,
+        "sport": 6,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 4,
+        "medicalCenters": 0,
+        "creches": 1,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 0,
+        "college": 1,
+        "lycee": 1
+      }
+    },
+    {
+      "irisCode": "212310402",
+      "poi": {
+        "transport": 0,
+        "shops": 4,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 3,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 2,
+        "medicalCenters": 3,
+        "creches": 2,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310403",
+      "poi": {
+        "transport": 2,
+        "shops": 21,
+        "pharmacies": 3,
+        "adminServices": 1,
+        "sport": 0,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 3,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310404",
+      "poi": {
+        "transport": 0,
+        "shops": 8,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 9,
+        "culture": 2,
+        "libraries": 0,
+        "doctors": 1,
+        "medicalCenters": 0,
+        "creches": 2,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 2,
+        "college": 0,
+        "lycee": 1
+      }
+    },
+    {
+      "irisCode": "212310501",
+      "poi": {
+        "transport": 0,
+        "shops": 7,
+        "pharmacies": 1,
+        "adminServices": 1,
+        "sport": 1,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310502",
+      "poi": {
+        "transport": 1,
+        "shops": 3,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 9,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 12,
+        "medicalCenters": 1,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 2,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310503",
+      "poi": {
+        "transport": 2,
+        "shops": 7,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 1,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 2,
+        "medicalCenters": 4,
+        "creches": 1,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310601",
+      "poi": {
+        "transport": 0,
+        "shops": 8,
+        "pharmacies": 0,
+        "adminServices": 1,
+        "sport": 17,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 3,
+        "creches": 6,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310701",
+      "poi": {
+        "transport": 0,
+        "shops": 10,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 8,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 2,
+        "medicalCenters": 1,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 1,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310702",
+      "poi": {
+        "transport": 0,
+        "shops": 5,
+        "pharmacies": 2,
+        "adminServices": 0,
+        "sport": 2,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 1,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310703",
+      "poi": {
+        "transport": 1,
+        "shops": 4,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 2,
+        "culture": 0,
+        "libraries": 1,
+        "doctors": 0,
+        "medicalCenters": 1,
+        "creches": 1,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310704",
+      "poi": {
+        "transport": 0,
+        "shops": 6,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 5,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 3,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310801",
+      "poi": {
+        "transport": 0,
+        "shops": 4,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 15,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 1,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 1,
+        "college": 1,
+        "lycee": 1
+      }
+    },
+    {
+      "irisCode": "212310802",
+      "poi": {
+        "transport": 4,
+        "shops": 3,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 4,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310803",
+      "poi": {
+        "transport": 1,
+        "shops": 2,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 4,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 2,
+        "medicalCenters": 1,
+        "creches": 1,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310804",
+      "poi": {
+        "transport": 1,
+        "shops": 1,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 7,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 6,
+        "medicalCenters": 0,
+        "creches": 1,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212310901",
+      "poi": {
+        "transport": 2,
+        "shops": 18,
+        "pharmacies": 1,
+        "adminServices": 1,
+        "sport": 3,
+        "culture": 1,
+        "libraries": 0,
+        "doctors": 1,
+        "medicalCenters": 1,
+        "creches": 2,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 0,
+        "college": 1,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311001",
+      "poi": {
+        "transport": 1,
+        "shops": 4,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 4,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311002",
+      "poi": {
+        "transport": 1,
+        "shops": 2,
+        "pharmacies": 2,
+        "adminServices": 0,
+        "sport": 2,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311003",
+      "poi": {
+        "transport": 3,
+        "shops": 11,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 21,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 3,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 2,
+        "college": 1,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311004",
+      "poi": {
+        "transport": 1,
+        "shops": 5,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 1,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 2,
+        "medicalCenters": 1,
+        "creches": 1,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311005",
+      "poi": {
+        "transport": 0,
+        "shops": 6,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 3,
+        "culture": 0,
+        "libraries": 1,
+        "doctors": 3,
+        "medicalCenters": 0,
+        "creches": 1,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311006",
+      "poi": {
+        "transport": 2,
+        "shops": 1,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 3,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311101",
+      "poi": {
+        "transport": 3,
+        "shops": 4,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 8,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 1,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 1
+      }
+    },
+    {
+      "irisCode": "212311201",
+      "poi": {
+        "transport": 3,
+        "shops": 1,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 8,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 1,
+        "medicalCenters": 1,
+        "creches": 1,
+        "schoolsMaternelle": 2,
+        "schoolsElementaire": 2,
+        "college": 1,
+        "lycee": 1
+      }
+    },
+    {
+      "irisCode": "212311202",
+      "poi": {
+        "transport": 1,
+        "shops": 1,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 4,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 6,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311203",
+      "poi": {
+        "transport": 0,
+        "shops": 0,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 1,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311204",
+      "poi": {
+        "transport": 1,
+        "shops": 18,
+        "pharmacies": 2,
+        "adminServices": 1,
+        "sport": 3,
+        "culture": 0,
+        "libraries": 1,
+        "doctors": 2,
+        "medicalCenters": 2,
+        "creches": 1,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311301",
+      "poi": {
+        "transport": 2,
+        "shops": 3,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 3,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 1,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311302",
+      "poi": {
+        "transport": 2,
+        "shops": 12,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 0,
+        "culture": 2,
+        "libraries": 0,
+        "doctors": 4,
+        "medicalCenters": 2,
+        "creches": 1,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311303",
+      "poi": {
+        "transport": 0,
+        "shops": 9,
+        "pharmacies": 1,
+        "adminServices": 1,
+        "sport": 3,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 1,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311401",
+      "poi": {
+        "transport": 0,
+        "shops": 5,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 5,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 2,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 2,
+        "college": 1,
+        "lycee": 2
+      }
+    },
+    {
+      "irisCode": "212311402",
+      "poi": {
+        "transport": 0,
+        "shops": 5,
+        "pharmacies": 2,
+        "adminServices": 0,
+        "sport": 2,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 4,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311501",
+      "poi": {
+        "transport": 2,
+        "shops": 9,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 6,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 2,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 1,
+        "lycee": 1
+      }
+    },
+    {
+      "irisCode": "212311502",
+      "poi": {
+        "transport": 2,
+        "shops": 1,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 5,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 1,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311503",
+      "poi": {
+        "transport": 0,
+        "shops": 2,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 0,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 3,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 2,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311601",
+      "poi": {
+        "transport": 1,
+        "shops": 10,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 3,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 4,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 3,
+        "college": 1,
+        "lycee": 1
+      }
+    },
+    {
+      "irisCode": "212311602",
+      "poi": {
+        "transport": 0,
+        "shops": 2,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 6,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 1,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311603",
+      "poi": {
+        "transport": 0,
+        "shops": 4,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 5,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 1,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311604",
+      "poi": {
+        "transport": 1,
+        "shops": 10,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 2,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 1,
+        "medicalCenters": 0,
+        "creches": 3,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311701",
+      "poi": {
+        "transport": 2,
+        "shops": 12,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 12,
+        "culture": 0,
+        "libraries": 1,
+        "doctors": 2,
+        "medicalCenters": 1,
+        "creches": 1,
+        "schoolsMaternelle": 2,
+        "schoolsElementaire": 2,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311702",
+      "poi": {
+        "transport": 2,
+        "shops": 0,
+        "pharmacies": 0,
+        "adminServices": 1,
+        "sport": 8,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 2,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 1,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311703",
+      "poi": {
+        "transport": 0,
+        "shops": 9,
+        "pharmacies": 2,
+        "adminServices": 0,
+        "sport": 3,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 5,
+        "medicalCenters": 0,
+        "creches": 3,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311704",
+      "poi": {
+        "transport": 2,
+        "shops": 12,
+        "pharmacies": 1,
+        "adminServices": 2,
+        "sport": 11,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 4,
+        "medicalCenters": 2,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 1
+      }
+    },
+    {
+      "irisCode": "212311801",
+      "poi": {
+        "transport": 3,
+        "shops": 6,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 4,
+        "culture": 1,
+        "libraries": 1,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 2,
+        "schoolsElementaire": 2,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311802",
+      "poi": {
+        "transport": 0,
+        "shops": 9,
+        "pharmacies": 1,
+        "adminServices": 1,
+        "sport": 0,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 1,
+        "creches": 1,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212311803",
+      "poi": {
+        "transport": 1,
+        "shops": 5,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 21,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 1,
+        "creches": 1,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 1,
+        "lycee": 1
+      }
+    },
+    {
+      "irisCode": "212311804",
+      "poi": {
+        "transport": 0,
+        "shops": 5,
+        "pharmacies": 1,
+        "adminServices": 1,
+        "sport": 0,
+        "culture": 0,
+        "libraries": 1,
+        "doctors": 4,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212312001",
+      "poi": {
+        "transport": 0,
+        "shops": 1,
+        "pharmacies": 0,
+        "adminServices": 1,
+        "sport": 8,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 7,
+        "medicalCenters": 0,
+        "creches": 1,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 1,
+        "lycee": 1
+      }
+    },
+    {
+      "irisCode": "212312002",
+      "poi": {
+        "transport": 1,
+        "shops": 3,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 4,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 3,
+        "medicalCenters": 1,
+        "creches": 1,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212312003",
+      "poi": {
+        "transport": 3,
+        "shops": 4,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 2,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 4,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212319801",
+      "poi": {
+        "transport": 5,
+        "shops": 131,
+        "pharmacies": 1,
+        "adminServices": 3,
+        "sport": 4,
+        "culture": 2,
+        "libraries": 0,
+        "doctors": 17,
+        "medicalCenters": 8,
+        "creches": 6,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 1,
+        "college": 0,
+        "lycee": 1
+      }
+    },
+    {
+      "irisCode": "212319802",
+      "poi": {
+        "transport": 3,
+        "shops": 32,
+        "pharmacies": 0,
+        "adminServices": 0,
+        "sport": 2,
+        "culture": 2,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 1,
+        "creches": 4,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212319803",
+      "poi": {
+        "transport": 1,
+        "shops": 4,
+        "pharmacies": 1,
+        "adminServices": 0,
+        "sport": 1,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212319804",
+      "poi": {
+        "transport": 0,
+        "shops": 2,
+        "pharmacies": 0,
+        "adminServices": 2,
+        "sport": 0,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 1,
+        "medicalCenters": 10,
+        "creches": 0,
+        "schoolsMaternelle": 0,
+        "schoolsElementaire": 0,
+        "college": 0,
+        "lycee": 0
+      }
+    },
+    {
+      "irisCode": "212319901",
+      "poi": {
+        "transport": 0,
+        "shops": 1,
+        "pharmacies": 0,
+        "adminServices": 1,
+        "sport": 20,
+        "culture": 0,
+        "libraries": 0,
+        "doctors": 0,
+        "medicalCenters": 0,
+        "creches": 0,
+        "schoolsMaternelle": 1,
+        "schoolsElementaire": 1,
+        "college": 1,
+        "lycee": 0
+      }
+    }
+  ]
+}
