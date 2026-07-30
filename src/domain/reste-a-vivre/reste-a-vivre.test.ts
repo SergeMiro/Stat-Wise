@@ -46,6 +46,9 @@ const baseInput: CompareInput = {
   targetCommute: { mode: "transports", daysOnSitePerWeek: 5 },
   currentErrands: { mode: "voiture", tripsPerMonth: 5, bikeAmortizationPerYear: 150 },
   targetErrands: { mode: "transports", tripsPerMonth: 5, bikeAmortizationPerYear: 150 },
+  familyTravel: { currentKm: 30, targetKm: 200, tripsPerYear: 6 },
+  otherMonthly: 420,
+  removalCost: 1200,
 };
 
 const electric = (over: Partial<CompareInput["vehicle"]> = {}): CompareInput => ({
@@ -202,7 +205,11 @@ describe("district ranking", () => {
   });
 
   it("puts the cheapest rent first when everything else is equal", () => {
-    expect(result.target.districtId).toBe("vaise");
+    // A property, not a fixed id: the winner depends on the seed, but with one
+    // salary and one household the district with the lowest rent must lead.
+    const rentOf = (side: SideResult) => lineOf(side, "loyer")!.amount!;
+    const cheapest = Math.min(...ranked.map(rentOf));
+    expect(rentOf(result.target)).toBe(cheapest);
   });
 
   it("exposes the distance to the nearest food store for every district", () => {
@@ -277,6 +284,20 @@ describe("commute and errands", () => {
     const line = lineOf(walking.target, "velo_amortissement");
     expect(line?.amount).toBe(0);
     expect(line?.basis?.key).toBe("bike_none");
+  });
+
+  it("charges nothing for a pass where the network is free, and drops the employer share", () => {
+    const toMontpellier = compare({
+      ...baseInput,
+      target: { ...baseInput.target, cityId: "montpellier" },
+    })!;
+    const pass = lineOf(toMontpellier.target, "abonnement_transport")!;
+    expect(pass.amount).toBe(0);
+    expect(pass.basis?.key).toBe("transit_free");
+    // Nothing to reimburse, so no 0 € income line pretending to be a benefit.
+    expect(toMontpellier.target.revenus.some((l) => l.key === "prise_en_charge_transport")).toBe(
+      false,
+    );
   });
 
   it("keeps one car once, whatever the energy", () => {
@@ -372,6 +393,129 @@ describe("electric vehicle", () => {
   });
 });
 
+// --- comparable versus real ------------------------------------------------
+
+describe("comparable and real reste à vivre", () => {
+  const result = compare(baseInput)!;
+
+  it("keeps declared place-invariant spending out of the comparable total", () => {
+    // It must not appear among the expenses that feed the verdict…
+    expect(result.current.depenses.some((l) => l.key === "autres_depenses")).toBe(false);
+    // …but it must still be carried, with the amount the user declared.
+    expect(result.current.autres.amount).toBe(420);
+    expect(result.current.autres.status).toBe("user");
+  });
+
+  it("subtracts it from the real figure only", () => {
+    expect(result.current.resteAVivreReel).toBeCloseTo(result.current.resteAVivre - 420, 2);
+    expect(result.target.resteAVivreReel).toBeCloseTo(result.target.resteAVivre - 420, 2);
+  });
+
+  it("leaves the verdict untouched, because it cancels in the difference", () => {
+    const richer = compare({ ...baseInput, otherMonthly: 1500 })!;
+    expect(richer.deltaResteAVivre).toBeCloseTo(result.deltaResteAVivre, 2);
+    expect(richer.current.resteAVivreReel).toBeLessThan(result.current.resteAVivreReel);
+  });
+});
+
+// --- travel to family -------------------------------------------------------
+
+describe("travel to family", () => {
+  const result = compare(baseInput)!;
+  const familyOf = (side: SideResult) => lineOf(side, "deplacements_famille");
+
+  it("costs more from the city that is further away", () => {
+    expect(familyOf(result.target)!.amount!).toBeGreaterThan(familyOf(result.current)!.amount!);
+  });
+
+  it("scales with the number of trips", () => {
+    const twice = compare({
+      ...baseInput,
+      familyTravel: { ...baseInput.familyTravel, tripsPerYear: 12 },
+    })!;
+    expect(familyOf(twice.target)!.amount!).toBeCloseTo(familyOf(result.target)!.amount! * 2, 1);
+  });
+
+  it("emits nothing when there are no trips, rather than a zero line", () => {
+    const none = compare({
+      ...baseInput,
+      familyTravel: { currentKm: 0, targetKm: 0, tripsPerYear: 0 },
+    })!;
+    expect(familyOf(none.current)).toBeUndefined();
+  });
+
+  it("is labelled an assumption, since trips per year are a habit", () => {
+    expect(familyOf(result.target)!.status).toBe("convention");
+  });
+});
+
+// --- the reverse question ---------------------------------------------------
+
+describe("required salary", () => {
+  const result = compare(baseInput)!;
+
+  it("finds the salary that reproduces today's reste à vivre", () => {
+    const needed = result.requiredTargetSalary!;
+    expect(needed).toBeGreaterThan(0);
+
+    const at = compare({ ...baseInput, target: { ...baseInput.target, netSalary: needed } })!;
+    // Solved on the best district and rounded up to 10 €, so it must land at or
+    // just above break-even — never below.
+    const sameDistrict = [at.target, ...at.alternatives].find(
+      (s) => s.districtId === result.target.districtId,
+    )!;
+    expect(sameDistrict.resteAVivre).toBeGreaterThanOrEqual(result.current.resteAVivre - 0.01);
+    expect(sameDistrict.resteAVivre).toBeLessThan(result.current.resteAVivre + 20);
+  });
+
+  it("asks for less where the same life is cheaper", () => {
+    const toParis = compare({ ...baseInput, target: { ...baseInput.target, cityId: "paris" } })!;
+    const toLille = compare({ ...baseInput, target: { ...baseInput.target, cityId: "lille" } })!;
+    expect(toParis.requiredTargetSalary!).toBeGreaterThan(toLille.requiredTargetSalary!);
+  });
+});
+
+// --- waterfall, range, up-front cost ---------------------------------------
+
+describe("how the difference is explained", () => {
+  const result = compare(baseInput)!;
+
+  it("adds the waterfall up to the headline difference", () => {
+    const sum = result.waterfall.reduce((s, step) => s + step.amount, 0);
+    expect(sum).toBeCloseTo(result.deltaResteAVivre, 1);
+  });
+
+  it("orders the waterfall by weight, so the reason comes first", () => {
+    const sizes = result.waterfall.map((s) => Math.abs(s.amount));
+    expect([...sizes].sort((a, b) => b - a)).toEqual(sizes);
+  });
+
+  it("brackets the headline with the local rent spread", () => {
+    expect(result.deltaRange.low).toBeLessThan(result.deltaResteAVivre);
+    expect(result.deltaRange.high).toBeGreaterThan(result.deltaResteAVivre);
+  });
+
+  it("states the cash needed up front without spreading it over months", () => {
+    const { lines, total } = result.moveCost;
+    expect(total).toBeGreaterThan(0);
+    // The deposit is one month excluding charges, so below the rent itself.
+    const deposit = lines.find((l) => l.key === "depot_garantie")!.amount!;
+    const rent = lineOf(result.target, "loyer")!.amount!;
+    expect(deposit).toBeLessThan(rent);
+    // Overlapping rent depends on the notice date, so it stays unquantified.
+    const overlap = lines.find((l) => l.key === "double_loyer")!;
+    expect(overlap.amount).toBeNull();
+    expect(overlap.reason).toBeDefined();
+  });
+
+  it("caps the letting fee harder in a very tight zone", () => {
+    const toParis = compare({ ...baseInput, target: { ...baseInput.target, cityId: "paris" } })!;
+    const feeOf = (c: typeof result) =>
+      c.moveCost.lines.find((l) => l.key === "honoraires_agence")!.amount!;
+    expect(feeOf(toParis)).toBeGreaterThan(feeOf(result));
+  });
+});
+
 // --- integration with the rest of the app -----------------------------------
 
 describe("shared geography", () => {
@@ -454,12 +598,19 @@ describe("translation coverage", () => {
                       },
                     });
                     if (!result) continue;
-                    for (const side of [result.current, result.target]) {
-                      for (const line of [...side.revenus, ...side.depenses, ...side.omitted]) {
-                        walk(labels, line.label);
-                        if (line.basis) walk(basis, line.basis);
-                        if (line.reason) walk(reasons, line.reason);
-                      }
+                    const all = [
+                      ...result.current.revenus,
+                      ...result.current.depenses,
+                      ...result.current.omitted,
+                      ...result.target.revenus,
+                      ...result.target.depenses,
+                      result.current.autres,
+                      ...result.moveCost.lines,
+                    ];
+                    for (const line of all) {
+                      walk(labels, line.label);
+                      if (line.basis) walk(basis, line.basis);
+                      if (line.reason) walk(reasons, line.reason);
                     }
                   }
                 }

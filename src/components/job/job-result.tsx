@@ -107,26 +107,153 @@ export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }
       {/* Verdict */}
       <section className="bg-card mb-5 rounded-2xl border p-5">
         <p className="font-heading text-xl font-semibold tracking-tight text-balance">{verdict}</p>
+        <p className="text-muted-foreground mt-1.5 text-sm">
+          {fill(r.rangeLabel, {
+            low: formatSignedCurrency(locale, result.deltaRange.low),
+            high: formatSignedCurrency(locale, result.deltaRange.high),
+          })}
+        </p>
         <p className="text-muted-foreground mt-2 text-xs">{r.verdictNote}</p>
 
-        <dl className="mt-5 grid grid-cols-2 gap-4">
-          <Cell label={`${r.here} · ${current.districtName}`}>
-            {formatCurrency(locale, current.resteAVivre)}
-          </Cell>
-          <Cell label={`${r.there} · ${target.districtName}`}>
-            {formatCurrency(locale, target.resteAVivre)}
-          </Cell>
-          <Cell label={r.salaryDelta}>{formatSignedCurrency(locale, result.deltaSalary)}</Cell>
-          <Cell label={r.housingDelta}>{formatSignedCurrency(locale, result.deltaHousing)}</Cell>
-        </dl>
+        {/*
+          Two numbers, not one. The comparable figure is what the verdict rests on;
+          the real one is what the household actually has left once the declared,
+          place-invariant part of the budget is taken off.
+        */}
+        <div className="mt-5 overflow-x-auto">
+          <table className="w-full min-w-[19rem] text-sm">
+            <thead className="text-muted-foreground text-xs">
+              <tr>
+                <th scope="col" className="py-1 text-left font-medium" />
+                <th scope="col" className="py-1 text-right font-medium">
+                  {r.here}
+                </th>
+                <th scope="col" className="py-1 text-right font-medium">
+                  {r.there}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" className="py-1.5 text-left font-medium">
+                  {r.comparable}
+                </th>
+                <td className="tabular py-1.5 text-right">
+                  {formatCurrency(locale, current.resteAVivre)}
+                </td>
+                <td className="tabular py-1.5 text-right">
+                  {formatCurrency(locale, target.resteAVivre)}
+                </td>
+              </tr>
+              <tr className="border-t">
+                <th scope="row" className="py-1.5 text-left font-medium">
+                  {r.real}
+                </th>
+                <td className="tabular py-1.5 text-right font-semibold">
+                  {formatCurrency(locale, current.resteAVivreReel)}
+                </td>
+                <td className="tabular py-1.5 text-right font-semibold">
+                  {formatCurrency(locale, target.resteAVivreReel)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="text-muted-foreground mt-2 text-xs">{r.realHint}</p>
 
-        <p className="text-muted-foreground mt-4 text-xs">
-          {r.commuteDelta}:{" "}
-          <span className="tabular text-foreground">
-            {fill(r.hoursPerYear, { hours: formatNumber(locale, current.commuteHoursPerYear) })}
-            {" → "}
-            {fill(r.hoursPerYear, { hours: formatNumber(locale, target.commuteHoursPerYear) })}
-          </span>
+        {/*
+          The per-item differences deliberately live in the waterfall below and
+          nowhere else. Showing "rent −11 €" here and "rent +11 €" there would be
+          two correct numbers with opposite signs — cost difference against effect
+          on what is left — and the reader should not have to work that out.
+        */}
+        <dl className="mt-5 grid grid-cols-2 gap-4 border-t pt-4">
+          <Cell label={r.bestDistrict}>{target.districtName}</Cell>
+          <Cell label={r.commuteDelta}>
+            <span className="text-base font-medium">
+              {fill(r.hoursPerYear, { hours: formatNumber(locale, current.commuteHoursPerYear) })}
+              {" → "}
+              {fill(r.hoursPerYear, { hours: formatNumber(locale, target.commuteHoursPerYear) })}
+            </span>
+          </Cell>
+        </dl>
+      </section>
+
+      {/* The figure to take into a negotiation */}
+      {result.requiredTargetSalary !== null ? (
+        <section className="bg-accent/40 mb-5 rounded-2xl border p-5">
+          <h2 className="font-heading text-base font-semibold">{r.requiredSalaryTitle}</h2>
+          <p className="mt-2 text-sm">
+            {fill(r.requiredSalary, {
+              city: target.cityName,
+              amount: formatCurrency(locale, result.requiredTargetSalary),
+            })}
+          </p>
+        </section>
+      ) : null}
+
+      {/* Where the difference comes from */}
+      {result.waterfall.length > 0 ? (
+        <section className="mb-5">
+          <h2 className="font-heading text-base font-semibold">{r.waterfallTitle}</h2>
+          <ul className="mt-3 space-y-1.5">
+            {result.waterfall.map((step) => {
+              const widest = Math.max(...result.waterfall.map((s) => Math.abs(s.amount)));
+              const width = widest > 0 ? (Math.abs(step.amount) / widest) * 100 : 0;
+              const up = step.amount >= 0;
+              return (
+                <li key={step.key} className="flex items-center gap-3 text-sm">
+                  <span className="w-32 shrink-0 truncate sm:w-40">
+                    {(r.waterfall as Record<string, string>)[step.key] ?? step.key}
+                  </span>
+                  <span className="bg-muted h-2.5 flex-1 overflow-hidden rounded-full">
+                    <span
+                      className={
+                        up ? "bg-confidence-high block h-full" : "bg-confidence-low block h-full"
+                      }
+                      style={{ width: `${width}%` }}
+                    />
+                  </span>
+                  <span
+                    className={
+                      up
+                        ? "tabular text-confidence-high w-20 shrink-0 text-right"
+                        : "tabular text-confidence-low w-20 shrink-0 text-right"
+                    }
+                  >
+                    {formatSignedCurrency(locale, step.amount)}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
+
+      {/* One-off cost of the move */}
+      <section className="bg-muted/30 mb-5 rounded-2xl border p-5">
+        <h2 className="font-heading text-base font-semibold">{r.moveCostTitle}</h2>
+        <p className="text-muted-foreground mt-1 text-sm">{r.moveCostDesc}</p>
+        <ul className="mt-4 space-y-2.5">
+          {result.moveCost.lines.map((line) => (
+            <li key={line.key}>
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-sm">{lineLabel(locale, dict, line)}</span>
+                <span className="tabular shrink-0 text-sm font-medium">
+                  {line.amount === null
+                    ? statusLabel(dict, line.status)
+                    : formatCurrency(locale, line.amount)}
+                </span>
+              </div>
+              <p className="text-muted-foreground mt-0.5 text-[11px]">
+                {lineBasis(locale, dict, line) ?? lineReason(locale, dict, line)}
+              </p>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3 flex items-baseline justify-between gap-3 border-t pt-3 text-sm font-semibold">
+          <span>{r.moveCostTotal}</span>
+          <span className="tabular">{formatCurrency(locale, result.moveCost.total)}</span>
         </p>
       </section>
 
@@ -231,6 +358,14 @@ export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }
                     title={r.expenses}
                     lines={side.depenses}
                     total={side.totalDepenses}
+                  />
+                  {/* Shown after the comparable total, because it is not part of it. */}
+                  <LineList
+                    locale={locale}
+                    dict={dict}
+                    title={r.real}
+                    lines={[side.autres]}
+                    total={side.resteAVivreReel}
                   />
                 </div>
               ))}

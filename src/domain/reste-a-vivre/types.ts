@@ -147,6 +147,22 @@ export type TargetSide = {
   surfaceM2: number;
 };
 
+/**
+ * Trips to close family. The largest place-driven cost nobody computes: moving
+ * 400 km away turns four visits a year into real money, and it is the reason
+ * people most often refuse a move.
+ *
+ * The distances are declared rather than routed — the user knows them, and asking
+ * avoids sending an address to a geocoder for no gain.
+ */
+export type FamilyTravelInput = {
+  /** One-way km from the current home to close family. */
+  currentKm: number;
+  /** One-way km from the target city. */
+  targetKm: number;
+  tripsPerYear: number;
+};
+
 export type SideResult = {
   cityId: string;
   cityName: string;
@@ -156,9 +172,18 @@ export type SideResult = {
   depenses: Line[];
   /** Lines excluded from the totals, kept for display. */
   omitted: Line[];
+  /**
+   * Declared spending that does not change with the city — insurance, telecom,
+   * clothing, leisure. Deliberately outside `depenses`, because including it
+   * would corrupt the comparable total while cancelling out in the difference.
+   */
+  autres: Line;
   totalRevenus: number;
   totalDepenses: number;
+  /** Place-driven only. This is what the verdict rests on. */
   resteAVivre: number;
+  /** What the household actually has left: comparable minus declared spending. */
+  resteAVivreReel: number;
   /** Hours per year spent commuting — the non-monetary axis. */
   commuteHoursPerYear: number;
   oneWayKm: number;
@@ -167,15 +192,39 @@ export type SideResult = {
   groceryKm: number;
 };
 
+/** One bar of the difference, so the result answers "why" and not only "how much". */
+export type WaterfallStep = { key: string; amount: number };
+
+/**
+ * Cash needed before the move. The `ponctuel` class from
+ * `docs/reste-a-vivre-variables.md` §1: never spread across months, because
+ * 3 200 € divided by twelve would quietly eat 267 €/month of the verdict.
+ */
+export type MoveCost = { lines: Line[]; total: number };
+
 export type Comparison = {
   current: SideResult;
   target: SideResult;
   /** Positive means the target leaves more money each month. */
   deltaResteAVivre: number;
+  /**
+   * The same difference with the target rent at the P25 and P75 of the local
+   * spread. A single figure would claim a precision a commune-level rent
+   * indicator does not have.
+   */
+  deltaRange: { low: number; high: number };
   deltaSalary: number;
   deltaHousing: number;
   /** Positive means the target costs more commuting hours per year. */
   deltaCommuteHours: number;
+  /** The difference grouped by cause, largest first. */
+  waterfall: WaterfallStep[];
+  /**
+   * Net monthly salary in the target city that would leave exactly today's
+   * amount. Null when no salary in a sane range achieves it.
+   */
+  requiredTargetSalary: number | null;
+  moveCost: MoveCost;
   /** Every other district of the target city, best reste à vivre first. */
   alternatives: SideResult[];
   /** Lines we refuse to invent — the honest health warning. */

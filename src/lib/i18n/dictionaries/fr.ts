@@ -432,6 +432,10 @@ export const fr = {
         title: "Vos déplacements",
         desc: "Deux usages, souvent deux modes : aller travailler, et faire les courses.",
       },
+      budget: {
+        title: "Vos proches et le reste du budget",
+        desc: "Deux choses que les calculateurs oublient, et qui changent la réponse.",
+      },
     },
     fields: {
       city: "Ville",
@@ -474,6 +478,15 @@ export const fr = {
       bikeCustom: "Montant annuel retenu (€/an)",
       perYear: "€/an",
       sameAsToday: "Comme aujourd'hui",
+      familyKmCurrent: "Distance jusqu'à vos proches aujourd'hui (km)",
+      familyKmTarget: "Distance depuis la ville de l'offre (km)",
+      familyTripsPerYear: "Nombre de visites par an",
+      familyHint:
+        "Aller simple. C'est souvent la vraie raison qui fait renoncer à un déménagement, et personne ne la chiffre.",
+      otherMonthly: "Tout le reste de votre budget mensuel",
+      otherMonthlyHint:
+        "Assurances, mutuelle, téléphone, internet, vêtements, loisirs, restaurants, abonnements, coiffeur, sport, animaux, cadeaux, banque, crédits. Une seule somme : ces postes ne changent pas d'une ville à l'autre, donc ils ne faussent pas la comparaison — mais sans eux le montant restant est trop optimiste.",
+      removalCost: "Coût du déménagement (€)",
     },
     modes: {
       voiture: "Voiture",
@@ -504,6 +517,12 @@ export const fr = {
       velo_amortissement: "Vélo — amortissement et entretien",
       creche: "Crèche (participation familiale)",
       alimentation: "Alimentation à domicile",
+      deplacements_famille: "Trajets vers vos proches",
+      autres_depenses: "Le reste de votre budget",
+      depot_garantie: "Dépôt de garantie",
+      honoraires_agence: "Honoraires d'agence",
+      demenagement: "Déménagement",
+      double_loyer: "Chevauchement de loyers",
       impot_revenu: "Impôt sur le revenu",
       prestations: "APL, allocations familiales, prime d'activité",
       assurances: "Assurance habitation, mutuelle",
@@ -540,6 +559,8 @@ export const fr = {
         "{km} km/mois × {perKm} €/km : le forfait de {base} €/km majoré de {upliftPct} % comme le prévoit le barème kilométrique pour un véhicule 100 % électrique. Attention : cette majoration fiscale couvre aussi la recharge, que nous comptons séparément — nous l'appliquons donc ici à l'usure et à la dépréciation seules. C'est une hypothèse, pas la règle fiscale.",
       transit_pass:
         "Grille tarifaire du réseau, relevée à la main — les abonnements ne figurent pas dans les données ouvertes.",
+      transit_free:
+        "Le réseau {network} est gratuit pour les habitants de la métropole : l'abonnement ne coûte rien, et la prise en charge employeur de 50 % n'a donc rien à couvrir. Il faut demander le pass nominatif et le renouveler chaque année.",
       errands_covered_by_pass:
         "Aucun coût supplémentaire : l'abonnement {network} est déjà payé pour le trajet domicile-travail et couvre ces {journeys} trajets.",
       errands_tickets:
@@ -554,6 +575,14 @@ export const fr = {
         "Panier de référence national + {premium} % (écart Île-de-France mesuré par l'enquête Insee de 2022). Aucune donnée officielle n'existe au niveau du quartier.",
       food_province:
         "Panier de référence national. Aucun écart de prix alimentaire n'est mesuré officiellement en dehors de l'Île-de-France, de la Corse et des DOM.",
+      family_travel:
+        "{oneWayKm} km aller simple × 2 × {trips} trajets par an = {monthlyKm} km/mois × {perKm} €/km (énergie + usure de votre véhicule). Le nombre de trajets est votre habitude, pas une mesure.",
+      declared_other:
+        "Montant que vous avez déclaré pour tout ce qui ne change pas avec la ville : assurances, mutuelle, téléphone, internet, vêtements, loisirs, abonnements. Volontairement hors du calcul comparable, puisqu'il est identique des deux côtés.",
+      deposit:
+        "Un mois de loyer hors charges, soit {rent} € moins {chargesShare} % de charges estimées. Il vous est rendu à la sortie, mais il faut l'avancer.",
+      agency_fee:
+        "Plafond légal de {cap} €/m² pour cette zone × {surface} m². C'est un maximum : une location entre particuliers coûte 0 €.",
     },
     reasons: {
       impot_revenu:
@@ -573,6 +602,8 @@ export const fr = {
         "Les tarifs de stationnement sont municipaux et les péages autoroutiers ne sont pas ouverts : aucune API centrale n'existe.",
       borne_domicile:
         "Dépense unique à l'installation, pas une charge mensuelle. Elle n'a donc pas sa place dans un reste à vivre, au même titre que le bonus écologique ou le malus au poids.",
+      double_loyer:
+        "Dépend de la date de votre préavis et de l'entrée dans le nouveau logement. Cela peut représenter un mois de loyer en double — ou rien du tout.",
     },
     status: {
       user: "Saisi",
@@ -662,6 +693,33 @@ export const fr = {
         "Avant impôt sur le revenu et hors prestations : ces deux postes ne sont pas encore chiffrés.",
       here: "Aujourd'hui",
       there: "Avec l'offre",
+      rangeLabel: "Entre {low} et {high}, selon le loyer que vous trouverez",
+      comparable: "Comparable",
+      comparableHint:
+        "Seuls les postes qui changent avec la ville. C'est ce chiffre qui fonde le verdict.",
+      real: "Réel",
+      realHint: "Comparable moins le reste de votre budget, tel que vous l'avez déclaré.",
+      requiredSalaryTitle: "Le chiffre à emporter en négociation",
+      requiredSalary:
+        "À {city}, il faut {amount} net pour retrouver exactement ce qui vous reste aujourd'hui.",
+      requiredSalaryBelow:
+        "L'offre est déjà au-dessus de ce seuil : {amount} net suffiraient à faire match nul.",
+      requiredSalaryAbove: "L'offre est en dessous : il faudrait {amount} net pour ne rien perdre.",
+      waterfallTitle: "D'où vient l'écart",
+      waterfall: {
+        salaire: "Salaire",
+        logement: "Loyer",
+        energie: "Énergie et eau",
+        transport: "Déplacements",
+        famille: "Trajets vers vos proches",
+        garde: "Crèche",
+        alimentation: "Alimentation",
+        autre: "Autres postes",
+      },
+      moveCostTitle: "Ce qu'il faut avancer pour déménager",
+      moveCostDesc:
+        "Dépenses uniques, jamais réparties sur douze mois : les étaler donnerait un verdict faux. C'est souvent ce montant, et non le reste à vivre, qui bloque un déménagement.",
+      moveCostTotal: "Total à prévoir",
       bestDistrict: "Meilleur quartier",
       salaryDelta: "Écart de salaire",
       housingDelta: "Écart de loyer",

@@ -4,16 +4,21 @@ import type {
   CurrentSide,
   ErrandsInput,
   Explanation,
+  FamilyTravelInput,
   Household,
   HousingType,
   Line,
+  MoveCost,
   SideResult,
   TargetSide,
   VehicleInput,
+  WaterfallStep,
 } from "./types";
 import {
   cities,
   crecheScale,
+  HOUSE_RENT_RATIO,
+  moveCostRules,
   nationalParams as p,
   type CitySnapshot,
   type DistrictSnapshot,
@@ -45,7 +50,8 @@ export const findDistrict = (
   districtId: string,
 ): DistrictSnapshot | undefined => city.districts.find((district) => district.id === districtId);
 
-export const listJobCities = (): CitySnapshot[] => cities;
+export const listJobCities = (): CitySnapshot[] =>
+  [...cities].sort((a, b) => a.name.localeCompare(b.name, "fr"));
 
 const round = (value: number) => Math.round(value * 100) / 100;
 
@@ -89,6 +95,27 @@ export const foodMonthlyCost = (household: Household, parisRegion: boolean): num
   return round(base * (parisRegion ? 1 + p.parisRegionFoodPremium : 1));
 };
 
+/**
+ * Total cost of a kilometre for this household's car: energy plus wear. Used for
+ * journeys that are not the commute or the shopping run — visiting family — where
+ * the two components do not need to be shown as separate lines.
+ */
+const vehicleCostPerKm = (vehicle: VehicleInput, city: CitySnapshot): number => {
+  const energy =
+    vehicle.energy === "thermique"
+      ? (vehicle.litresPer100Km * city.fuelPricePerLitre) / 100
+      : (vehicle.kwhPer100Km *
+          (Math.min(Math.max(vehicle.homeChargingShare, 0), 1) * p.electricityPricePerKwh +
+            (1 - Math.min(Math.max(vehicle.homeChargingShare, 0), 1)) *
+              p.publicChargingPricePerKwh)) /
+        100;
+  const wear =
+    vehicle.energy === "electrique"
+      ? p.carVariableCostPerKm * (1 + p.electricVehicleUplift)
+      : p.carVariableCostPerKm;
+  return round(energy + wear);
+};
+
 type SideContext = {
   city: CitySnapshot;
   district: DistrictSnapshot;
@@ -96,6 +123,11 @@ type SideContext = {
   commute: CommuteInput;
   errands: ErrandsInput;
   vehicle: VehicleInput;
+  /** One-way km to close family from this side. */
+  familyKm: number;
+  familyTripsPerYear: number;
+  /** Declared monthly spending that does not change with the city. */
+  otherMonthly: number;
   netSalary: number;
   partnerNetSalary: number;
   housingType: HousingType;
@@ -131,7 +163,12 @@ const revenueLines = (context: SideContext): Line[] => {
     });
   }
 
-  if (context.commute.mode === "transports") {
+  /*
+    The employer reimburses half of a pass. Where the network is free for
+    residents there is nothing to reimburse, and a 0 € "employer share" line
+    would be noise pretending to be information.
+  */
+  if (context.commute.mode === "transports" && !context.city.transitFreeForResidents) {
     const pass = context.city.transitPassMonthly;
     lines.push({
       key: "prise_en_charge_transport",
@@ -366,7 +403,9 @@ const expenseLines = (context: SideContext): Line[] => {
       kind: "contrainte",
       amount: city.transitPassMonthly,
       status: "computed",
-      basis: { key: "transit_pass" },
+      basis: city.transitFreeForResidents
+        ? { key: "transit_free", params: { network: city.transitNetwork } }
+        : { key: "transit_pass" },
       sources: ["gtfs_tarifs"],
     });
   }
@@ -453,6 +492,30 @@ const expenseLines = (context: SideContext): Line[] => {
         },
       },
       sources: ["bareme_psu_cnaf"],
+    });
+  }
+
+  // Trips to close family. Place-driven because the distance changes with the
+  // city, and costed with the household's own car rather than a generic rate.
+  const familyMonthlyKm = (context.familyKm * 2 * context.familyTripsPerYear) / MONTHS_PER_YEAR;
+
+  if (familyMonthlyKm > 0) {
+    lines.push({
+      key: "deplacements_famille",
+      label: { key: "deplacements_famille" },
+      kind: "contrainte",
+      amount: round(familyMonthlyKm * vehicleCostPerKm(vehicle, city)),
+      status: "convention",
+      basis: {
+        key: "family_travel",
+        params: {
+          oneWayKm: { n: context.familyKm, d: 0 },
+          trips: { n: context.familyTripsPerYear, d: 0 },
+          monthlyKm: { n: familyMonthlyKm, d: 0 },
+          perKm: { n: vehicleCostPerKm(vehicle, city), d: 2 },
+        },
+      },
+      sources: ["convention_statwise", "prix_carburants"],
     });
   }
 
@@ -582,6 +645,23 @@ const buildSide = (context: SideContext): SideResult => {
   const oneWayMinutes = Math.round((km / speed) * 60);
   const totalRevenus = total(revenus);
   const totalDepenses = total(depenses);
+  const resteAVivre = round(totalRevenus - totalDepenses);
+
+  /*
+    Declared place-invariant spending. Kept outside `depenses` on purpose: it must
+    not enter the comparable total, because that total is what the verdict rests
+    on and this figure is identical on both sides. It exists so the absolute
+    number stops being overstated — every category it stands for is an expense.
+  */
+  const autres: Line = {
+    key: "autres_depenses",
+    label: { key: "autres_depenses" },
+    kind: "pilotable",
+    amount: context.otherMonthly,
+    status: "user",
+    basis: { key: "declared_other" },
+    sources: ["saisie_utilisateur"],
+  };
 
   return {
     cityId: context.city.id,
@@ -591,9 +671,11 @@ const buildSide = (context: SideContext): SideResult => {
     revenus,
     depenses,
     omitted: omittedLines(context),
+    autres,
     totalRevenus,
     totalDepenses,
-    resteAVivre: round(totalRevenus - totalDepenses),
+    resteAVivre,
+    resteAVivreReel: round(resteAVivre - context.otherMonthly),
     commuteHoursPerYear:
       Math.round(
         ((oneWayMinutes * 2 * context.commute.daysOnSitePerWeek * p.workingWeeksPerYear) / 60) * 10,
@@ -618,6 +700,127 @@ export type CompareInput = {
   currentErrands: ErrandsInput;
   /** Grocery runs planned in the target city. */
   targetErrands: ErrandsInput;
+  /** Trips to close family, from each side. */
+  familyTravel: FamilyTravelInput;
+  /**
+   * Declared monthly spending that does not change with the city — insurance,
+   * telecom, clothing, leisure, subscriptions. One field instead of thirty models
+   * for categories no open dataset covers geographically.
+   */
+  otherMonthly: number;
+  /** €, what the removal itself will cost. Part of the up-front block. */
+  removalCost: number;
+};
+
+/** Which bucket of the waterfall a line belongs to. */
+const WATERFALL_BUCKET: Record<string, string> = {
+  salaire: "salaire",
+  salaire_conjoint: "salaire",
+  prise_en_charge_transport: "transport",
+  loyer: "logement",
+  electricite: "energie",
+  eau: "energie",
+  carburant: "transport",
+  recharge_domicile: "transport",
+  recharge_publique: "transport",
+  usage_vehicule: "transport",
+  abonnement_transport: "transport",
+  courses_transport: "transport",
+  velo_amortissement: "transport",
+  deplacements_famille: "famille",
+  creche: "garde",
+  alimentation: "alimentation",
+};
+
+/**
+ * The difference grouped by cause. Income counts positively, expenses negatively,
+ * so the bars add up to `deltaResteAVivre` — which is the only property that
+ * makes a waterfall readable.
+ */
+const buildWaterfall = (current: SideResult, target: SideResult): WaterfallStep[] => {
+  const totals = new Map<string, number>();
+  const add = (key: string, amount: number) =>
+    totals.set(key, round((totals.get(key) ?? 0) + amount));
+
+  for (const [side, sign] of [
+    [target, 1],
+    [current, -1],
+  ] as const) {
+    for (const line of side.revenus) {
+      add(WATERFALL_BUCKET[line.key] ?? "autre", sign * (line.amount ?? 0));
+    }
+    for (const line of side.depenses) {
+      add(WATERFALL_BUCKET[line.key] ?? "autre", -sign * (line.amount ?? 0));
+    }
+  }
+
+  return [...totals.entries()]
+    .map(([key, amount]) => ({ key, amount }))
+    .filter((step) => Math.abs(step.amount) >= 0.5)
+    .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));
+};
+
+/** Cash needed before moving in. Rules only — no geographic data required. */
+const buildMoveCost = (
+  targetCity: CitySnapshot,
+  targetRent: number,
+  surfaceM2: number,
+  removalCost: number,
+): MoveCost => {
+  const rentExcludingCharges = round(targetRent * (1 - moveCostRules.chargesShareOfRent));
+  const deposit = round(rentExcludingCharges * moveCostRules.depositMonths);
+  const feeCap = moveCostRules.agencyFeeCapPerSqm[targetCity.alurZone];
+  const agencyFee = round(feeCap * surfaceM2);
+
+  const lines: Line[] = [
+    {
+      key: "depot_garantie",
+      label: { key: "depot_garantie" },
+      kind: "contrainte",
+      amount: deposit,
+      status: "computed",
+      basis: {
+        key: "deposit",
+        params: {
+          rent: { n: targetRent, d: 0 },
+          chargesShare: { n: moveCostRules.chargesShareOfRent * 100, d: 0 },
+        },
+      },
+      sources: ["convention_statwise"],
+    },
+    {
+      key: "honoraires_agence",
+      label: { key: "honoraires_agence" },
+      kind: "contrainte",
+      amount: agencyFee,
+      status: "computed",
+      basis: {
+        key: "agency_fee",
+        params: { cap: { n: feeCap, d: 0 }, surface: { n: surfaceM2, d: 0 } },
+      },
+      sources: ["carte_loyers"],
+    },
+    {
+      key: "demenagement",
+      label: { key: "demenagement" },
+      kind: "contrainte",
+      amount: removalCost,
+      status: "user",
+      basis: { key: "user_input" },
+      sources: ["saisie_utilisateur"],
+    },
+    {
+      key: "double_loyer",
+      label: { key: "double_loyer" },
+      kind: "contrainte",
+      amount: null,
+      status: "unavailable",
+      reason: { key: "double_loyer" },
+      sources: [],
+    },
+  ];
+
+  return { lines, total: total(lines) };
 };
 
 /**
@@ -642,6 +845,9 @@ export const compare = (input: CompareInput): Comparison | null => {
     commute: input.currentCommute,
     errands: input.currentErrands,
     vehicle: input.vehicle,
+    familyKm: input.familyTravel.currentKm,
+    familyTripsPerYear: input.familyTravel.tripsPerYear,
+    otherMonthly: input.otherMonthly,
     netSalary: input.current.netSalary,
     partnerNetSalary: input.current.partnerNetSalary,
     housingType: input.current.housingType,
@@ -650,21 +856,26 @@ export const compare = (input: CompareInput): Comparison | null => {
     actualKm: input.current.oneWayKm,
   });
 
+  /** A target-side district at an arbitrary salary — reused by the reverse solve. */
+  const targetSideAt = (district: DistrictSnapshot, netSalary: number) =>
+    buildSide({
+      city: targetCity,
+      district,
+      household: input.household,
+      commute: input.targetCommute,
+      errands: input.targetErrands,
+      vehicle: input.vehicle,
+      familyKm: input.familyTravel.targetKm,
+      familyTripsPerYear: input.familyTravel.tripsPerYear,
+      otherMonthly: input.otherMonthly,
+      netSalary,
+      partnerNetSalary: input.target.partnerNetSalary,
+      housingType: input.target.housingType,
+      surfaceM2: input.target.surfaceM2,
+    });
+
   const ranked = targetCity.districts
-    .map((district) =>
-      buildSide({
-        city: targetCity,
-        district,
-        household: input.household,
-        commute: input.targetCommute,
-        errands: input.targetErrands,
-        vehicle: input.vehicle,
-        netSalary: input.target.netSalary,
-        partnerNetSalary: input.target.partnerNetSalary,
-        housingType: input.target.housingType,
-        surfaceM2: input.target.surfaceM2,
-      }),
-    )
+    .map((district) => targetSideAt(district, input.target.netSalary))
     .sort((a, b) => b.resteAVivre - a.resteAVivre);
 
   const [best, ...alternatives] = ranked;
@@ -676,10 +887,51 @@ export const compare = (input: CompareInput): Comparison | null => {
   // and duplicating it would only suggest the gaps are twice as large.
   const omitted = best.omitted;
 
+  const bestDistrict = targetCity.districts.find((d) => d.id === best.districtId)!;
+  const medianRent = bestDistrict.rentPerSqm[input.target.housingType];
+  const surface = input.target.surfaceM2;
+  const ratio = input.target.housingType === "maison" ? HOUSE_RENT_RATIO : 1;
+  /*
+    Only the rent moves: the current side is a fact and everything else on the
+    target side is independent of it. A dearer rent leaves less over, so the P75
+    of the local spread gives the low bound.
+  */
+  const rentLow = bestDistrict.rentPerSqmRange.low * ratio * surface;
+  const rentHigh = bestDistrict.rentPerSqmRange.high * ratio * surface;
+  const deltaMedian = round(best.resteAVivre - current.resteAVivre);
+
+  /*
+    What salary in the target city leaves exactly today's amount.
+
+    Bisection, not a division: an extra euro of salary raises the crèche
+    contribution through the PSU scale, so the relationship is not one-to-one.
+    Solved on the best district, so the answer matches the headline the reader
+    just saw rather than a district they were never shown.
+  */
+  const requiredTargetSalary = (() => {
+    const goal = current.resteAVivre;
+    const partner = input.target.partnerNetSalary;
+    let low = 0;
+    let high = 30000;
+    if (targetSideAt(bestDistrict, high).resteAVivre < goal) return null;
+    for (let i = 0; i < 60; i++) {
+      const mid = (low + high) / 2;
+      if (targetSideAt(bestDistrict, mid).resteAVivre < goal) low = mid;
+      else high = mid;
+    }
+    // Round up to the nearest 10 €: a negotiation figure, not a decimal.
+    const solved = Math.ceil(high / 10) * 10;
+    return solved > 0 || partner > 0 ? solved : null;
+  })();
+
   return {
     current,
     target: best,
-    deltaResteAVivre: round(best.resteAVivre - current.resteAVivre),
+    deltaResteAVivre: deltaMedian,
+    deltaRange: {
+      low: round(deltaMedian - (rentHigh - medianRent * surface)),
+      high: round(deltaMedian + (medianRent * surface - rentLow)),
+    },
     deltaSalary: round(
       input.target.netSalary +
         input.target.partnerNetSalary -
@@ -687,6 +939,9 @@ export const compare = (input: CompareInput): Comparison | null => {
     ),
     deltaHousing: round(rentOf(best) - rentOf(current)),
     deltaCommuteHours: round(best.commuteHoursPerYear - current.commuteHoursPerYear),
+    waterfall: buildWaterfall(current, best),
+    requiredTargetSalary,
+    moveCost: buildMoveCost(targetCity, rentOf(best), surface, input.removalCost),
     alternatives,
     omitted,
   };

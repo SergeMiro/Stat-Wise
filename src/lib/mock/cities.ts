@@ -33,7 +33,186 @@ type CitySpec = {
 
 const CITY_SPECS: CitySpec[] = [
   {
-    city: { id: "dijon", name: "Dijon", postalCodes: ["21000"], department: "Côte-d'Or (21)", coverageLevel: "rich" },
+    city: {
+      id: "paris",
+      name: "Paris",
+      postalCodes: ["75001", "75011", "75020"],
+      department: "Paris (75)",
+      coverageLevel: "rich",
+    },
+    center: { latitude: 48.8566, longitude: 2.3522 },
+    areas: [
+      { name: "Le Marais", archetype: "central" },
+      { name: "Quartier latin", archetype: "central" },
+      { name: "Saint-Germain-des-Prés", archetype: "central" },
+      { name: "Montmartre", archetype: "residential" },
+      { name: "Batignolles", archetype: "residential" },
+      { name: "Bercy", archetype: "residential" },
+      { name: "Belleville", archetype: "peripheral" },
+      { name: "La Chapelle", archetype: "peripheral" },
+    ],
+  },
+  {
+    city: {
+      id: "marseille",
+      name: "Marseille",
+      postalCodes: ["13001", "13006", "13008"],
+      department: "Bouches-du-Rhône (13)",
+      coverageLevel: "rich",
+    },
+    center: { latitude: 43.2965, longitude: 5.3698 },
+    areas: [
+      { name: "Vieux-Port", archetype: "central" },
+      { name: "Le Panier", archetype: "central" },
+      { name: "Cours Julien", archetype: "central" },
+      { name: "Prado – Castellane", archetype: "residential" },
+      { name: "Les Cinq Avenues", archetype: "residential" },
+      { name: "La Joliette", archetype: "residential" },
+      { name: "Saint-Barnabé", archetype: "peripheral" },
+      { name: "L'Estaque", archetype: "peripheral" },
+    ],
+  },
+  {
+    city: {
+      id: "toulouse",
+      name: "Toulouse",
+      postalCodes: ["31000", "31200", "31500"],
+      department: "Haute-Garonne (31)",
+      coverageLevel: "rich",
+    },
+    center: { latitude: 43.6047, longitude: 1.4442 },
+    areas: [
+      { name: "Capitole", archetype: "central" },
+      { name: "Les Carmes", archetype: "central" },
+      { name: "Saint-Cyprien", archetype: "residential" },
+      { name: "Compans-Caffarelli", archetype: "residential" },
+      { name: "Rangueil", archetype: "residential" },
+      { name: "Borderouge", archetype: "peripheral" },
+      { name: "La Reynerie", archetype: "peripheral" },
+    ],
+  },
+  {
+    city: {
+      id: "nice",
+      name: "Nice",
+      postalCodes: ["06000", "06100", "06300"],
+      department: "Alpes-Maritimes (06)",
+      coverageLevel: "rich",
+    },
+    center: { latitude: 43.7102, longitude: 7.262 },
+    areas: [
+      { name: "Vieux-Nice", archetype: "central" },
+      { name: "Carré d'Or", archetype: "central" },
+      { name: "Libération", archetype: "residential" },
+      { name: "Cimiez", archetype: "residential" },
+      { name: "Riquier", archetype: "residential" },
+      { name: "Fabron", archetype: "peripheral" },
+      { name: "L'Ariane", archetype: "peripheral" },
+    ],
+  },
+  {
+    city: {
+      id: "nantes",
+      name: "Nantes",
+      postalCodes: ["44000", "44100", "44300"],
+      department: "Loire-Atlantique (44)",
+      coverageLevel: "rich",
+    },
+    center: { latitude: 47.2184, longitude: -1.5536 },
+    areas: [
+      { name: "Centre-ville", archetype: "central" },
+      { name: "Île de Nantes", archetype: "central" },
+      { name: "Hauts-Pavés – Saint-Félix", archetype: "residential" },
+      { name: "Malakoff – Saint-Donatien", archetype: "residential" },
+      { name: "Dervallières – Zola", archetype: "residential" },
+      { name: "Doulon – Bottière", archetype: "peripheral" },
+      { name: "Nantes Nord", archetype: "peripheral" },
+    ],
+  },
+  {
+    city: {
+      id: "montpellier",
+      name: "Montpellier",
+      postalCodes: ["34000", "34070", "34080"],
+      department: "Hérault (34)",
+      coverageLevel: "rich",
+    },
+    center: { latitude: 43.6108, longitude: 3.8767 },
+    areas: [
+      { name: "Écusson", archetype: "central" },
+      { name: "Antigone", archetype: "central" },
+      { name: "Beaux-Arts", archetype: "residential" },
+      { name: "Port Marianne", archetype: "residential" },
+      { name: "Boutonnet", archetype: "residential" },
+      { name: "Croix-d'Argent", archetype: "peripheral" },
+      { name: "La Mosson", archetype: "peripheral" },
+    ],
+  },
+  {
+    city: {
+      id: "strasbourg",
+      name: "Strasbourg",
+      postalCodes: ["67000", "67100", "67200"],
+      department: "Bas-Rhin (67)",
+      coverageLevel: "rich",
+    },
+    center: { latitude: 48.5734, longitude: 7.7521 },
+    areas: [
+      { name: "Grande Île", archetype: "central" },
+      { name: "Krutenau", archetype: "central" },
+      { name: "Neustadt", archetype: "residential" },
+      { name: "Orangerie", archetype: "residential" },
+      { name: "Neudorf", archetype: "residential" },
+      { name: "Robertsau", archetype: "peripheral" },
+      { name: "Hautepierre", archetype: "peripheral" },
+    ],
+  },
+  {
+    city: {
+      id: "bordeaux",
+      name: "Bordeaux",
+      postalCodes: ["33000", "33200", "33300"],
+      department: "Gironde (33)",
+      coverageLevel: "rich",
+    },
+    center: { latitude: 44.8378, longitude: -0.5792 },
+    areas: [
+      { name: "Saint-Pierre", archetype: "central" },
+      { name: "Chartrons", archetype: "central" },
+      { name: "Saint-Michel", archetype: "residential" },
+      { name: "Nansouty", archetype: "residential" },
+      { name: "La Bastide", archetype: "residential" },
+      { name: "Caudéran", archetype: "peripheral" },
+      { name: "Bacalan", archetype: "peripheral" },
+    ],
+  },
+  {
+    city: {
+      id: "lille",
+      name: "Lille",
+      postalCodes: ["59000", "59800"],
+      department: "Nord (59)",
+      coverageLevel: "rich",
+    },
+    center: { latitude: 50.6292, longitude: 3.0573 },
+    areas: [
+      { name: "Vieux-Lille", archetype: "central" },
+      { name: "Centre", archetype: "central" },
+      { name: "Wazemmes", archetype: "residential" },
+      { name: "Vauban-Esquermes", archetype: "residential" },
+      { name: "Moulins", archetype: "residential" },
+      { name: "Fives", archetype: "peripheral" },
+      { name: "Bois-Blancs", archetype: "peripheral" },
+    ],
+  },
+  {
+    city: {
+      id: "dijon",
+      name: "Dijon",
+      postalCodes: ["21000"],
+      department: "Côte-d'Or (21)",
+      coverageLevel: "rich",
+    },
     center: { latitude: 47.322, longitude: 5.0415 },
     areas: [
       { name: "Centre-ville", archetype: "central" },
@@ -46,7 +225,13 @@ const CITY_SPECS: CitySpec[] = [
     ],
   },
   {
-    city: { id: "lyon", name: "Lyon", postalCodes: ["69001", "69002", "69003"], department: "Rhône (69)", coverageLevel: "rich" },
+    city: {
+      id: "lyon",
+      name: "Lyon",
+      postalCodes: ["69001", "69002", "69003"],
+      department: "Rhône (69)",
+      coverageLevel: "rich",
+    },
     center: { latitude: 45.764, longitude: 4.8357 },
     areas: [
       { name: "Presqu'île", archetype: "central" },
@@ -56,10 +241,17 @@ const CITY_SPECS: CitySpec[] = [
       { name: "Monplaisir", archetype: "residential" },
       { name: "Vaise", archetype: "peripheral" },
       { name: "La Guillotière", archetype: "central" },
+      { name: "Gerland", archetype: "peripheral" },
     ],
   },
   {
-    city: { id: "versailles", name: "Versailles", postalCodes: ["78000"], department: "Yvelines (78)", coverageLevel: "rich" },
+    city: {
+      id: "versailles",
+      name: "Versailles",
+      postalCodes: ["78000"],
+      department: "Yvelines (78)",
+      coverageLevel: "rich",
+    },
     center: { latitude: 48.8049, longitude: 2.1204 },
     areas: [
       { name: "Notre-Dame", archetype: "central" },
@@ -71,7 +263,13 @@ const CITY_SPECS: CitySpec[] = [
     ],
   },
   {
-    city: { id: "avignon", name: "Avignon", postalCodes: ["84000"], department: "Vaucluse (84)", coverageLevel: "rich" },
+    city: {
+      id: "avignon",
+      name: "Avignon",
+      postalCodes: ["84000"],
+      department: "Vaucluse (84)",
+      coverageLevel: "rich",
+    },
     center: { latitude: 43.9493, longitude: 4.8055 },
     areas: [
       { name: "Intra-muros", archetype: "central" },
@@ -137,32 +335,93 @@ type Archetypal = {
 
 const PROFILES: Record<Archetype, Archetypal> = {
   central: {
-    rent: [880, 1120], priceM2: [3600, 5200], transport: [12, 22], shops: [55, 95], pharmacies: [4, 8],
-    admin: [3, 7], sport: [4, 9], culture: [6, 14], libraries: [1, 3], doctors: [16, 30], medical: [2, 5],
-    creches: [3, 6], parks: [1, 3], crime: [55, 90], apl: [4.5, 6], distCenter: [0.2, 0.9],
-    distTransport: [0.1, 0.3], distHospital: [1, 3],
+    rent: [880, 1120],
+    priceM2: [3600, 5200],
+    transport: [12, 22],
+    shops: [55, 95],
+    pharmacies: [4, 8],
+    admin: [3, 7],
+    sport: [4, 9],
+    culture: [6, 14],
+    libraries: [1, 3],
+    doctors: [16, 30],
+    medical: [2, 5],
+    creches: [3, 6],
+    parks: [1, 3],
+    crime: [55, 90],
+    apl: [4.5, 6],
+    distCenter: [0.2, 0.9],
+    distTransport: [0.1, 0.3],
+    distHospital: [1, 3],
   },
   residential: {
-    rent: [740, 920], priceM2: [2800, 3700], transport: [5, 10], shops: [22, 42], pharmacies: [2, 5],
-    admin: [1, 4], sport: [4, 9], culture: [2, 6], libraries: [1, 2], doctors: [7, 14], medical: [1, 3],
-    creches: [3, 6], parks: [4, 9], crime: [22, 45], apl: [4, 5.2], distCenter: [1.4, 3.4],
-    distTransport: [0.3, 0.7], distHospital: [2, 5],
+    rent: [740, 920],
+    priceM2: [2800, 3700],
+    transport: [5, 10],
+    shops: [22, 42],
+    pharmacies: [2, 5],
+    admin: [1, 4],
+    sport: [4, 9],
+    culture: [2, 6],
+    libraries: [1, 2],
+    doctors: [7, 14],
+    medical: [1, 3],
+    creches: [3, 6],
+    parks: [4, 9],
+    crime: [22, 45],
+    apl: [4, 5.2],
+    distCenter: [1.4, 3.4],
+    distTransport: [0.3, 0.7],
+    distHospital: [2, 5],
   },
   peripheral: {
-    rent: [600, 760], priceM2: [1900, 2800], transport: [2, 6], shops: [8, 20], pharmacies: [1, 3],
-    admin: [0, 2], sport: [1, 5], culture: [0, 3], libraries: [0, 1], doctors: [2, 7], medical: [0, 2],
-    creches: [1, 3], parks: [2, 6], crime: [25, 55], apl: [3, 4.2], distCenter: [3, 6.5],
-    distTransport: [0.6, 1.6], distHospital: [4, 8],
+    rent: [600, 760],
+    priceM2: [1900, 2800],
+    transport: [2, 6],
+    shops: [8, 20],
+    pharmacies: [1, 3],
+    admin: [0, 2],
+    sport: [1, 5],
+    culture: [0, 3],
+    libraries: [0, 1],
+    doctors: [2, 7],
+    medical: [0, 2],
+    creches: [1, 3],
+    parks: [2, 6],
+    crime: [25, 55],
+    apl: [3, 4.2],
+    distCenter: [3, 6.5],
+    distTransport: [0.6, 1.6],
+    distHospital: [4, 8],
   },
   limited: {
-    rent: [620, 780], priceM2: [2100, 2700], transport: [0, 2], shops: [3, 9], pharmacies: [0, 2],
-    admin: [0, 1], sport: [0, 3], culture: [0, 1], libraries: [0, 1], doctors: [0, 3], medical: [0, 1],
-    creches: [0, 2], parks: [1, 4], crime: [15, 35], apl: [2.6, 3.6], distCenter: [4, 9],
-    distTransport: [1, 3], distHospital: [6, 12],
+    rent: [620, 780],
+    priceM2: [2100, 2700],
+    transport: [0, 2],
+    shops: [3, 9],
+    pharmacies: [0, 2],
+    admin: [0, 1],
+    sport: [0, 3],
+    culture: [0, 1],
+    libraries: [0, 1],
+    doctors: [0, 3],
+    medical: [0, 1],
+    creches: [0, 2],
+    parks: [1, 4],
+    crime: [15, 35],
+    apl: [2.6, 3.6],
+    distCenter: [4, 9],
+    distTransport: [1, 3],
+    distHospital: [6, 12],
   },
 };
 
-function buildArea(cityId: string, spec: AreaSpec, center: CitySpec["center"], index: number): AreaProfile {
+function buildArea(
+  cityId: string,
+  spec: AreaSpec,
+  center: CitySpec["center"],
+  index: number,
+): AreaProfile {
   const p = PROFILES[spec.archetype];
   const s = seedFrom(`${cityId}:${spec.name}`);
   const s2 = seedFrom(`${spec.name}:${cityId}`);
@@ -205,7 +464,9 @@ function buildArea(cityId: string, spec: AreaSpec, center: CitySpec["center"], i
     },
     distancesKm: {
       toCityCenter: round1(p.distCenter[0] + (p.distCenter[1] - p.distCenter[0]) * s),
-      toNearestTransport: round1(p.distTransport[0] + (p.distTransport[1] - p.distTransport[0]) * s2),
+      toNearestTransport: round1(
+        p.distTransport[0] + (p.distTransport[1] - p.distTransport[0]) * s2,
+      ),
       toNearestHospital: round1(p.distHospital[0] + (p.distHospital[1] - p.distHospital[0]) * s),
     },
     apl: round1(p.apl[0] + (p.apl[1] - p.apl[0]) * s2),
@@ -227,7 +488,9 @@ function round1(n: number): number {
 const AREA_CACHE = new Map<string, AreaProfile[]>();
 
 export function listCities(): City[] {
-  return CITY_SPECS.map((c) => c.city);
+  // Alphabetical: with fourteen cities a picker needs a predictable order, and
+  // "largest first" stops being obvious to the reader past the first few.
+  return CITY_SPECS.map((c) => c.city).sort((a, b) => a.name.localeCompare(b.name, "fr"));
 }
 
 export function findCity(cityId: string): City | undefined {

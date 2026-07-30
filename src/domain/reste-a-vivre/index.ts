@@ -23,10 +23,13 @@ export {
   bikeAmortizationPresets,
   cities as jobCities,
   crecheScale,
+  moveCostRules,
   nationalParams,
   JOB_DATASET_VERSION,
   SNAPSHOT_IS_SEEDED,
+  type AlurZone,
   type CitySnapshot,
+  type DistrictArchetype,
   type DistrictSnapshot,
 } from "./snapshot";
 
@@ -48,10 +51,12 @@ export type {
   CurrentSide,
   ErrandsInput,
   Explanation,
+  FamilyTravelInput,
   Household,
   HousingType,
   Interpolation,
   Line,
+  MoveCost,
   LineKind,
   LineStatus,
   Num,
@@ -60,4 +65,5 @@ export type {
   TravelMode,
   VehicleEnergy,
   VehicleInput,
+  WaterfallStep,
 } from "./types";

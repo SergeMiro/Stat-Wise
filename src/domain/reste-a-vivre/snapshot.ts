@@ -2,16 +2,22 @@
  * Seeded snapshot for the reste-à-vivre engine.
  *
  * ⚠️ These are SEED VALUES, sized to the real datasets so the simulator reads
- * correctly end to end. They are NOT yet read from the imported data. Each field
- * names the source it will be filled from, and the UI labels the whole run as
- * seeded — see `SNAPSHOT_IS_SEEDED` below, which the result page renders as a
- * visible banner rather than fine print.
+ * correctly end to end. They are NOT yet read from the imported data. The UI
+ * labels every run as seeded — see `SNAPSHOT_IS_SEEDED`, which the result page
+ * renders as a visible banner rather than fine print.
  *
- * Replacing this module with ETL output must not require touching the engine:
- * the shapes here are the shapes the importers have to produce.
+ * District figures are **derived**, not typed in one by one. Each city carries a
+ * central reference rent and each district an archetype; the rest follows from a
+ * documented model plus a deterministic per-district jitter. That is deliberate:
+ * sixty hand-written numbers would look like measurements, while a stated model
+ * can be read, argued with and replaced wholesale by ETL output.
+ *
+ * Replacing this module with real data must not require touching the engine: the
+ * shapes below are the shapes the importers have to produce.
  *
  * Field → source mapping:
  *   rentPerSqm          → Carte des loyers (ANIL/CEREMA), commune, charges comprises
+ *   rentPerSqmRange     → same, P25/P75 spread
  *   electricityKwhYear  → Enedis, consommation résidentielle par IRIS
  *   waterPricePerM3     → SISPEA via Hub'Eau, périmètre du service
  *   fuelPricePerLitre   → prix-carburants.gouv.fr, médiane des stations à 5 km
@@ -19,19 +25,23 @@
  *   transitTicketUnit   → GTFS fare_attributes, quand le réseau les publie
  *   distanceToJobKm     → à remplacer par un vrai calcul BAN + itinéraire
  *   distanceToGroceryKm → BPE (commerces alimentaires) + BAN + itinéraire
+ *   alurZone            → décret plafonnant les honoraires de location
  *
- * `cityId` and the district names are deliberately the same as in
- * `src/lib/mock/cities.ts`, so both simulators speak of the same places; a test
- * enforces it. The granularity still differs and is not faked: "Trouver mon
- * quartier" works on IRIS zones for Dijon (real DVF/BPE), while this simulator
- * works on named districts, which is the level rent indicators reach.
+ * `id`, `name` and `department` are the same as in `src/lib/mock/cities.ts`, so
+ * both simulators speak of the same places; a test enforces it.
  */
+
+/** Position of a district inside its city. Drives rent, energy and distances. */
+export type DistrictArchetype = "central" | "residential" | "peripheral";
 
 export type DistrictSnapshot = {
   id: string;
   name: string;
+  archetype: DistrictArchetype;
   /** Rent €/m² per month, charges comprises, by housing type. */
   rentPerSqm: { appartement: number; maison: number };
+  /** P25/P75 spread of the flat rent, for the result range. */
+  rentPerSqmRange: { low: number; high: number };
   /** Annual kWh per residential delivery point in this area. */
   electricityKwhYear: number;
   /**
@@ -60,85 +70,154 @@ export type CitySnapshot = {
   fuelPricePerLitre: number;
   /** Monthly adult transit pass, full price before the employer share. */
   transitPassMonthly: number;
+  /** True where the network is free for residents, so the pass costs nothing. */
+  transitFreeForResidents: boolean;
   /** Single-journey ticket, for trips no monthly pass covers. */
   transitTicketUnit: number;
   transitNetwork: string;
+  /** Zone used by the decree capping letting fees. */
+  alurZone: AlurZone;
   districts: DistrictSnapshot[];
 };
+
+export type AlurZone = "tres_tendue" | "tendue" | "autre";
 
 /** Flipped to false the day the engine reads imported data instead of this file. */
 export const SNAPSHOT_IS_SEEDED = true;
 
 export const JOB_DATASET_VERSION = "seed-2026.07";
 
-export const cities: CitySnapshot[] = [
+// --- the derivation model ---------------------------------------------------
+
+/**
+ * How an archetype sits relative to its city's central reference.
+ *
+ * `rent` multiplies the central €/m². Energy rises towards the edge (bigger,
+ * older, less dense housing) while distances grow — which is the whole tension
+ * the simulator exists to price: cheaper rent, dearer travel.
+ */
+const ARCHETYPES: Record<
+  DistrictArchetype,
+  { rent: number; kwh: number; jobKm: number; groceryKm: number }
+> = {
+  central: { rent: 1, kwh: 3150, jobKm: 1.2, groceryKm: 0.4 },
+  residential: { rent: 0.88, kwh: 3700, jobKm: 2.6, groceryKm: 0.6 },
+  peripheral: { rent: 0.76, kwh: 4250, jobKm: 4.6, groceryKm: 0.95 },
+};
+
+/** A house costs less per m² than a flat in the same area. */
+export const HOUSE_RENT_RATIO = 0.9;
+/** P25 and P75 of the advertised rent around its median. */
+const RENT_SPREAD = { low: 0.85, high: 1.18 };
+
+/** FNV-1a → 0..1. Deterministic: the engine must never call Math.random. */
+function seed(text: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return ((h >>> 0) % 1000) / 1000;
+}
+
+const round1 = (n: number) => Math.round(n * 10) / 10;
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
+type CitySpec = Omit<CitySnapshot, "districts"> & {
+  /** Central reference rent, €/m²/month for a flat, charges comprises. */
+  centralRentPerSqm: number;
+  districts: Array<{ id: string; name: string; archetype: DistrictArchetype }>;
+};
+
+function buildDistrict(
+  cityId: string,
+  centralRent: number,
+  spec: { id: string; name: string; archetype: DistrictArchetype },
+): DistrictSnapshot {
+  const a = ARCHETYPES[spec.archetype];
+  // Two independent draws so rent and distance do not move in lockstep.
+  const s1 = seed(`${cityId}:${spec.id}`);
+  const s2 = seed(`${spec.id}:${cityId}`);
+
+  // ±6 % around the archetype so districts of one archetype are not clones.
+  const flat = round2(centralRent * a.rent * (0.94 + 0.12 * s1));
+
+  return {
+    id: spec.id,
+    name: spec.name,
+    archetype: spec.archetype,
+    rentPerSqm: { appartement: flat, maison: round2(flat * HOUSE_RENT_RATIO) },
+    rentPerSqmRange: {
+      low: round2(flat * RENT_SPREAD.low),
+      high: round2(flat * RENT_SPREAD.high),
+    },
+    electricityKwhYear: Math.round(a.kwh * (0.92 + 0.16 * s2)),
+    distanceToJobKm: round1(a.jobKm * (0.8 + 0.4 * s2)),
+    distanceToGroceryKm: round1(a.groceryKm * (0.8 + 0.4 * s1)),
+  };
+}
+
+// --- the cities -------------------------------------------------------------
+
+/*
+  The ten largest cities in France plus the four pilot communes already covered.
+  Transit fares and water prices are seeded per network; two of them are worth
+  reading twice:
+
+  - Montpellier's network has been free for residents of the métropole since
+    21/12/2023, so the pass is 0 € and the employer's 50 % has nothing to cover.
+  - Paris and Versailles are both Île-de-France, so they must carry the *same*
+    Navigo price. Sources disagreed on the 2026 figure (90,80 € against
+    101,50 €); 90,80 € is used and recorded in NOTES/03 as needing a check
+    against Île-de-France Mobilités directly.
+*/
+const CITY_SPECS: CitySpec[] = [
   {
-    id: "dijon",
-    name: "Dijon",
-    department: "Côte-d'Or (21)",
-    parisRegion: false,
-    waterPricePerM3: 3.55,
-    fuelPricePerLitre: 1.72,
-    transitPassMonthly: 40.5,
-    transitTicketUnit: 1.5,
-    transitNetwork: "Divia",
+    id: "paris",
+    name: "Paris",
+    department: "Paris (75)",
+    parisRegion: true,
+    waterPricePerM3: 4.3,
+    fuelPricePerLitre: 1.86,
+    transitPassMonthly: 90.8,
+    transitFreeForResidents: false,
+    transitTicketUnit: 2.5,
+    transitNetwork: "Navigo (Île-de-France Mobilités)",
+    alurZone: "tres_tendue",
+    centralRentPerSqm: 31,
     districts: [
-      {
-        id: "centre-ville",
-        name: "Centre-ville",
-        rentPerSqm: { appartement: 14.2, maison: 12.5 },
-        electricityKwhYear: 3250,
-        distanceToJobKm: 1.2,
-        distanceToGroceryKm: 0.4,
-      },
-      {
-        id: "montchapet",
-        name: "Montchapet",
-        rentPerSqm: { appartement: 12.8, maison: 11.6 },
-        electricityKwhYear: 3900,
-        distanceToJobKm: 2.4,
-        distanceToGroceryKm: 0.6,
-      },
-      {
-        id: "universite",
-        name: "Université",
-        rentPerSqm: { appartement: 13.5, maison: 11.9 },
-        electricityKwhYear: 3400,
-        distanceToJobKm: 3.1,
-        distanceToGroceryKm: 0.7,
-      },
-      {
-        id: "chevreul-parc",
-        name: "Chevreul – Parc",
-        rentPerSqm: { appartement: 12.9, maison: 11.8 },
-        electricityKwhYear: 3700,
-        distanceToJobKm: 2.0,
-        distanceToGroceryKm: 0.5,
-      },
-      {
-        id: "fontaine-d-ouche",
-        name: "Fontaine d'Ouche",
-        rentPerSqm: { appartement: 10.9, maison: 10.1 },
-        electricityKwhYear: 3600,
-        distanceToJobKm: 3.8,
-        distanceToGroceryKm: 0.8,
-      },
-      {
-        id: "toison-d-or",
-        name: "Toison d'Or",
-        rentPerSqm: { appartement: 12.2, maison: 11.2 },
-        electricityKwhYear: 4400,
-        distanceToJobKm: 4.3,
-        distanceToGroceryKm: 0.4,
-      },
-      {
-        id: "gresilles",
-        name: "Grésilles",
-        rentPerSqm: { appartement: 10.8, maison: 10.0 },
-        electricityKwhYear: 3500,
-        distanceToJobKm: 3.2,
-        distanceToGroceryKm: 0.6,
-      },
+      { id: "marais", name: "Le Marais", archetype: "central" },
+      { id: "quartier-latin", name: "Quartier latin", archetype: "central" },
+      { id: "saint-germain", name: "Saint-Germain-des-Prés", archetype: "central" },
+      { id: "montmartre", name: "Montmartre", archetype: "residential" },
+      { id: "batignolles", name: "Batignolles", archetype: "residential" },
+      { id: "bercy", name: "Bercy", archetype: "residential" },
+      { id: "belleville", name: "Belleville", archetype: "peripheral" },
+      { id: "la-chapelle", name: "La Chapelle", archetype: "peripheral" },
+    ],
+  },
+  {
+    id: "marseille",
+    name: "Marseille",
+    department: "Bouches-du-Rhône (13)",
+    parisRegion: false,
+    waterPricePerM3: 3.9,
+    fuelPricePerLitre: 1.79,
+    transitPassMonthly: 44,
+    transitFreeForResidents: false,
+    transitTicketUnit: 1.8,
+    transitNetwork: "RTM",
+    alurZone: "tendue",
+    centralRentPerSqm: 16,
+    districts: [
+      { id: "vieux-port", name: "Vieux-Port", archetype: "central" },
+      { id: "le-panier", name: "Le Panier", archetype: "central" },
+      { id: "cours-julien", name: "Cours Julien", archetype: "central" },
+      { id: "prado-castellane", name: "Prado – Castellane", archetype: "residential" },
+      { id: "cinq-avenues", name: "Les Cinq Avenues", archetype: "residential" },
+      { id: "joliette", name: "La Joliette", archetype: "residential" },
+      { id: "saint-barnabe", name: "Saint-Barnabé", archetype: "peripheral" },
+      { id: "l-estaque", name: "L'Estaque", archetype: "peripheral" },
     ],
   },
   {
@@ -149,65 +228,182 @@ export const cities: CitySnapshot[] = [
     waterPricePerM3: 3.25,
     fuelPricePerLitre: 1.78,
     transitPassMonthly: 74.2,
+    transitFreeForResidents: false,
     transitTicketUnit: 2.1,
     transitNetwork: "TCL",
+    alurZone: "tendue",
+    centralRentPerSqm: 19,
     districts: [
-      {
-        id: "presqu-ile",
-        name: "Presqu'île",
-        rentPerSqm: { appartement: 19.0, maison: 16.7 },
-        electricityKwhYear: 2900,
-        distanceToJobKm: 1.0,
-        distanceToGroceryKm: 0.3,
-      },
-      {
-        id: "croix-rousse",
-        name: "Croix-Rousse",
-        rentPerSqm: { appartement: 17.6, maison: 15.6 },
-        electricityKwhYear: 3050,
-        distanceToJobKm: 2.4,
-        distanceToGroceryKm: 0.5,
-      },
-      {
-        id: "part-dieu",
-        name: "Part-Dieu",
-        rentPerSqm: { appartement: 17.1, maison: 15.1 },
-        electricityKwhYear: 3000,
-        distanceToJobKm: 2.2,
-        distanceToGroceryKm: 0.4,
-      },
-      {
-        id: "confluence",
-        name: "Confluence",
-        rentPerSqm: { appartement: 18.3, maison: 16.1 },
-        electricityKwhYear: 2950,
-        distanceToJobKm: 2.0,
-        distanceToGroceryKm: 0.6,
-      },
-      {
-        id: "monplaisir",
-        name: "Monplaisir",
-        rentPerSqm: { appartement: 15.2, maison: 13.7 },
-        electricityKwhYear: 3400,
-        distanceToJobKm: 4.2,
-        distanceToGroceryKm: 0.6,
-      },
-      {
-        id: "vaise",
-        name: "Vaise",
-        rentPerSqm: { appartement: 14.9, maison: 13.5 },
-        electricityKwhYear: 3600,
-        distanceToJobKm: 4.8,
-        distanceToGroceryKm: 0.7,
-      },
-      {
-        id: "la-guillotiere",
-        name: "La Guillotière",
-        rentPerSqm: { appartement: 16.8, maison: 14.9 },
-        electricityKwhYear: 3150,
-        distanceToJobKm: 2.5,
-        distanceToGroceryKm: 0.5,
-      },
+      { id: "presqu-ile", name: "Presqu'île", archetype: "central" },
+      { id: "part-dieu", name: "Part-Dieu", archetype: "central" },
+      { id: "confluence", name: "Confluence", archetype: "central" },
+      { id: "croix-rousse", name: "Croix-Rousse", archetype: "residential" },
+      { id: "la-guillotiere", name: "La Guillotière", archetype: "residential" },
+      { id: "monplaisir", name: "Monplaisir", archetype: "residential" },
+      { id: "vaise", name: "Vaise", archetype: "peripheral" },
+      { id: "gerland", name: "Gerland", archetype: "peripheral" },
+    ],
+  },
+  {
+    id: "toulouse",
+    name: "Toulouse",
+    department: "Haute-Garonne (31)",
+    parisRegion: false,
+    waterPricePerM3: 3.6,
+    fuelPricePerLitre: 1.76,
+    transitPassMonthly: 48,
+    transitFreeForResidents: false,
+    transitTicketUnit: 1.8,
+    transitNetwork: "Tisséo",
+    alurZone: "tendue",
+    centralRentPerSqm: 15,
+    districts: [
+      { id: "capitole", name: "Capitole", archetype: "central" },
+      { id: "les-carmes", name: "Les Carmes", archetype: "central" },
+      { id: "saint-cyprien", name: "Saint-Cyprien", archetype: "residential" },
+      { id: "compans", name: "Compans-Caffarelli", archetype: "residential" },
+      { id: "rangueil", name: "Rangueil", archetype: "residential" },
+      { id: "borderouge", name: "Borderouge", archetype: "peripheral" },
+      { id: "la-reynerie", name: "La Reynerie", archetype: "peripheral" },
+    ],
+  },
+  {
+    id: "nice",
+    name: "Nice",
+    department: "Alpes-Maritimes (06)",
+    parisRegion: false,
+    waterPricePerM3: 4.1,
+    fuelPricePerLitre: 1.82,
+    transitPassMonthly: 40,
+    transitFreeForResidents: false,
+    transitTicketUnit: 1.7,
+    transitNetwork: "Lignes d'Azur",
+    alurZone: "tendue",
+    centralRentPerSqm: 19.5,
+    districts: [
+      { id: "vieux-nice", name: "Vieux-Nice", archetype: "central" },
+      { id: "carre-d-or", name: "Carré d'Or", archetype: "central" },
+      { id: "liberation", name: "Libération", archetype: "residential" },
+      { id: "cimiez", name: "Cimiez", archetype: "residential" },
+      { id: "riquier", name: "Riquier", archetype: "residential" },
+      { id: "fabron", name: "Fabron", archetype: "peripheral" },
+      { id: "l-ariane", name: "L'Ariane", archetype: "peripheral" },
+    ],
+  },
+  {
+    id: "nantes",
+    name: "Nantes",
+    department: "Loire-Atlantique (44)",
+    parisRegion: false,
+    waterPricePerM3: 3.7,
+    fuelPricePerLitre: 1.75,
+    transitPassMonthly: 66,
+    transitFreeForResidents: false,
+    transitTicketUnit: 1.8,
+    transitNetwork: "TAN",
+    alurZone: "tendue",
+    centralRentPerSqm: 15.5,
+    districts: [
+      { id: "centre-ville", name: "Centre-ville", archetype: "central" },
+      { id: "ile-de-nantes", name: "Île de Nantes", archetype: "central" },
+      { id: "hauts-paves", name: "Hauts-Pavés – Saint-Félix", archetype: "residential" },
+      { id: "malakoff", name: "Malakoff – Saint-Donatien", archetype: "residential" },
+      { id: "dervallieres", name: "Dervallières – Zola", archetype: "residential" },
+      { id: "doulon", name: "Doulon – Bottière", archetype: "peripheral" },
+      { id: "nantes-nord", name: "Nantes Nord", archetype: "peripheral" },
+    ],
+  },
+  {
+    id: "montpellier",
+    name: "Montpellier",
+    department: "Hérault (34)",
+    parisRegion: false,
+    waterPricePerM3: 3.85,
+    fuelPricePerLitre: 1.78,
+    // Free for residents of the métropole since 21/12/2023 (Pass gratuité).
+    transitPassMonthly: 0,
+    transitFreeForResidents: true,
+    transitTicketUnit: 1.6,
+    transitNetwork: "TaM",
+    alurZone: "tendue",
+    centralRentPerSqm: 16.5,
+    districts: [
+      { id: "ecusson", name: "Écusson", archetype: "central" },
+      { id: "antigone", name: "Antigone", archetype: "central" },
+      { id: "beaux-arts", name: "Beaux-Arts", archetype: "residential" },
+      { id: "port-marianne", name: "Port Marianne", archetype: "residential" },
+      { id: "boutonnet", name: "Boutonnet", archetype: "residential" },
+      { id: "croix-d-argent", name: "Croix-d'Argent", archetype: "peripheral" },
+      { id: "la-mosson", name: "La Mosson", archetype: "peripheral" },
+    ],
+  },
+  {
+    id: "strasbourg",
+    name: "Strasbourg",
+    department: "Bas-Rhin (67)",
+    parisRegion: false,
+    waterPricePerM3: 3.95,
+    fuelPricePerLitre: 1.77,
+    transitPassMonthly: 52.5,
+    transitFreeForResidents: false,
+    transitTicketUnit: 1.9,
+    transitNetwork: "CTS",
+    alurZone: "tendue",
+    centralRentPerSqm: 15,
+    districts: [
+      { id: "grande-ile", name: "Grande Île", archetype: "central" },
+      { id: "krutenau", name: "Krutenau", archetype: "central" },
+      { id: "neustadt", name: "Neustadt", archetype: "residential" },
+      { id: "orangerie", name: "Orangerie", archetype: "residential" },
+      { id: "neudorf", name: "Neudorf", archetype: "residential" },
+      { id: "robertsau", name: "Robertsau", archetype: "peripheral" },
+      { id: "hautepierre", name: "Hautepierre", archetype: "peripheral" },
+    ],
+  },
+  {
+    id: "bordeaux",
+    name: "Bordeaux",
+    department: "Gironde (33)",
+    parisRegion: false,
+    waterPricePerM3: 3.65,
+    fuelPricePerLitre: 1.77,
+    transitPassMonthly: 45.5,
+    transitFreeForResidents: false,
+    transitTicketUnit: 1.8,
+    transitNetwork: "TBM",
+    alurZone: "tendue",
+    centralRentPerSqm: 17,
+    districts: [
+      { id: "saint-pierre", name: "Saint-Pierre", archetype: "central" },
+      { id: "chartrons", name: "Chartrons", archetype: "central" },
+      { id: "saint-michel", name: "Saint-Michel", archetype: "residential" },
+      { id: "nansouty", name: "Nansouty", archetype: "residential" },
+      { id: "la-bastide", name: "La Bastide", archetype: "residential" },
+      { id: "cauderan", name: "Caudéran", archetype: "peripheral" },
+      { id: "bacalan", name: "Bacalan", archetype: "peripheral" },
+    ],
+  },
+  {
+    id: "lille",
+    name: "Lille",
+    department: "Nord (59)",
+    parisRegion: false,
+    waterPricePerM3: 3.8,
+    fuelPricePerLitre: 1.76,
+    transitPassMonthly: 40,
+    transitFreeForResidents: false,
+    transitTicketUnit: 1.8,
+    transitNetwork: "Ilévia",
+    alurZone: "tendue",
+    centralRentPerSqm: 15.5,
+    districts: [
+      { id: "vieux-lille", name: "Vieux-Lille", archetype: "central" },
+      { id: "centre", name: "Centre", archetype: "central" },
+      { id: "wazemmes", name: "Wazemmes", archetype: "residential" },
+      { id: "vauban-esquermes", name: "Vauban-Esquermes", archetype: "residential" },
+      { id: "moulins", name: "Moulins", archetype: "residential" },
+      { id: "fives", name: "Fives", archetype: "peripheral" },
+      { id: "bois-blancs", name: "Bois-Blancs", archetype: "peripheral" },
     ],
   },
   {
@@ -217,58 +413,43 @@ export const cities: CitySnapshot[] = [
     parisRegion: true,
     waterPricePerM3: 4.35,
     fuelPricePerLitre: 1.83,
-    transitPassMonthly: 88.8,
+    // Same Navigo as Paris: one network, one price.
+    transitPassMonthly: 90.8,
+    transitFreeForResidents: false,
     transitTicketUnit: 2.5,
     transitNetwork: "Navigo (Île-de-France Mobilités)",
+    alurZone: "tendue",
+    centralRentPerSqm: 20.5,
     districts: [
-      {
-        id: "notre-dame",
-        name: "Notre-Dame",
-        rentPerSqm: { appartement: 20.5, maison: 18.1 },
-        electricityKwhYear: 3500,
-        distanceToJobKm: 1.3,
-        distanceToGroceryKm: 0.4,
-      },
-      {
-        id: "saint-louis",
-        name: "Saint-Louis",
-        rentPerSqm: { appartement: 19.8, maison: 17.5 },
-        electricityKwhYear: 3600,
-        distanceToJobKm: 1.6,
-        distanceToGroceryKm: 0.6,
-      },
-      {
-        id: "clagny-glatigny",
-        name: "Clagny – Glatigny",
-        rentPerSqm: { appartement: 19.2, maison: 17.9 },
-        electricityKwhYear: 4200,
-        distanceToJobKm: 2.4,
-        distanceToGroceryKm: 0.8,
-      },
-      {
-        id: "montreuil",
-        name: "Montreuil",
-        rentPerSqm: { appartement: 17.9, maison: 16.1 },
-        electricityKwhYear: 3900,
-        distanceToJobKm: 2.6,
-        distanceToGroceryKm: 0.9,
-      },
-      {
-        id: "porchefontaine",
-        name: "Porchefontaine",
-        rentPerSqm: { appartement: 17.6, maison: 16.0 },
-        electricityKwhYear: 4000,
-        distanceToJobKm: 2.9,
-        distanceToGroceryKm: 1.0,
-      },
-      {
-        id: "chantiers",
-        name: "Chantiers",
-        rentPerSqm: { appartement: 18.2, maison: 16.4 },
-        electricityKwhYear: 3800,
-        distanceToJobKm: 2.2,
-        distanceToGroceryKm: 0.7,
-      },
+      { id: "notre-dame", name: "Notre-Dame", archetype: "central" },
+      { id: "saint-louis", name: "Saint-Louis", archetype: "central" },
+      { id: "clagny-glatigny", name: "Clagny – Glatigny", archetype: "residential" },
+      { id: "montreuil", name: "Montreuil", archetype: "residential" },
+      { id: "chantiers", name: "Chantiers", archetype: "residential" },
+      { id: "porchefontaine", name: "Porchefontaine", archetype: "peripheral" },
+    ],
+  },
+  {
+    id: "dijon",
+    name: "Dijon",
+    department: "Côte-d'Or (21)",
+    parisRegion: false,
+    waterPricePerM3: 3.55,
+    fuelPricePerLitre: 1.72,
+    transitPassMonthly: 40.5,
+    transitFreeForResidents: false,
+    transitTicketUnit: 1.5,
+    transitNetwork: "Divia",
+    alurZone: "autre",
+    centralRentPerSqm: 14.2,
+    districts: [
+      { id: "centre-ville", name: "Centre-ville", archetype: "central" },
+      { id: "universite", name: "Université", archetype: "central" },
+      { id: "montchapet", name: "Montchapet", archetype: "residential" },
+      { id: "chevreul-parc", name: "Chevreul – Parc", archetype: "residential" },
+      { id: "toison-d-or", name: "Toison d'Or", archetype: "residential" },
+      { id: "fontaine-d-ouche", name: "Fontaine d'Ouche", archetype: "peripheral" },
+      { id: "gresilles", name: "Grésilles", archetype: "peripheral" },
     ],
   },
   {
@@ -279,49 +460,17 @@ export const cities: CitySnapshot[] = [
     waterPricePerM3: 3.95,
     fuelPricePerLitre: 1.75,
     transitPassMonthly: 38,
+    transitFreeForResidents: false,
     transitTicketUnit: 1.4,
     transitNetwork: "Orizo",
+    alurZone: "autre",
+    centralRentPerSqm: 12.4,
     districts: [
-      {
-        id: "intra-muros",
-        name: "Intra-muros",
-        rentPerSqm: { appartement: 12.4, maison: 11.2 },
-        electricityKwhYear: 3400,
-        distanceToJobKm: 1.0,
-        distanceToGroceryKm: 0.6,
-      },
-      {
-        id: "montfavet",
-        name: "Montfavet",
-        rentPerSqm: { appartement: 10.6, maison: 10.0 },
-        electricityKwhYear: 4600,
-        distanceToJobKm: 6.9,
-        distanceToGroceryKm: 1.6,
-      },
-      {
-        id: "pont-des-deux-eaux",
-        name: "Pont des Deux Eaux",
-        rentPerSqm: { appartement: 10.9, maison: 10.2 },
-        electricityKwhYear: 4100,
-        distanceToJobKm: 3.4,
-        distanceToGroceryKm: 1.1,
-      },
-      {
-        id: "monclar",
-        name: "Monclar",
-        rentPerSqm: { appartement: 10.2, maison: 9.7 },
-        electricityKwhYear: 3900,
-        distanceToJobKm: 2.6,
-        distanceToGroceryKm: 0.9,
-      },
-      {
-        id: "saint-chamand",
-        name: "Saint-Chamand",
-        rentPerSqm: { appartement: 10.0, maison: 9.5 },
-        electricityKwhYear: 4000,
-        distanceToJobKm: 3.9,
-        distanceToGroceryKm: 1.3,
-      },
+      { id: "intra-muros", name: "Intra-muros", archetype: "central" },
+      { id: "pont-des-deux-eaux", name: "Pont des Deux Eaux", archetype: "residential" },
+      { id: "monclar", name: "Monclar", archetype: "residential" },
+      { id: "montfavet", name: "Montfavet", archetype: "peripheral" },
+      { id: "saint-chamand", name: "Saint-Chamand", archetype: "peripheral" },
     ],
   },
   {
@@ -332,28 +481,25 @@ export const cities: CitySnapshot[] = [
     waterPricePerM3: 3.72,
     fuelPricePerLitre: 1.71,
     transitPassMonthly: 40.5,
+    transitFreeForResidents: false,
     transitTicketUnit: 1.5,
     transitNetwork: "Divia",
+    alurZone: "autre",
+    centralRentPerSqm: 11.6,
     districts: [
-      {
-        id: "bourg",
-        name: "Bourg",
-        rentPerSqm: { appartement: 11.6, maison: 10.8 },
-        electricityKwhYear: 6100,
-        distanceToJobKm: 5.6,
-        distanceToGroceryKm: 1.0,
-      },
-      {
-        id: "les-carrieres",
-        name: "Les Carrières",
-        rentPerSqm: { appartement: 11.2, maison: 10.5 },
-        electricityKwhYear: 6400,
-        distanceToJobKm: 6.4,
-        distanceToGroceryKm: 1.8,
-      },
+      { id: "bourg", name: "Bourg", archetype: "residential" },
+      { id: "les-carrieres", name: "Les Carrières", archetype: "peripheral" },
     ],
   },
 ];
+
+export const cities: CitySnapshot[] = CITY_SPECS.map((spec) => {
+  const { centralRentPerSqm, districts, ...city } = spec;
+  return {
+    ...city,
+    districts: districts.map((d) => buildDistrict(spec.id, centralRentPerSqm, d)),
+  };
+});
 
 /**
  * National parameters. None of these create a difference between two cities —
@@ -416,13 +562,33 @@ export const nationalParams = {
 } as const;
 
 /**
+ * One-off costs of moving — the `ponctuel` class from
+ * `docs/reste-a-vivre-variables.md` §1. Never spread across months: 3 200 €
+ * divided by twelve would silently eat 267 €/month and make the verdict
+ * meaningless.
+ */
+export const moveCostRules = {
+  /** Letting fees are capped in €/m² of living space by decree, per zone. */
+  agencyFeeCapPerSqm: { tres_tendue: 12, tendue: 10, autre: 8 } as Record<AlurZone, number>,
+  /** Deposit for an unfurnished let: one month's rent excluding charges. */
+  depositMonths: 1,
+  /**
+   * Share of the rent assumed to be charges, used to get back to "hors charges"
+   * for the deposit. The rent indicator we use is charges comprises, so this
+   * step is unavoidable — and it is an assumption, not a measurement.
+   */
+  chargesShareOfRent: 0.15,
+  /** €, a removal between two cities for a family. The user can override it. */
+  defaultRemovalCost: 1200,
+} as const;
+
+/**
  * Suggested yearly cost of keeping a bicycle on the road — purchase spread over
  * its life, plus wear parts, tyres and repairs.
  *
  * No public dataset publishes this, so these are openly assumptions offered as
  * starting points, not measurements. The user picks one or types their own
- * figure, and the result labels the line as a hypothesis either way. Presenting
- * any of these as data would break the rule the rest of the engine follows.
+ * figure, and the result labels the line as a hypothesis either way.
  */
 export const bikeAmortizationPresets = [
   { key: "walk", perYear: 0 },
@@ -439,7 +605,7 @@ export const bikeAmortizationPresets = [
  * product of those bounds, which is what makes the set verifiable.
  *
  * TODO: the Cnaf published a 2026 barème on 15/12/2025 — revalidate the rates
- * before the next release.
+ * before the next release. `npm run check:vintages` fails once this is overdue.
  */
 export const crecheScale = {
   vintage: "2025",

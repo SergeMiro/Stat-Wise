@@ -425,6 +425,10 @@ export const en: Dictionary = {
         title: "Your travel",
         desc: "Two purposes, often two modes: getting to work, and doing the shopping.",
       },
+      budget: {
+        title: "Your family and the rest of the budget",
+        desc: "Two things calculators forget, and both change the answer.",
+      },
     },
     fields: {
       city: "City",
@@ -468,6 +472,15 @@ export const en: Dictionary = {
       bikeCustom: "Yearly amount chosen (€/year)",
       perYear: "€/year",
       sameAsToday: "Same as today",
+      familyKmCurrent: "Distance to close family today (km)",
+      familyKmTarget: "Distance from the city of the offer (km)",
+      familyTripsPerYear: "Visits per year",
+      familyHint:
+        "One way. This is often the real reason people turn a move down, and nobody puts a figure on it.",
+      otherMonthly: "Everything else in your monthly budget",
+      otherMonthlyHint:
+        "Insurance, health top-up, phone, internet, clothing, leisure, restaurants, subscriptions, haircuts, sport, pets, gifts, bank charges, loans. One figure: these do not change from one city to another, so they do not distort the comparison — but without them the amount left over looks far too good.",
+      removalCost: "Cost of the removal (€)",
     },
     modes: {
       voiture: "Car",
@@ -498,6 +511,12 @@ export const en: Dictionary = {
       velo_amortissement: "Bicycle — amortisation and upkeep",
       creche: "Nursery (family contribution)",
       alimentation: "Food at home",
+      deplacements_famille: "Trips to close family",
+      autres_depenses: "The rest of your budget",
+      depot_garantie: "Tenancy deposit",
+      honoraires_agence: "Letting agency fee",
+      demenagement: "Removal",
+      double_loyer: "Overlapping rent",
       impot_revenu: "Income tax",
       prestations: "Housing benefit, family allowances, activity bonus",
       assurances: "Home insurance, health top-up",
@@ -534,6 +553,8 @@ export const en: Dictionary = {
         "{km} km/month × {perKm} €/km: the {base} €/km flat rate increased by {upliftPct} %, as the mileage allowance provides for a fully electric vehicle. Note: that fiscal uplift also covers charging, which we bill separately — so we apply it here to wear and depreciation alone. It is an assumption, not the tax rule.",
       transit_pass:
         "The network's tariff table, collected by hand — passes are not published in the open data.",
+      transit_free:
+        "The {network} network is free for residents of the métropole: the pass costs nothing, so the employer's 50 % share has nothing to cover. You have to apply for the named pass and renew it every year.",
       errands_covered_by_pass:
         "No additional cost: the {network} pass is already paid for the commute and covers these {journeys} journeys.",
       errands_tickets:
@@ -548,6 +569,14 @@ export const en: Dictionary = {
         "National reference basket + {premium} % (the Île-de-France gap measured by the 2022 Insee survey). No official data exists at district level.",
       food_province:
         "National reference basket. No spatial food-price gap is officially measured outside Île-de-France, Corsica and the overseas départements.",
+      family_travel:
+        "{oneWayKm} km one way × 2 × {trips} trips a year = {monthlyKm} km/month × {perKm} €/km (energy plus wear on your car). The number of trips is your habit, not a measurement.",
+      declared_other:
+        "The figure you declared for everything that does not change with the city: insurance, health top-up, phone, internet, clothing, leisure, subscriptions. Deliberately outside the comparable calculation, since it is identical on both sides.",
+      deposit:
+        "One month's rent excluding charges — {rent} € less an estimated {chargesShare} % of charges. You get it back when you leave, but you have to find it first.",
+      agency_fee:
+        "Legal cap of {cap} €/m² for this zone × {surface} m². That is a maximum: renting direct from a landlord costs nothing.",
     },
     reasons: {
       impot_revenu:
@@ -565,6 +594,8 @@ export const en: Dictionary = {
         "Parking tariffs are set by each municipality and motorway tolls are not open: no central API exists.",
       borne_domicile:
         "A one-off cost at installation, not a monthly charge. It has no place in money left over each month, any more than the purchase grant or the weight penalty does.",
+      double_loyer:
+        "Depends on your notice date and on when the new tenancy starts. It can be a full month of double rent — or nothing at all.",
     },
     status: {
       user: "Entered",
@@ -652,6 +683,32 @@ export const en: Dictionary = {
       verdictNote: "Before income tax and excluding benefits: neither of those is quantified yet.",
       here: "Today",
       there: "With the offer",
+      rangeLabel: "Between {low} and {high}, depending on the rent you find",
+      comparable: "Comparable",
+      comparableHint: "Only what changes with the city. This is the figure the verdict rests on.",
+      real: "Real",
+      realHint: "Comparable minus the rest of your budget, as you declared it.",
+      requiredSalaryTitle: "The figure to take into the negotiation",
+      requiredSalary:
+        "In {city} you need {amount} net to be left with exactly what you have today.",
+      requiredSalaryBelow:
+        "The offer is already above that threshold: {amount} net would be break-even.",
+      requiredSalaryAbove: "The offer falls short: {amount} net would be needed to lose nothing.",
+      waterfallTitle: "Where the difference comes from",
+      waterfall: {
+        salaire: "Salary",
+        logement: "Rent",
+        energie: "Energy and water",
+        transport: "Travel",
+        famille: "Trips to family",
+        garde: "Nursery",
+        alimentation: "Food",
+        autre: "Other items",
+      },
+      moveCostTitle: "What you need up front to move",
+      moveCostDesc:
+        "One-off costs, never spread over twelve months: spreading them would produce a false verdict. It is often this figure, not the money left over, that actually stops a move.",
+      moveCostTotal: "Total to budget for",
       bestDistrict: "Best district",
       salaryDelta: "Salary difference",
       housingDelta: "Rent difference",

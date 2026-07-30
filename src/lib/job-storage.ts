@@ -1,6 +1,7 @@
 import {
   findCity,
   findDistrict,
+  moveCostRules,
   nationalParams,
   type CompareInput,
   type HousingType,
@@ -13,8 +14,8 @@ import {
   version is bumped rather than migrated: a stale payload would silently produce
   NaN totals, and there is nothing in a wizard draft worth a migration path.
 */
-export const JOB_DRAFT_KEY = "statwise:job:draft:v2";
-export const JOB_INPUT_KEY = "statwise:job:input:v2";
+export const JOB_DRAFT_KEY = "statwise:job:draft:v3";
+export const JOB_INPUT_KEY = "statwise:job:input:v3";
 
 /**
  * Editable wizard state for "Trouver mon job".
@@ -56,6 +57,20 @@ export type JobDraft = {
   errandsMode: TravelMode;
   tripsPerMonth: number;
   bikeAmortizationPerYear: number;
+
+  /** One-way km to close family, from each side, and how often they are visited. */
+  familyKmCurrent: number;
+  familyKmTarget: number;
+  familyTripsPerYear: number;
+
+  /**
+   * Everything that does not change with the city: insurance, telecom, clothing,
+   * leisure, subscriptions. One declared figure, so the absolute result stops
+   * being overstated without pretending to model categories no dataset covers.
+   */
+  otherMonthly: number;
+  /** €, cost of the removal itself. Part of the up-front block. */
+  removalCost: number;
 };
 
 /**
@@ -94,6 +109,13 @@ export const defaultJobDraft: JobDraft = {
   errandsMode: "voiture",
   tripsPerMonth: nationalParams.defaultGroceryTripsPerMonth,
   bikeAmortizationPerYear: 150,
+
+  familyKmCurrent: 30,
+  familyKmTarget: 200,
+  familyTripsPerYear: 6,
+
+  otherMonthly: 420,
+  removalCost: moveCostRules.defaultRemovalCost,
 };
 
 /** Maps the editable draft to the engine input, or null if the places are unknown. */
@@ -155,6 +177,13 @@ export function draftToInput(draft: JobDraft): CompareInput | null {
       tripsPerMonth: draft.tripsPerMonth,
       bikeAmortizationPerYear: draft.bikeAmortizationPerYear,
     },
+    familyTravel: {
+      currentKm: Math.max(0, draft.familyKmCurrent),
+      targetKm: Math.max(0, draft.familyKmTarget),
+      tripsPerYear: Math.max(0, draft.familyTripsPerYear),
+    },
+    otherMonthly: Math.max(0, draft.otherMonthly),
+    removalCost: Math.max(0, draft.removalCost),
   };
 }
 

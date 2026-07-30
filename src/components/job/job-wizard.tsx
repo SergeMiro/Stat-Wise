@@ -48,7 +48,7 @@ import {
 } from "@/components/ui/select";
 import { ChoiceGroup } from "@/components/quartier/choice-group";
 
-const STEP_KEYS = ["today", "offer", "household", "travel"] as const;
+const STEP_KEYS = ["today", "offer", "household", "travel", "budget"] as const;
 
 export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const router = useRouter();
@@ -507,6 +507,61 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
                   />
                 </div>
               ) : null}
+            </div>
+          )}
+          {/* ---- Family and the rest of the budget ---- */}
+          {stepKey === "budget" && (
+            <div className="space-y-5">
+              <div className="space-y-3">
+                <p className="text-muted-foreground text-xs">{f.familyHint}</p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <NumberField
+                    id="family-km-current"
+                    label={f.familyKmCurrent}
+                    value={draft.familyKmCurrent}
+                    min={0}
+                    step={10}
+                    onChange={(familyKmCurrent) => update({ familyKmCurrent })}
+                  />
+                  <NumberField
+                    id="family-km-target"
+                    label={f.familyKmTarget}
+                    value={draft.familyKmTarget}
+                    min={0}
+                    step={10}
+                    onChange={(familyKmTarget) => update({ familyKmTarget })}
+                  />
+                </div>
+                <NumberField
+                  id="family-trips"
+                  label={f.familyTripsPerYear}
+                  value={draft.familyTripsPerYear}
+                  min={0}
+                  step={1}
+                  onChange={(familyTripsPerYear) => update({ familyTripsPerYear })}
+                />
+              </div>
+
+              <NumberField
+                id="other-monthly"
+                label={f.otherMonthly}
+                hint={f.otherMonthlyHint}
+                suffix="€"
+                value={draft.otherMonthly}
+                min={0}
+                step={20}
+                onChange={(otherMonthly) => update({ otherMonthly })}
+              />
+
+              <NumberField
+                id="removal-cost"
+                label={f.removalCost}
+                suffix="€"
+                value={draft.removalCost}
+                min={0}
+                step={100}
+                onChange={(removalCost) => update({ removalCost })}
+              />
             </div>
           )}
         </CardContent>

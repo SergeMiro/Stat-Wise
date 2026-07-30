@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "check:vintages": "node scripts/check-vintages.mjs",
     "test:watch": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
