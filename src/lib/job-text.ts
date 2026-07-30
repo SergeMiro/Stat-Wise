@@ -23,7 +23,12 @@ import { formatDecimal } from "@/lib/formatting";
 /** The dictionary tables an explanation can be looked up in. */
 type Table = "lines" | "basis" | "reasons";
 
-const isNum = (value: string | Num): value is Num => typeof value === "object";
+type Value = string | Num | Explanation;
+
+const isNested = (value: Value): value is Explanation =>
+  typeof value === "object" && "key" in value;
+
+const isNum = (value: Value): value is Num => typeof value === "object" && "n" in value;
 
 const table = (dict: Dictionary, name: Table): Record<string, string> =>
   dict.job[name] as Record<string, string>;
@@ -36,7 +41,13 @@ function render(locale: Locale, dict: Dictionary, name: Table, explanation: Expl
 
   const params: Record<string, string | number> = {};
   for (const [key, value] of Object.entries(explanation.params)) {
-    params[key] = isNum(value) ? formatDecimal(locale, value.n, value.d ?? 0) : value;
+    // A nested fragment resolves in the same table, so the sentence describing a
+    // set of journeys is written once and reused by every energy type.
+    params[key] = isNested(value)
+      ? render(locale, dict, name, value)
+      : isNum(value)
+        ? formatDecimal(locale, value.n, value.d ?? 0)
+        : value;
   }
   return fill(template, params);
 }

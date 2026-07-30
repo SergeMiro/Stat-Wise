@@ -5,10 +5,16 @@ import {
   type CompareInput,
   type HousingType,
   type TravelMode,
+  type VehicleEnergy,
 } from "@/domain/reste-a-vivre";
 
-export const JOB_DRAFT_KEY = "statwise:job:draft:v1";
-export const JOB_INPUT_KEY = "statwise:job:input:v1";
+/*
+  v2 because the vehicle moved out of the commute and gained an energy type. The
+  version is bumped rather than migrated: a stale payload would silently produce
+  NaN totals, and there is nothing in a wizard draft worth a migration path.
+*/
+export const JOB_DRAFT_KEY = "statwise:job:draft:v2";
+export const JOB_INPUT_KEY = "statwise:job:input:v2";
 
 /**
  * Editable wizard state for "Trouver mon job".
@@ -40,7 +46,12 @@ export type JobDraft = {
   currentCommuteMode: TravelMode;
   targetCommuteMode: TravelMode;
   daysOnSitePerWeek: number;
+
+  vehicleEnergy: VehicleEnergy;
   litresPer100Km: number;
+  kwhPer100Km: number;
+  /** Percentage, 0–100. Converted to a 0–1 share when handed to the engine. */
+  homeChargingSharePct: number;
 
   errandsMode: TravelMode;
   tripsPerMonth: number;
@@ -74,7 +85,11 @@ export const defaultJobDraft: JobDraft = {
   currentCommuteMode: "voiture",
   targetCommuteMode: "transports",
   daysOnSitePerWeek: 5,
+
+  vehicleEnergy: "thermique",
   litresPer100Km: 6.5,
+  kwhPer100Km: nationalParams.defaultKwhPer100Km,
+  homeChargingSharePct: 80,
 
   errandsMode: "voiture",
   tripsPerMonth: nationalParams.defaultGroceryTripsPerMonth,
@@ -116,15 +131,19 @@ export function draftToInput(draft: JobDraft): CompareInput | null {
       childrenInCreche,
       crecheHoursPerMonth: draft.crecheHoursPerMonth,
     },
+    vehicle: {
+      energy: draft.vehicleEnergy,
+      litresPer100Km: draft.litresPer100Km,
+      kwhPer100Km: draft.kwhPer100Km,
+      homeChargingShare: Math.min(Math.max(draft.homeChargingSharePct, 0), 100) / 100,
+    },
     currentCommute: {
       mode: draft.currentCommuteMode,
       daysOnSitePerWeek: draft.daysOnSitePerWeek,
-      litresPer100Km: draft.litresPer100Km,
     },
     targetCommute: {
       mode: draft.targetCommuteMode,
       daysOnSitePerWeek: draft.daysOnSitePerWeek,
-      litresPer100Km: draft.litresPer100Km,
     },
     currentErrands: {
       mode: draft.errandsMode,

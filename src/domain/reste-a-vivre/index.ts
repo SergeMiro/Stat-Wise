@@ -58,4 +58,6 @@ export type {
   SideResult,
   TargetSide,
   TravelMode,
+  VehicleEnergy,
+  VehicleInput,
 } from "./types";

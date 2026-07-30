@@ -9,10 +9,12 @@ import {
   Building2,
   Bus,
   Car,
+  Fuel,
   House,
   Sparkles,
   User,
   Users,
+  Zap,
 } from "lucide-react";
 import {
   bikeAmortizationPresets,
@@ -20,6 +22,7 @@ import {
   listJobCities,
   type HousingType,
   type TravelMode,
+  type VehicleEnergy,
 } from "@/domain/reste-a-vivre";
 import { fill, localePath, type Dictionary, type Locale } from "@/lib/i18n";
 import {
@@ -35,6 +38,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import {
   Select,
   SelectContent,
@@ -403,14 +407,73 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
               </div>
 
               {usesCar ? (
-                <NumberField
-                  id="litres"
-                  label={f.litresPer100Km}
-                  value={draft.litresPer100Km}
-                  min={0}
-                  step={0.1}
-                  onChange={(litresPer100Km) => update({ litresPer100Km })}
-                />
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <Label>{f.vehicleEnergy}</Label>
+                    <ChoiceGroup<VehicleEnergy>
+                      ariaLabel={f.vehicleEnergy}
+                      columns={2}
+                      value={draft.vehicleEnergy}
+                      onChange={(vehicleEnergy) => update({ vehicleEnergy })}
+                      options={[
+                        {
+                          value: "thermique",
+                          label: f.thermique,
+                          icon: <Fuel className="size-4" />,
+                        },
+                        {
+                          value: "electrique",
+                          label: f.electrique,
+                          icon: <Zap className="size-4" />,
+                        },
+                      ]}
+                    />
+                    <p className="text-muted-foreground text-xs">{f.hybridNote}</p>
+                  </div>
+
+                  {draft.vehicleEnergy === "thermique" ? (
+                    <NumberField
+                      id="litres"
+                      label={f.litresPer100Km}
+                      value={draft.litresPer100Km}
+                      min={0}
+                      step={0.1}
+                      onChange={(litresPer100Km) => update({ litresPer100Km })}
+                    />
+                  ) : (
+                    <>
+                      <NumberField
+                        id="kwh"
+                        label={f.kwhPer100Km}
+                        value={draft.kwhPer100Km}
+                        min={0}
+                        step={0.5}
+                        onChange={(kwhPer100Km) => update({ kwhPer100Km })}
+                      />
+                      <div className="space-y-2">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <Label htmlFor="home-charging">{f.homeChargingShare}</Label>
+                          <span className="tabular text-sm font-semibold">
+                            {draft.homeChargingSharePct} %
+                          </span>
+                        </div>
+                        <Slider
+                          id="home-charging"
+                          value={[draft.homeChargingSharePct]}
+                          min={0}
+                          max={100}
+                          step={5}
+                          onValueChange={(v) =>
+                            update({
+                              homeChargingSharePct: Array.isArray(v) ? v[0] : (v as number),
+                            })
+                          }
+                        />
+                        <p className="text-muted-foreground text-xs">{f.homeChargingHint}</p>
+                      </div>
+                    </>
+                  )}
+                </div>
               ) : null}
 
               {usesBike ? (

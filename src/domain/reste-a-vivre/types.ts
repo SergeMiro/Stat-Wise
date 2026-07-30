@@ -19,7 +19,13 @@ import type { SourceCode } from "./sources";
 /** A number destined for a sentence, with the precision it must keep. */
 export type Num = { n: number; d?: number };
 
-export type Interpolation = Record<string, string | Num>;
+/**
+ * A value to interpolate: a plain string, a number with its precision, or another
+ * translated fragment. The nested case exists so that the sentence describing
+ * *which journeys* are being charged is written once and reused by petrol,
+ * home charging and public charging, instead of being duplicated per energy type.
+ */
+export type Interpolation = Record<string, string | Num | Explanation>;
 
 /** A translation key and the values to interpolate into it. */
 export type Explanation = { key: string; params?: Interpolation };
@@ -71,8 +77,33 @@ export type Household = {
 export type CommuteInput = {
   mode: TravelMode;
   daysOnSitePerWeek: number;
-  /** Litres per 100 km, for the `voiture` mode. */
+};
+
+/** What the car burns. Hybrids are treated as `thermique` — see the note below. */
+export type VehicleEnergy = "thermique" | "electrique";
+
+/**
+ * The household's car. One per household, not one per journey: the commute and
+ * the shopping runs share the same vehicle, which is why kilometres are pooled
+ * before any per-kilometre cost is applied.
+ *
+ * Hybrids and plug-in hybrids are deliberately absent. The DGFiP mileage
+ * allowance treats them as thermal vehicles, and modelling their real split
+ * between petrol and electricity would need a figure no public dataset gives.
+ * Offering a third option would look like precision we do not have.
+ */
+export type VehicleInput = {
+  energy: VehicleEnergy;
+  /** Litres per 100 km. Used when `energy` is `thermique`. */
   litresPer100Km: number;
+  /** kWh per 100 km. Used when `energy` is `electrique`. */
+  kwhPer100Km: number;
+  /**
+   * Share of charging done at home, 0 to 1. The rest is charged on public
+   * points, at a very different price — which is why this is asked rather than
+   * assumed. A flat without a parking space means 0.
+   */
+  homeChargingShare: number;
 };
 
 /**

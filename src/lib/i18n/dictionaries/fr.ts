@@ -457,7 +457,16 @@ export const fr = {
       commuteMode: "Pour aller travailler",
       errandsMode: "Pour faire les courses",
       daysOnSite: "Jours sur site par semaine",
+      vehicleEnergy: "Votre véhicule",
+      thermique: "Thermique",
+      electrique: "Électrique",
+      hybridNote:
+        "Un hybride relève du barème thermique : choisissez « Thermique » et indiquez sa consommation réelle.",
       litresPer100Km: "Consommation (L/100 km)",
+      kwhPer100Km: "Consommation (kWh/100 km)",
+      homeChargingShare: "Part rechargée à domicile",
+      homeChargingHint:
+        "Sans place de parking, c'est 0 %. L'écart entre tarif domestique et borne publique pèse plus que l'écart de prix du carburant entre deux villes.",
       tripsPerMonth: "Courses par mois",
       bikeAmortization: "Amortissement du vélo",
       bikeAmortizationHint:
@@ -486,6 +495,9 @@ export const fr = {
       electricite: "Électricité",
       eau: "Eau et assainissement",
       carburant: "Carburant",
+      recharge_domicile: "Recharge du véhicule à domicile",
+      recharge_publique: "Recharge sur bornes publiques",
+      borne_domicile: "Installation d'une borne à domicile",
       usage_vehicule: "Usage du véhicule (entretien, assurance, dépréciation)",
       abonnement_transport: "Abonnement {network}",
       courses_transport: "Courses en transport en commun",
@@ -513,13 +525,19 @@ export const fr = {
         "{kwhYear} kWh/an par point de livraison résidentiel du secteur × {price} €/kWh, plus l'abonnement. Moyenne du secteur, pas la consommation du logement visé.",
       water:
         "{pricePerM3} €/m³ (tarif du service) × {m3PerPerson} m³/personne/an, hypothèse de consommation.",
-      fuel_both:
-        "{commuteKm} km domicile-travail + {groceryKm} km de courses ({groceryOneWay} km jusqu'au commerce alimentaire le plus proche, aller simple) = {totalKm} km/mois × {litres} L/100 km × {price} €/L, prix moyen des stations de la ville.",
-      fuel_commute:
-        "{commuteKm} km domicile-travail = {totalKm} km/mois × {litres} L/100 km × {price} €/L, prix moyen des stations de la ville.",
-      fuel_groceries:
-        "{groceryKm} km de courses ({groceryOneWay} km jusqu'au commerce alimentaire le plus proche, aller simple) = {totalKm} km/mois × {litres} L/100 km × {price} €/L, prix moyen des stations de la ville.",
+      purpose_both:
+        "{commuteKm} km domicile-travail + {groceryKm} km de courses ({groceryOneWay} km jusqu'au commerce alimentaire le plus proche, aller simple)",
+      purpose_commute: "{commuteKm} km domicile-travail",
+      purpose_groceries:
+        "{groceryKm} km de courses ({groceryOneWay} km jusqu'au commerce alimentaire le plus proche, aller simple)",
+      fuel: "{purpose} = {totalKm} km/mois × {litres} L/100 km × {price} €/L, prix moyen des stations de la ville.",
+      charge_home:
+        "{purpose} = {totalKm} km/mois × {kwhPer100} kWh/100 km, dont {sharePct} % rechargés à domicile, soit {kwh} kWh × {price} €/kWh. Ce montant s'ajoute à la ligne Électricité : la consommation du secteur ne tient pas compte d'un véhicule.",
+      charge_public:
+        "{purpose} — les {sharePct} % rechargés hors domicile, soit {kwh} kWh à {price} €/kWh. Hypothèse : les tarifs des bornes publiques varient fortement selon l'opérateur et la puissance, et aucun relevé officiel exploitable n'existe.",
       vehicle_use: "{km} km/mois × {perKm} €/km, forfait national dérivé du barème kilométrique.",
+      vehicle_use_ev:
+        "{km} km/mois × {perKm} €/km : le forfait de {base} €/km majoré de {upliftPct} % comme le prévoit le barème kilométrique pour un véhicule 100 % électrique. Attention : cette majoration fiscale couvre aussi la recharge, que nous comptons séparément — nous l'appliquons donc ici à l'usure et à la dépréciation seules. C'est une hypothèse, pas la règle fiscale.",
       transit_pass:
         "Grille tarifaire du réseau, relevée à la main — les abonnements ne figurent pas dans les données ouvertes.",
       errands_covered_by_pass:
@@ -553,6 +571,8 @@ export const fr = {
       cmg: "Concerne l'assistante maternelle et la garde à domicile, pas la crèche PSU. À intégrer avec OpenFisca si vous comparez ces modes de garde.",
       stationnement:
         "Les tarifs de stationnement sont municipaux et les péages autoroutiers ne sont pas ouverts : aucune API centrale n'existe.",
+      borne_domicile:
+        "Dépense unique à l'installation, pas une charge mensuelle. Elle n'a donc pas sa place dans un reste à vivre, au même titre que le bonus écologique ou le malus au poids.",
     },
     status: {
       user: "Saisi",
@@ -587,6 +607,7 @@ export const fr = {
       daily_reading: "relevé du jour",
       scale_in_force: "barème en vigueur",
       tariff_table_collected: "grille tarifaire relevée",
+      consolidated_file: "fichier consolidé courant",
       rule_in_force: "règle en vigueur",
       current_reference: "référentiel courant",
       legislation_2026: "législation au 01/01/2026",
@@ -609,7 +630,9 @@ export const fr = {
       prix_carburants:
         "Prix d'un jour donné. Un budget annuel doit être calculé sur une moyenne, pas sur le relevé du matin.",
       bareme_kilometrique:
-        "Forfait national couvrant entretien, assurance et dépréciation. Il ne reflète pas l'écart de prime d'assurance entre départements.",
+        "Forfait national couvrant entretien, assurance et dépréciation. Il ne reflète pas l'écart de prime d'assurance entre départements. Pour un véhicule 100 % électrique, le barème est majoré de 20 % — mais cette majoration couvre aussi la recharge, que nous comptons à part.",
+      irve_bornes:
+        "Le fichier consolidé recense les bornes et parfois leur tarification, mais ce champ est hétérogène et souvent vide. Le prix de la recharge publique utilisé ici reste donc une hypothèse, pas un relevé.",
       gtfs_tarifs:
         "Les abonnements ne figurent pas dans les données GTFS ouvertes : cette grille est relevée à la main, réseau par réseau, et peut avoir changé.",
       code_travail_transport:

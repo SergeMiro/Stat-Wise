@@ -3,11 +3,13 @@ import type {
   Comparison,
   CurrentSide,
   ErrandsInput,
+  Explanation,
   Household,
   HousingType,
   Line,
   SideResult,
   TargetSide,
+  VehicleInput,
 } from "./types";
 import {
   cities,
@@ -93,6 +95,7 @@ type SideContext = {
   household: Household;
   commute: CommuteInput;
   errands: ErrandsInput;
+  vehicle: VehicleInput;
   netSalary: number;
   partnerNetSalary: number;
   housingType: HousingType;
@@ -152,7 +155,7 @@ const revenueLines = (context: SideContext): Line[] => {
 };
 
 const expenseLines = (context: SideContext): Line[] => {
-  const { city, district, household, commute, errands } = context;
+  const { city, district, household, commute, errands, vehicle } = context;
   const persons = household.adults + household.children;
   const lines: Line[] = [];
 
@@ -235,37 +238,119 @@ const expenseLines = (context: SideContext): Line[] => {
   const carKm = (commuteByCar ? commuteMonthlyKm : 0) + (errandsByCar ? groceryMonthlyKm : 0);
 
   if (carKm > 0) {
-    const fuelKey =
-      commuteByCar && errandsByCar ? "fuel_both" : commuteByCar ? "fuel_commute" : "fuel_groceries";
-
-    lines.push({
-      key: "carburant",
-      label: { key: "carburant" },
-      kind: "contrainte",
-      amount: round((carKm * commute.litresPer100Km * city.fuelPricePerLitre) / 100),
-      status: "computed",
-      basis: {
-        key: fuelKey,
-        params: {
-          commuteKm: { n: commuteMonthlyKm, d: 0 },
-          groceryKm: { n: groceryMonthlyKm, d: 0 },
-          groceryOneWay: { n: district.distanceToGroceryKm, d: 1 },
-          totalKm: { n: carKm, d: 0 },
-          litres: { n: commute.litresPer100Km, d: 1 },
-          price: { n: city.fuelPricePerLitre, d: 2 },
-        },
+    /*
+      Which journeys the car is doing. Written once and interpolated into whichever
+      energy line applies, so petrol and electricity cannot drift apart in how they
+      describe the same kilometres.
+    */
+    const purpose: Explanation = {
+      key:
+        commuteByCar && errandsByCar
+          ? "purpose_both"
+          : commuteByCar
+            ? "purpose_commute"
+            : "purpose_groceries",
+      params: {
+        commuteKm: { n: commuteMonthlyKm, d: 0 },
+        groceryKm: { n: groceryMonthlyKm, d: 0 },
+        groceryOneWay: { n: district.distanceToGroceryKm, d: 1 },
       },
-      sources: ["prix_carburants", "insee_bpe", "ban_itineraire"],
-    });
+    };
+
+    if (vehicle.energy === "thermique") {
+      lines.push({
+        key: "carburant",
+        label: { key: "carburant" },
+        kind: "contrainte",
+        amount: round((carKm * vehicle.litresPer100Km * city.fuelPricePerLitre) / 100),
+        status: "computed",
+        basis: {
+          key: "fuel",
+          params: {
+            purpose,
+            totalKm: { n: carKm, d: 0 },
+            litres: { n: vehicle.litresPer100Km, d: 1 },
+            price: { n: city.fuelPricePerLitre, d: 2 },
+          },
+        },
+        sources: ["prix_carburants", "insee_bpe", "ban_itineraire"],
+      });
+    } else {
+      /*
+        An electric car does the same kilometres for a price that depends on where
+        it is plugged in. Home and public charging are two different tariffs, so
+        they are two different lines: one computed from the regulated electricity
+        price, one an openly-labelled assumption.
+      */
+      const kwh = (carKm * vehicle.kwhPer100Km) / 100;
+      const homeShare = Math.min(Math.max(vehicle.homeChargingShare, 0), 1);
+      const homeKwh = kwh * homeShare;
+      const publicKwh = kwh - homeKwh;
+
+      if (homeKwh > 0) {
+        lines.push({
+          key: "recharge_domicile",
+          label: { key: "recharge_domicile" },
+          kind: "contrainte",
+          amount: round(homeKwh * p.electricityPricePerKwh),
+          status: "computed",
+          basis: {
+            key: "charge_home",
+            params: {
+              purpose,
+              totalKm: { n: carKm, d: 0 },
+              kwhPer100: { n: vehicle.kwhPer100Km, d: 1 },
+              sharePct: { n: homeShare * 100, d: 0 },
+              kwh: { n: homeKwh, d: 0 },
+              price: { n: p.electricityPricePerKwh, d: 4 },
+            },
+          },
+          sources: ["tarif_electricite", "insee_bpe", "ban_itineraire"],
+        });
+      }
+
+      if (publicKwh > 0) {
+        lines.push({
+          key: "recharge_publique",
+          label: { key: "recharge_publique" },
+          kind: "contrainte",
+          amount: round(publicKwh * p.publicChargingPricePerKwh),
+          status: "convention",
+          basis: {
+            key: "charge_public",
+            params: {
+              purpose,
+              sharePct: { n: (1 - homeShare) * 100, d: 0 },
+              kwh: { n: publicKwh, d: 0 },
+              price: { n: p.publicChargingPricePerKwh, d: 2 },
+            },
+          },
+          sources: ["irve_bornes", "convention_statwise"],
+        });
+      }
+    }
+
+    // Wear, servicing, insurance and depreciation. Electric cars carry the DGFiP
+    // uplift — applied here to wear alone, since charging is billed above.
+    const electric = vehicle.energy === "electrique";
+    const perKm = electric
+      ? round(p.carVariableCostPerKm * (1 + p.electricVehicleUplift))
+      : p.carVariableCostPerKm;
+
     lines.push({
       key: "usage_vehicule",
       label: { key: "usage_vehicule" },
       kind: "contrainte",
-      amount: round(carKm * p.carVariableCostPerKm),
+      amount: round(carKm * perKm),
       status: "convention",
       basis: {
-        key: "vehicle_use",
-        params: { km: { n: carKm, d: 0 }, perKm: { n: p.carVariableCostPerKm, d: 2 } },
+        key: electric ? "vehicle_use_ev" : "vehicle_use",
+        params: {
+          km: { n: carKm, d: 0 },
+          perKm: { n: perKm, d: 2 },
+          base: { n: p.carVariableCostPerKm, d: 2 },
+          upliftPct: { n: p.electricVehicleUplift * 100, d: 0 },
+        },
       },
       sources: ["bareme_kilometrique", "convention_statwise"],
     });
@@ -472,6 +557,20 @@ const omittedLines = (context: SideContext): Line[] => {
     });
   }
 
+  // Fitting a home charging point is a one-off, and this engine measures a monthly
+  // flow. Saying so is better than burying a four-figure cost in a rent-sized line.
+  if (context.vehicle.energy === "electrique" && context.vehicle.homeChargingShare > 0) {
+    lines.push({
+      key: "borne_domicile",
+      label: { key: "borne_domicile" },
+      kind: "contrainte",
+      amount: null,
+      status: "non_applicable",
+      reason: { key: "borne_domicile" },
+      sources: [],
+    });
+  }
+
   return lines;
 };
 
@@ -509,6 +608,8 @@ export type CompareInput = {
   current: CurrentSide;
   target: TargetSide;
   household: Household;
+  /** The household's car. Shared by both sides: moving city does not change it. */
+  vehicle: VehicleInput;
   /** Commute as it is today. */
   currentCommute: CommuteInput;
   /** Commute planned in the target city. */
@@ -540,6 +641,7 @@ export const compare = (input: CompareInput): Comparison | null => {
     household: input.household,
     commute: input.currentCommute,
     errands: input.currentErrands,
+    vehicle: input.vehicle,
     netSalary: input.current.netSalary,
     partnerNetSalary: input.current.partnerNetSalary,
     housingType: input.current.housingType,
@@ -556,6 +658,7 @@ export const compare = (input: CompareInput): Comparison | null => {
         household: input.household,
         commute: input.targetCommute,
         errands: input.targetErrands,
+        vehicle: input.vehicle,
         netSalary: input.target.netSalary,
         partnerNetSalary: input.target.partnerNetSalary,
         housingType: input.target.housingType,

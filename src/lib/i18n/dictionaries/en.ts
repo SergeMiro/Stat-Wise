@@ -451,7 +451,16 @@ export const en: Dictionary = {
       commuteMode: "Getting to work",
       errandsMode: "Doing the shopping",
       daysOnSite: "Days on site per week",
+      vehicleEnergy: "Your vehicle",
+      thermique: "Petrol or diesel",
+      electrique: "Electric",
+      hybridNote:
+        "A hybrid falls under the thermal scale: choose “Petrol or diesel” and enter its real consumption.",
       litresPer100Km: "Fuel consumption (L/100 km)",
+      kwhPer100Km: "Consumption (kWh/100 km)",
+      homeChargingShare: "Share charged at home",
+      homeChargingHint:
+        "With no parking space it is 0 %. The gap between the domestic tariff and a public point weighs more than the fuel-price gap between two cities.",
       tripsPerMonth: "Shopping trips per month",
       bikeAmortization: "Bicycle amortisation",
       bikeAmortizationHint:
@@ -480,6 +489,9 @@ export const en: Dictionary = {
       electricite: "Electricity",
       eau: "Water and sanitation",
       carburant: "Fuel",
+      recharge_domicile: "Charging the car at home",
+      recharge_publique: "Charging at public points",
+      borne_domicile: "Installing a home charging point",
       usage_vehicule: "Vehicle running costs (servicing, insurance, depreciation)",
       abonnement_transport: "{network} pass",
       courses_transport: "Shopping trips by public transport",
@@ -506,14 +518,20 @@ export const en: Dictionary = {
         "{kwhYear} kWh/year per residential delivery point in this area × {price} €/kWh, plus the standing charge. An area average, not the consumption of the dwelling itself.",
       water:
         "{pricePerM3} €/m³ (the service's tariff) × {m3PerPerson} m³ per person per year, an assumed consumption.",
-      fuel_both:
-        "{commuteKm} km commuting + {groceryKm} km shopping ({groceryOneWay} km to the nearest food store, one way) = {totalKm} km/month × {litres} L/100 km × {price} €/L, average price across the city's stations.",
-      fuel_commute:
-        "{commuteKm} km commuting = {totalKm} km/month × {litres} L/100 km × {price} €/L, average price across the city's stations.",
-      fuel_groceries:
-        "{groceryKm} km shopping ({groceryOneWay} km to the nearest food store, one way) = {totalKm} km/month × {litres} L/100 km × {price} €/L, average price across the city's stations.",
+      purpose_both:
+        "{commuteKm} km commuting + {groceryKm} km shopping ({groceryOneWay} km to the nearest food store, one way)",
+      purpose_commute: "{commuteKm} km commuting",
+      purpose_groceries:
+        "{groceryKm} km shopping ({groceryOneWay} km to the nearest food store, one way)",
+      fuel: "{purpose} = {totalKm} km/month × {litres} L/100 km × {price} €/L, average price across the city's stations.",
+      charge_home:
+        "{purpose} = {totalKm} km/month × {kwhPer100} kWh/100 km, of which {sharePct} % charged at home, so {kwh} kWh × {price} €/kWh. This is on top of the Electricity line: the area's consumption figure does not account for a vehicle.",
+      charge_public:
+        "{purpose} — the {sharePct} % charged away from home, so {kwh} kWh at {price} €/kWh. An assumption: public charging tariffs vary widely by operator and power rating, and no usable official record exists.",
       vehicle_use:
         "{km} km/month × {perKm} €/km, a national flat rate derived from the mileage allowance.",
+      vehicle_use_ev:
+        "{km} km/month × {perKm} €/km: the {base} €/km flat rate increased by {upliftPct} %, as the mileage allowance provides for a fully electric vehicle. Note: that fiscal uplift also covers charging, which we bill separately — so we apply it here to wear and depreciation alone. It is an assumption, not the tax rule.",
       transit_pass:
         "The network's tariff table, collected by hand — passes are not published in the open data.",
       errands_covered_by_pass:
@@ -545,6 +563,8 @@ export const en: Dictionary = {
       cmg: "Applies to childminders and home-based care, not to a PSU nursery. To be wired in with OpenFisca if you compare those arrangements.",
       stationnement:
         "Parking tariffs are set by each municipality and motorway tolls are not open: no central API exists.",
+      borne_domicile:
+        "A one-off cost at installation, not a monthly charge. It has no place in money left over each month, any more than the purchase grant or the weight penalty does.",
     },
     status: {
       user: "Entered",
@@ -579,6 +599,7 @@ export const en: Dictionary = {
       daily_reading: "reading of the day",
       scale_in_force: "scale in force",
       tariff_table_collected: "tariff table collected by hand",
+      consolidated_file: "current consolidated file",
       rule_in_force: "rule in force",
       current_reference: "current reference data",
       legislation_2026: "legislation as of 01/01/2026",
@@ -601,7 +622,9 @@ export const en: Dictionary = {
       prix_carburants:
         "A single day's price. An annual budget must be built on an average, not on this morning's reading.",
       bareme_kilometrique:
-        "A national flat rate covering servicing, insurance and depreciation. It does not reflect insurance differences between départements.",
+        "A national flat rate covering servicing, insurance and depreciation. It does not reflect insurance differences between départements. For a fully electric vehicle the allowance is increased by 20 % — but that uplift also covers charging, which we bill separately.",
+      irve_bornes:
+        "The consolidated file lists charging points and sometimes their tariff, but that field is heterogeneous and often empty. The public charging price used here is therefore an assumption, not a reading.",
       gtfs_tarifs:
         "Passes do not appear in open GTFS data: this table is collected by hand, network by network, and may have changed.",
       code_travail_transport: "Applies to public transport passes, never to fuel costs.",

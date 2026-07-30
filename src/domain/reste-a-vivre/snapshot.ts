@@ -371,6 +371,25 @@ export const nationalParams = {
    * and therefore blind to insurance differences between départements.
    */
   carVariableCostPerKm: 0.15,
+  /**
+   * Uplift applied to the running cost of a 100 % electric car.
+   *
+   * The DGFiP increases the mileage allowance by 20 % for electric vehicles
+   * (arrêté du 16/02/2026, scale unchanged since 2024). Careful: that fiscal
+   * majoration also covers charging, which this engine bills as its own line.
+   * So the number is published, but the way we use it — as an assumption about
+   * wear and depreciation only — is ours, and the line says so.
+   */
+  electricVehicleUplift: 0.2,
+  /**
+   * €/kWh at a public charging point. An assumption, not a measurement: the
+   * national IRVE file lists stations and sometimes their tariff, but the tariff
+   * field is heterogeneous and often empty, and prices swing with the operator
+   * and the charging power.
+   */
+  publicChargingPricePerKwh: 0.45,
+  /** kWh/100 km, a mid-range figure offered as a starting point. */
+  defaultKwhPer100Km: 17,
   /** m³ per person per year. Order of magnitude, not a measurement. */
   waterM3PerPersonYear: 54,
   /** €/person/month for food at home, national reference basket. */

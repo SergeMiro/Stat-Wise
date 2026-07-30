@@ -5,7 +5,7 @@ import { en } from "@/lib/i18n/dictionaries/en";
 import { compare, crecheMonthlyCost, foodMonthlyCost, type CompareInput } from "./engine";
 import { cities, crecheScale, nationalParams } from "./snapshot";
 import { DATA_SOURCES, SOURCE_CODES } from "./sources";
-import type { Line, SideResult } from "./types";
+import type { Explanation, Line, SideResult } from "./types";
 
 /**
  * The engine decides money, so a silent sign error or a null treated as zero
@@ -36,11 +36,22 @@ const baseInput: CompareInput = {
     surfaceM2: 65,
   },
   household: { adults: 2, children: 1, childrenInCreche: 1, crecheHoursPerMonth: 160 },
-  currentCommute: { mode: "voiture", daysOnSitePerWeek: 5, litresPer100Km: 6.5 },
-  targetCommute: { mode: "transports", daysOnSitePerWeek: 5, litresPer100Km: 6.5 },
+  vehicle: {
+    energy: "thermique",
+    litresPer100Km: 6.5,
+    kwhPer100Km: 17,
+    homeChargingShare: 0.8,
+  },
+  currentCommute: { mode: "voiture", daysOnSitePerWeek: 5 },
+  targetCommute: { mode: "transports", daysOnSitePerWeek: 5 },
   currentErrands: { mode: "voiture", tripsPerMonth: 5, bikeAmortizationPerYear: 150 },
   targetErrands: { mode: "transports", tripsPerMonth: 5, bikeAmortizationPerYear: 150 },
 };
+
+const electric = (over: Partial<CompareInput["vehicle"]> = {}): CompareInput => ({
+  ...baseInput,
+  vehicle: { ...baseInput.vehicle, energy: "electrique", ...over },
+});
 
 const sumOf = (lines: Line[]) => lines.reduce((s, l) => s + (l.amount ?? 0), 0);
 const lineOf = (side: SideResult, key: string) => side.depenses.find((l) => l.key === key);
@@ -206,8 +217,9 @@ describe("commute and errands", () => {
 
   it("pools both purposes into one fuel line", () => {
     const fuel = lineOf(result.current, "carburant");
-    expect(fuel?.basis?.key).toBe("fuel_both");
-    expect(fuel?.basis?.params?.groceryOneWay).toBeDefined();
+    expect(fuel?.basis?.key).toBe("fuel");
+    // The journeys are described by a nested fragment shared with the EV lines.
+    expect(fuel?.basis?.params?.purpose).toEqual(expect.objectContaining({ key: "purpose_both" }));
   });
 
   it("charges no fuel when the commute is by transit", () => {
@@ -267,10 +279,96 @@ describe("commute and errands", () => {
     expect(line?.basis?.key).toBe("bike_none");
   });
 
+  it("keeps one car once, whatever the energy", () => {
+    const ev = compare(electric())!;
+    expect(ev.current.depenses.filter((l) => l.key === "usage_vehicule")).toHaveLength(1);
+    expect(ev.current.depenses.filter((l) => l.key === "carburant")).toHaveLength(0);
+  });
+
   it("keeps the crèche line national — same income, same amount across districts", () => {
     const creche = (side: SideResult) => lineOf(side, "creche")?.amount;
     expect(creche(result.target)).toBe(creche(result.alternatives[0]));
     expect(creche(result.target)).not.toBe(creche(result.current));
+  });
+});
+
+// --- electric vehicles ------------------------------------------------------
+
+describe("electric vehicle", () => {
+  /** The current side drives to work and to the shops, so the car is in use. */
+  const side = (input: CompareInput) => compare(input)!.current;
+
+  it("replaces petrol with charging, and charges the same kilometres", () => {
+    const petrol = side(baseInput);
+    const ev = side(electric());
+    const carKm = lineOf(petrol, "carburant")!.basis!.params!.totalKm;
+    expect(lineOf(ev, "carburant")).toBeUndefined();
+    expect(lineOf(ev, "recharge_domicile")!.basis!.params!.totalKm).toEqual(carKm);
+  });
+
+  it("splits the energy between home and public charging at the chosen share", () => {
+    const ev = side(electric({ homeChargingShare: 0.75 }));
+    const home = lineOf(ev, "recharge_domicile")!;
+    const pub = lineOf(ev, "recharge_publique")!;
+
+    const km = (lineOf(ev, "usage_vehicule")!.basis!.params!.km as { n: number }).n;
+    const kwh = (km * 17) / 100;
+    expect(home.amount).toBeCloseTo(kwh * 0.75 * nationalParams.electricityPricePerKwh, 2);
+    expect(pub.amount).toBeCloseTo(kwh * 0.25 * nationalParams.publicChargingPricePerKwh, 2);
+  });
+
+  it("prices home charging at the household tariff and public charging above it", () => {
+    const ev = side(electric({ homeChargingShare: 0.5 }));
+    // Same kWh on each side of a 50/50 split, so the public line must cost more.
+    expect(lineOf(ev, "recharge_publique")!.amount!).toBeGreaterThan(
+      lineOf(ev, "recharge_domicile")!.amount!,
+    );
+  });
+
+  it("labels home charging as computed and public charging as an assumption", () => {
+    const ev = side(electric({ homeChargingShare: 0.5 }));
+    expect(lineOf(ev, "recharge_domicile")!.status).toBe("computed");
+    expect(lineOf(ev, "recharge_publique")!.status).toBe("convention");
+  });
+
+  it("emits no empty line when charging happens entirely in one place", () => {
+    const allHome = side(electric({ homeChargingShare: 1 }));
+    expect(lineOf(allHome, "recharge_publique")).toBeUndefined();
+    expect(lineOf(allHome, "recharge_domicile")).toBeDefined();
+
+    const allPublic = side(electric({ homeChargingShare: 0 }));
+    expect(lineOf(allPublic, "recharge_domicile")).toBeUndefined();
+    expect(lineOf(allPublic, "recharge_publique")).toBeDefined();
+  });
+
+  it("applies the 20 % DGFiP uplift to running costs, as an assumption", () => {
+    const petrol = lineOf(side(baseInput), "usage_vehicule")!;
+    const ev = lineOf(side(electric()), "usage_vehicule")!;
+    expect(ev.amount!).toBeCloseTo(petrol.amount! * (1 + nationalParams.electricVehicleUplift), 1);
+    expect(ev.status).toBe("convention");
+    expect(ev.basis?.key).toBe("vehicle_use_ev");
+  });
+
+  it("declares the home charging point as a one-off, not a monthly charge", () => {
+    const ev = side(electric({ homeChargingShare: 0.8 }));
+    const borne = ev.omitted.find((l) => l.key === "borne_domicile")!;
+    expect(borne.amount).toBeNull();
+    expect(borne.status).toBe("non_applicable");
+
+    // Nobody charging at home has nothing to install.
+    const noHome = side(electric({ homeChargingShare: 0 }));
+    expect(noHome.omitted.find((l) => l.key === "borne_domicile")).toBeUndefined();
+  });
+
+  it("charges nothing to the car when every journey is made without it", () => {
+    const noCar = compare({
+      ...electric(),
+      currentCommute: { ...baseInput.currentCommute, mode: "transports" },
+      currentErrands: { ...baseInput.currentErrands, mode: "actif" },
+    })!;
+    for (const key of ["carburant", "recharge_domicile", "recharge_publique", "usage_vehicule"]) {
+      expect(lineOf(noCar.current, key), key).toBeUndefined();
+    }
   });
 });
 
@@ -310,7 +408,21 @@ describe("translation coverage", () => {
     const basis = new Set<string>();
     const reasons = new Set<string>();
 
+    /*
+      Explanations nest: the fragment naming the journeys lives inside the params
+      of the petrol and charging lines. Walking only the top level would leave
+      those fragments untested, which is exactly where a missing translation would
+      hide.
+    */
+    const walk = (into: Set<string>, explanation: Explanation) => {
+      into.add(explanation.key);
+      for (const value of Object.values(explanation.params ?? {})) {
+        if (typeof value === "object" && "key" in value) walk(into, value);
+      }
+    };
+
     const modes = ["voiture", "transports", "actif"] as const;
+    const energies = ["thermique", "electrique"] as const;
     for (const commuteMode of modes) {
       for (const errandsMode of modes) {
         for (const partnerNetSalary of [0, 1800]) {
@@ -318,31 +430,37 @@ describe("translation coverage", () => {
             // 0 € is its own branch: it is the walking case, which has a
             // different note from an amortised bike.
             for (const bike of [0, 150]) {
-              for (const cityId of cities.map((c) => c.id)) {
-                const result = compare({
-                  ...baseInput,
-                  target: { ...baseInput.target, cityId, partnerNetSalary },
-                  current: { ...baseInput.current, partnerNetSalary },
-                  household: { ...baseInput.household, childrenInCreche },
-                  currentCommute: { ...baseInput.currentCommute, mode: commuteMode },
-                  targetCommute: { ...baseInput.targetCommute, mode: commuteMode },
-                  currentErrands: {
-                    ...baseInput.currentErrands,
-                    mode: errandsMode,
-                    bikeAmortizationPerYear: bike,
-                  },
-                  targetErrands: {
-                    ...baseInput.targetErrands,
-                    mode: errandsMode,
-                    bikeAmortizationPerYear: bike,
-                  },
-                });
-                if (!result) continue;
-                for (const side of [result.current, result.target]) {
-                  for (const line of [...side.revenus, ...side.depenses, ...side.omitted]) {
-                    labels.add(line.label.key);
-                    if (line.basis) basis.add(line.basis.key);
-                    if (line.reason) reasons.add(line.reason.key);
+              for (const energy of energies) {
+                // 0 and 1 are their own branches: each suppresses one charging line.
+                for (const homeChargingShare of [0, 0.5, 1]) {
+                  for (const cityId of cities.map((c) => c.id)) {
+                    const result = compare({
+                      ...baseInput,
+                      target: { ...baseInput.target, cityId, partnerNetSalary },
+                      current: { ...baseInput.current, partnerNetSalary },
+                      household: { ...baseInput.household, childrenInCreche },
+                      vehicle: { ...baseInput.vehicle, energy, homeChargingShare },
+                      currentCommute: { ...baseInput.currentCommute, mode: commuteMode },
+                      targetCommute: { ...baseInput.targetCommute, mode: commuteMode },
+                      currentErrands: {
+                        ...baseInput.currentErrands,
+                        mode: errandsMode,
+                        bikeAmortizationPerYear: bike,
+                      },
+                      targetErrands: {
+                        ...baseInput.targetErrands,
+                        mode: errandsMode,
+                        bikeAmortizationPerYear: bike,
+                      },
+                    });
+                    if (!result) continue;
+                    for (const side of [result.current, result.target]) {
+                      for (const line of [...side.revenus, ...side.depenses, ...side.omitted]) {
+                        walk(labels, line.label);
+                        if (line.basis) walk(basis, line.basis);
+                        if (line.reason) walk(reasons, line.reason);
+                      }
+                    }
                   }
                 }
               }

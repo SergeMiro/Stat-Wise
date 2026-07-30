@@ -105,6 +105,15 @@ const SOURCES = {
     geoLevel: "national",
     caveat: { key: "bareme_kilometrique" },
   },
+  irve_bornes: {
+    label: "Base nationale des infrastructures de recharge (IRVE)",
+    publisher: "transport.data.gouv.fr / Etalab",
+    vintage: { key: "consolidated_file" },
+    refresh: { key: "continuous" },
+    geoLevel: "point",
+    url: "https://transport.data.gouv.fr/datasets/fichier-consolide-des-bornes-de-recharge-pour-vehicules-electriques",
+    caveat: { key: "irve_bornes" },
+  },
   gtfs_tarifs: {
     label: "Tarifs des réseaux de transport public",
     publisher: "Réseaux locaux / transport.data.gouv.fr",
