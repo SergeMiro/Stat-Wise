@@ -1,0 +1,383 @@
+"use client";
+
+import { useMemo } from "react";
+import Link from "next/link";
+import { Briefcase, Compass, RotateCcw, TriangleAlert } from "lucide-react";
+import {
+  collectSources,
+  compare,
+  DATA_SOURCES,
+  JOB_DATASET_VERSION,
+  JOB_ENGINE_VERSION,
+  SNAPSHOT_DATE,
+  SNAPSHOT_IS_SEEDED,
+  type CompareInput,
+  type Line,
+} from "@/domain/reste-a-vivre";
+import { fill, localePath, type Dictionary, type Locale } from "@/lib/i18n";
+import {
+  formatCurrency,
+  formatDistanceKm,
+  formatNumber,
+  formatSignedCurrency,
+} from "@/lib/formatting";
+import { loadJobInput } from "@/lib/job-storage";
+import {
+  geoLevelLabel,
+  lineBasis,
+  lineLabel,
+  lineReason,
+  sourceCaveat,
+  statusLabel,
+  term,
+} from "@/lib/job-text";
+import { useHydratedState } from "@/lib/use-hydrated-state";
+import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { EmptyState } from "@/components/states";
+
+export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }) {
+  const [input, , ready] = useHydratedState<CompareInput | null>(null, () => loadJobInput());
+
+  const result = useMemo(() => (input ? compare(input) : null), [input]);
+
+  if (!ready) return null;
+
+  if (!input || !result) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-10">
+        <EmptyState
+          icon={<Briefcase />}
+          title={dict.job.result.empty.title}
+          description={dict.job.result.empty.desc}
+          action={
+            <Button render={<Link href={localePath(locale, "/app/job/new")} />}>
+              {dict.job.result.empty.cta}
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
+
+  const r = dict.job.result;
+  const { current, target } = result;
+  const ranked = [target, ...result.alternatives];
+
+  const delta = result.deltaResteAVivre;
+  const verdict =
+    Math.abs(delta) < 10
+      ? r.verdictSame
+      : fill(delta > 0 ? r.verdictBetter : r.verdictWorse, {
+          amount: formatCurrency(locale, Math.abs(delta)),
+        });
+
+  const sources = collectSources([
+    current.revenus,
+    current.depenses,
+    current.omitted,
+    target.revenus,
+    target.depenses,
+  ]);
+
+  return (
+    <div className="mx-auto max-w-2xl px-4 py-6">
+      <header className="mb-5">
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">{r.title}</h1>
+        <p className="text-muted-foreground mt-1 text-sm">
+          {fill(r.subtitle, { currentCity: current.cityName, targetCity: target.cityName })}
+        </p>
+      </header>
+
+      {SNAPSHOT_IS_SEEDED ? (
+        <div className="border-confidence-low/40 bg-muted/40 mb-5 flex items-start gap-3 rounded-xl border p-4">
+          <TriangleAlert className="text-confidence-low mt-0.5 size-4 shrink-0" />
+          <div>
+            <p className="text-sm font-medium">{r.seededTitle}</p>
+            <p className="text-muted-foreground mt-1 text-xs">{r.seededDesc}</p>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Verdict */}
+      <section className="bg-card mb-5 rounded-2xl border p-5">
+        <p className="font-heading text-xl font-semibold tracking-tight text-balance">{verdict}</p>
+        <p className="text-muted-foreground mt-2 text-xs">{r.verdictNote}</p>
+
+        <dl className="mt-5 grid grid-cols-2 gap-4">
+          <Cell label={`${r.here} · ${current.districtName}`}>
+            {formatCurrency(locale, current.resteAVivre)}
+          </Cell>
+          <Cell label={`${r.there} · ${target.districtName}`}>
+            {formatCurrency(locale, target.resteAVivre)}
+          </Cell>
+          <Cell label={r.salaryDelta}>{formatSignedCurrency(locale, result.deltaSalary)}</Cell>
+          <Cell label={r.housingDelta}>{formatSignedCurrency(locale, result.deltaHousing)}</Cell>
+        </dl>
+
+        <p className="text-muted-foreground mt-4 text-xs">
+          {r.commuteDelta}:{" "}
+          <span className="tabular text-foreground">
+            {fill(r.hoursPerYear, { hours: formatNumber(locale, current.commuteHoursPerYear) })}
+            {" → "}
+            {fill(r.hoursPerYear, { hours: formatNumber(locale, target.commuteHoursPerYear) })}
+          </span>
+        </p>
+      </section>
+
+      {/* District ranking */}
+      <section className="mb-5">
+        <h2 className="font-heading text-base font-semibold">
+          {fill(r.rankingTitle, { city: target.cityName })}
+        </h2>
+        <p className="text-muted-foreground mt-1 mb-3 text-sm">{r.rankingDesc}</p>
+
+        <div className="overflow-x-auto rounded-xl border">
+          <table className="w-full min-w-[34rem] text-sm">
+            <thead className="bg-muted/50 text-muted-foreground text-xs">
+              <tr>
+                <th scope="col" className="px-3 py-2 text-left font-medium">
+                  {r.colDistrict}
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  {r.colRent}
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  {r.colCommute}
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  {r.colGrocery}
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  {r.colResteAVivre}
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-medium">
+                  {r.colVsCurrent}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {ranked.map((side, i) => {
+                const rent = side.depenses.find((l) => l.key === "loyer")?.amount ?? 0;
+                const vs = side.resteAVivre - current.resteAVivre;
+                return (
+                  <tr key={side.districtId} className={i === 0 ? "bg-accent/40" : undefined}>
+                    <th scope="row" className="px-3 py-2 text-left font-medium">
+                      {side.districtName}
+                      {i === 0 ? (
+                        <span className="text-primary ml-2 text-xs font-normal">
+                          {r.bestDistrict}
+                        </span>
+                      ) : null}
+                    </th>
+                    <td className="tabular px-3 py-2 text-right">{formatCurrency(locale, rent)}</td>
+                    <td className="tabular text-muted-foreground px-3 py-2 text-right">
+                      {formatDistanceKm(locale, side.oneWayKm)}
+                    </td>
+                    <td className="tabular text-muted-foreground px-3 py-2 text-right">
+                      {formatDistanceKm(locale, side.groceryKm)}
+                    </td>
+                    <td className="tabular px-3 py-2 text-right font-medium">
+                      {formatCurrency(locale, side.resteAVivre)}
+                    </td>
+                    <td
+                      className={
+                        vs >= 0
+                          ? "tabular text-confidence-high px-3 py-2 text-right"
+                          : "tabular text-confidence-low px-3 py-2 text-right"
+                      }
+                    >
+                      {formatSignedCurrency(locale, vs)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Line by line */}
+      <Accordion className="mb-3 rounded-xl border px-3">
+        <AccordionItem>
+          <AccordionTrigger className="text-sm hover:no-underline">
+            {r.breakdownTitle}
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-6 pb-2">
+              {(
+                [
+                  [`${r.here} · ${current.cityName}`, current],
+                  [`${r.there} · ${target.cityName} · ${target.districtName}`, target],
+                ] as const
+              ).map(([heading, side]) => (
+                <div key={heading}>
+                  <p className="mb-2 text-sm font-medium">{heading}</p>
+                  <LineList
+                    locale={locale}
+                    dict={dict}
+                    title={r.revenues}
+                    lines={side.revenus}
+                    total={side.totalRevenus}
+                  />
+                  <LineList
+                    locale={locale}
+                    dict={dict}
+                    title={r.expenses}
+                    lines={side.depenses}
+                    total={side.totalDepenses}
+                  />
+                </div>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      {/* What is missing */}
+      <Accordion className="mb-3 rounded-xl border px-3">
+        <AccordionItem>
+          <AccordionTrigger className="text-sm hover:no-underline">
+            {r.omittedTitle}
+          </AccordionTrigger>
+          <AccordionContent>
+            <p className="text-muted-foreground mb-3 text-xs">{r.omittedDesc}</p>
+            <ul className="space-y-3 pb-2">
+              {result.omitted.map((line) => (
+                <li key={line.key}>
+                  <div className="flex flex-wrap items-baseline gap-x-2">
+                    <span className="text-sm font-medium">{lineLabel(locale, dict, line)}</span>
+                    <span className="text-muted-foreground font-mono text-[11px] uppercase">
+                      {statusLabel(dict, line.status)}
+                    </span>
+                  </div>
+                  <p className="text-muted-foreground mt-0.5 text-xs">
+                    {lineReason(locale, dict, line)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      {/* Data freshness — the year behind every figure */}
+      <Accordion className="mb-6 rounded-xl border px-3">
+        <AccordionItem>
+          <AccordionTrigger className="text-sm hover:no-underline">
+            {r.freshnessTitle}
+          </AccordionTrigger>
+          <AccordionContent>
+            <p className="text-muted-foreground mb-1 text-xs">{r.freshnessDesc}</p>
+            <p className="text-muted-foreground mb-3 font-mono text-[11px]">
+              {fill(r.snapshotDate, { date: SNAPSHOT_DATE })}
+            </p>
+            <ul className="space-y-3 pb-2">
+              {sources.map((code) => {
+                const source = DATA_SOURCES[code];
+                return (
+                  <li
+                    key={code}
+                    className="border-border/60 border-t pt-3 first:border-0 first:pt-0"
+                  >
+                    <p className="text-sm font-medium">{source.label}</p>
+                    <p className="text-muted-foreground mt-0.5 font-mono text-[11px]">
+                      {source.publisher} · {r.vintage} {term(dict, source.vintage)} · {r.refresh}{" "}
+                      {term(dict, source.refresh)} · {r.level}{" "}
+                      {geoLevelLabel(dict, source.geoLevel)}
+                    </p>
+                    <p className="text-muted-foreground mt-1 text-xs">{sourceCaveat(dict, code)}</p>
+                    {source.url ? (
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-primary mt-1 inline-block font-mono text-[11px] break-all hover:underline"
+                      >
+                        {source.url}
+                      </a>
+                    ) : null}
+                  </li>
+                );
+              })}
+            </ul>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      {/* Actions */}
+      <div className="grid gap-2 sm:grid-cols-2">
+        <Button variant="outline" render={<Link href={localePath(locale, "/app/quartier/new")} />}>
+          <Compass />
+          {r.goToQuartier}
+        </Button>
+        <Button variant="outline" render={<Link href={localePath(locale, "/app/job/new")} />}>
+          <RotateCcw />
+          {r.restart}
+        </Button>
+      </div>
+
+      <p className="text-muted-foreground mt-6 text-xs">{r.disclaimer}</p>
+      <p className="text-muted-foreground mt-2 text-center text-xs">
+        {dict.brand.name} · {JOB_ENGINE_VERSION} · {JOB_DATASET_VERSION}
+      </p>
+    </div>
+  );
+}
+
+function Cell({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <dt className="text-muted-foreground text-xs">{label}</dt>
+      <dd className="tabular mt-0.5 text-lg font-semibold">{children}</dd>
+    </div>
+  );
+}
+
+function LineList({
+  locale,
+  dict,
+  title,
+  lines,
+  total,
+}: {
+  locale: Locale;
+  dict: Dictionary;
+  title: string;
+  lines: Line[];
+  total: number;
+}) {
+  return (
+    <div className="mt-3">
+      <p className="text-muted-foreground font-mono text-[11px] uppercase">{title}</p>
+      <ul className="mt-1 space-y-2.5">
+        {lines.map((line) => {
+          const basis = lineBasis(locale, dict, line);
+          return (
+            <li key={line.key}>
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-sm">{lineLabel(locale, dict, line)}</span>
+                <span className="tabular shrink-0 text-sm font-medium">
+                  {formatCurrency(locale, line.amount ?? 0)}
+                </span>
+              </div>
+              <p className="text-muted-foreground mt-0.5 text-[11px]">
+                <span className="font-mono uppercase">{statusLabel(dict, line.status)}</span>
+                {basis ? ` · ${basis}` : null}
+              </p>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-2 flex items-baseline justify-between gap-3 border-t pt-2 text-sm font-medium">
+        <span>{title}</span>
+        <span className="tabular">{formatCurrency(locale, total)}</span>
+      </p>
+    </div>
+  );
+}

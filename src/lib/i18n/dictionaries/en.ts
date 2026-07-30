@@ -41,8 +41,12 @@ export const en: Dictionary = {
     heroTitle: "Find the right neighbourhood for your life and family.",
     heroSubtitle:
       "StatWise turns official French public data into clear decisions about where to live.",
+    startJob: "Find my job",
     startQuartier: "Find my neighbourhood",
     startFamily: "Raising a child here",
+    jobTitle: "Find my job",
+    jobDesc:
+      "Does a higher salary elsewhere actually leave you with more? Compare what is left once every bill is paid.",
     quartierTitle: "Find my neighbourhood",
     quartierDesc: "Rank the areas of a city by your budget, your commute and your priorities.",
     familyTitle: "Raising a child here",
@@ -71,6 +75,7 @@ export const en: Dictionary = {
       "Results are indicative and based on available official data. They are neither a guarantee nor personalised advice.",
   },
   wizard: {
+    jobTitle: "Find my job",
     quartierTitle: "Find my neighbourhood",
     familyTitle: "Raising a child here",
     stepOf: "Step {current} of {total}",
@@ -394,6 +399,276 @@ export const en: Dictionary = {
       school_sector_not_guaranteed: "The presence of schools does not guarantee the catchment.",
       crime_commune_level: "Recorded-crime data is at commune level.",
       apl_commune_level: "Access to doctors (APL) is measured at commune level.",
+    },
+  },
+  job: {
+    title: "Find my job",
+    subtitle:
+      "A higher salary elsewhere is only worth what survives it. Compare the money left over between your situation today and the offer you are considering.",
+    metric: "Money left over",
+    metricDesc: "What remains each month once every bill is paid.",
+    generate: "Compare the two situations",
+    steps: {
+      today: {
+        title: "Your situation today",
+        desc: "This side is fact, not estimate — it is what anchors the comparison.",
+      },
+      offer: {
+        title: "The offer you are considering",
+        desc: "Housing and travel will be estimated from the city's data.",
+      },
+      household: {
+        title: "Your household",
+        desc: "The household drives food, water and childcare.",
+      },
+      travel: {
+        title: "Your travel",
+        desc: "Two purposes, often two modes: getting to work, and doing the shopping.",
+      },
+    },
+    fields: {
+      city: "City",
+      district: "District",
+      districtHint:
+        "The district sets the rent per m², the distance to work and to the nearest food store.",
+      netSalary: "Net monthly salary",
+      netSalaryHint: "Before income tax.",
+      partnerSalary: "Second salary in the household",
+      partnerSalaryNone: "No second salary",
+      rent: "Rent you pay, charges included",
+      housingType: "Housing type",
+      apartment: "Apartment",
+      house: "House",
+      surface: "Surface area (m²)",
+      oneWayKm: "Distance to work (one way, km)",
+      targetCity: "City of the offer",
+      targetSalary: "Net salary offered",
+      targetSurface: "Surface area sought (m²)",
+      adults: "Adults",
+      children: "Dependent children",
+      childrenInCreche: "Children in nursery",
+      crecheHours: "Nursery hours per month",
+      commuteMode: "Getting to work",
+      errandsMode: "Doing the shopping",
+      daysOnSite: "Days on site per week",
+      litresPer100Km: "Fuel consumption (L/100 km)",
+      tripsPerMonth: "Shopping trips per month",
+      bikeAmortization: "Bicycle amortisation",
+      bikeAmortizationHint:
+        "No public dataset puts a figure on this. Choose the yearly amount you accept: it will be shown as your hypothesis, not as a measurement.",
+      bikeCustom: "Yearly amount chosen (€/year)",
+      perYear: "€/year",
+      sameAsToday: "Same as today",
+    },
+    modes: {
+      voiture: "Car",
+      transports: "Public transport",
+      actif: "Bicycle or walking",
+    },
+    bike: {
+      walk: "Walking — no bicycle",
+      usedBike: "Second-hand push bike",
+      newBike: "New push bike",
+      electricBike: "Electrically assisted bicycle",
+    },
+    lines: {
+      salaire: "Net salary (before income tax)",
+      salaire_conjoint: "Second net salary in the household",
+      prise_en_charge_transport: "Employer's share of the transport pass",
+      loyer_reel: "Rent, charges included",
+      loyer_estime: "Estimated rent, charges included",
+      electricite: "Electricity",
+      eau: "Water and sanitation",
+      carburant: "Fuel",
+      usage_vehicule: "Vehicle running costs (servicing, insurance, depreciation)",
+      abonnement_transport: "{network} pass",
+      courses_transport: "Shopping trips by public transport",
+      velo_amortissement: "Bicycle — amortisation and upkeep",
+      creche: "Nursery (family contribution)",
+      alimentation: "Food at home",
+      impot_revenu: "Income tax",
+      prestations: "Housing benefit, family allowances, activity bonus",
+      assurances: "Home insurance, health top-up",
+      charges_copro: "Building service charges not included in the rent",
+      taxe_fonciere: "Property tax",
+      taxe_habitation: "Residence tax",
+      cmg: "Childcare supplement (CMG)",
+      stationnement: "Residential parking and tolls",
+    },
+    basis: {
+      user_input: "The amount you entered.",
+      rent_actual: "The rent you actually pay today — this is what anchors the comparison.",
+      employer_share:
+        "{share} % of the {network} pass ({pass} €), a legal obligation on the employer.",
+      rent_estimated:
+        "{perSqm} €/m² × {surface} m² — advertised-rent indicator for the commune, not for the district.",
+      electricity:
+        "{kwhYear} kWh/year per residential delivery point in this area × {price} €/kWh, plus the standing charge. An area average, not the consumption of the dwelling itself.",
+      water:
+        "{pricePerM3} €/m³ (the service's tariff) × {m3PerPerson} m³ per person per year, an assumed consumption.",
+      fuel_both:
+        "{commuteKm} km commuting + {groceryKm} km shopping ({groceryOneWay} km to the nearest food store, one way) = {totalKm} km/month × {litres} L/100 km × {price} €/L, average price across the city's stations.",
+      fuel_commute:
+        "{commuteKm} km commuting = {totalKm} km/month × {litres} L/100 km × {price} €/L, average price across the city's stations.",
+      fuel_groceries:
+        "{groceryKm} km shopping ({groceryOneWay} km to the nearest food store, one way) = {totalKm} km/month × {litres} L/100 km × {price} €/L, average price across the city's stations.",
+      vehicle_use:
+        "{km} km/month × {perKm} €/km, a national flat rate derived from the mileage allowance.",
+      transit_pass:
+        "The network's tariff table, collected by hand — passes are not published in the open data.",
+      errands_covered_by_pass:
+        "No additional cost: the {network} pass is already paid for the commute and covers these {journeys} journeys.",
+      errands_tickets:
+        "{journeys} journeys × {ticket} € per ticket. The employer's 50 % share covers the commute only, never the shopping.",
+      bike_amortization:
+        "{perYear} €/year that you chose, spread over 12 months, for {km} km/month. No public dataset puts a figure on this: the amount is your hypothesis, not a measurement.",
+      bike_none:
+        "No amortisation applied for {km} km/month — walking, or a bicycle already written off.",
+      creche:
+        "PSU scale {vintage}, {hours} h/month. The scale is national: it does not vary from one city to another. Getting a place does.",
+      food_paris:
+        "National reference basket + {premium} % (the Île-de-France gap measured by the 2022 Insee survey). No official data exists at district level.",
+      food_province:
+        "National reference basket. No spatial food-price gap is officially measured outside Île-de-France, Corsica and the overseas départements.",
+    },
+    reasons: {
+      impot_revenu:
+        "Requires the OpenFisca rules engine and the full configuration of the tax household. Not wired in: the figure shown is therefore before income tax.",
+      prestations:
+        "Same rules engine. These benefits can move the result by several hundred euros, in either direction.",
+      assurances:
+        "No public dataset gives the premium per commune: those prices belong to the insurers.",
+      charges_copro:
+        "The rent indicator used already includes charges; actual building charges vary from one block to the next and are not published.",
+      taxe_fonciere: "Concerns owners only. This version compares two rental situations.",
+      taxe_habitation: "Abolished on main residences since 2023. It is therefore not counted.",
+      cmg: "Applies to childminders and home-based care, not to a PSU nursery. To be wired in with OpenFisca if you compare those arrangements.",
+      stationnement:
+        "Parking tariffs are set by each municipality and motorway tolls are not open: no central API exists.",
+    },
+    status: {
+      user: "Entered",
+      computed: "Calculated",
+      convention: "Assumption",
+      unavailable: "Not quantified",
+      non_applicable: "Not applicable",
+    },
+    geoLevels: {
+      national: "whole of France",
+      region: "region",
+      departement: "département",
+      zone_emploi: "employment zone",
+      commune: "commune",
+      iris: "district (IRIS)",
+      point: "address or point",
+      user: "your input",
+    },
+    terms: {
+      annual: "annual",
+      continuous: "continuous",
+      manual: "manual",
+      legislative: "legislative",
+      every_10_min: "every 10 minutes",
+      biannual_revision: "revised twice a year",
+      every_5_6_years: "every 5 to 6 years",
+      on_legislative_change: "on every legislative change",
+      on_method_revision: "on every revision of the method",
+      on_input: "on every entry",
+      realtime_feed: "real-time feed",
+      tariff_in_force: "tariff in force",
+      daily_reading: "reading of the day",
+      scale_in_force: "scale in force",
+      tariff_table_collected: "tariff table collected by hand",
+      rule_in_force: "rule in force",
+      current_reference: "current reference data",
+      legislation_2026: "legislation as of 01/01/2026",
+      documented_in_docs: "documented in docs/reste-a-vivre-variables.md",
+      your_situation: "your current situation",
+    },
+    sourceCaveats: {
+      carte_loyers:
+        "Advertised rent, charges included, at commune level. It is not an observed rent, and the indicator does not reach the district.",
+      insee_salaires:
+        "Full-time equivalent salaries. A market benchmark, never an individual salary.",
+      france_travail_offres:
+        "Salary is filled in on only part of the postings, so the distribution is biased.",
+      enedis_conso:
+        "An average per residential delivery point in the area, aggregated from 10 active sites. It is not the consumption of the dwelling itself.",
+      tarif_electricite:
+        "A national price: it creates no gap between two cities. Only consumption does.",
+      sispea_eau:
+        "The tariff applies to the service's perimeter, which does not always match the commune. Real differences run from 1 to 2 between communes.",
+      prix_carburants:
+        "A single day's price. An annual budget must be built on an average, not on this morning's reading.",
+      bareme_kilometrique:
+        "A national flat rate covering servicing, insurance and depreciation. It does not reflect insurance differences between départements.",
+      gtfs_tarifs:
+        "Passes do not appear in open GTFS data: this table is collected by hand, network by network, and may have changed.",
+      code_travail_transport: "Applies to public transport passes, never to fuel costs.",
+      bareme_psu_cnaf:
+        "The rate is computed on N-2 resources. The scale is national: it creates no gap between cities. Getting a place, on the other hand, depends entirely on the area.",
+      insee_bpe:
+        "The presence of an amenity says nothing about its quality, its prices, or whether a place is free.",
+      ban_itineraire:
+        "Distances in this version are reference distances per district, not yet address-to-address routing.",
+      insee_ecsp:
+        "The only measured gap: the Paris region against the rest of France (+7 %), Corsica and the overseas départements. No official data exists at city or district level.",
+      openfisca:
+        "A rules engine, not statistics. The result depends on the full configuration of the tax household.",
+      convention_statwise:
+        "An assumption we own, not a measurement. It is displayed so it can be challenged and changed.",
+      saisie_utilisateur:
+        "This is the most reliable figure in the calculation: it anchors the comparison.",
+    },
+    result: {
+      title: "Your money left over, on both sides",
+      subtitle: "{currentCity} today, against {targetCity} at its best district.",
+      verdictBetter: "You would be left with {amount} more each month.",
+      verdictWorse: "You would be left with {amount} less each month.",
+      verdictSame: "The money left over would be practically identical.",
+      verdictNote: "Before income tax and excluding benefits: neither of those is quantified yet.",
+      here: "Today",
+      there: "With the offer",
+      bestDistrict: "Best district",
+      salaryDelta: "Salary difference",
+      housingDelta: "Rent difference",
+      commuteDelta: "Commute difference",
+      hoursPerYear: "{hours} h/year",
+      perMonth: "/ month",
+      seededTitle: "Seed data",
+      seededDesc:
+        "This version runs on seed values calibrated against the real datasets, not yet on imported data. The orders of magnitude are right; the amounts are not measurements.",
+      rankingTitle: "Districts of {city}, most to least advantageous",
+      rankingDesc:
+        "With the same salary and household, only the district changes. Rent goes down, but the commute and the distance to the shops can take the difference back.",
+      colDistrict: "District",
+      colRent: "Estimated rent",
+      colCommute: "Commute",
+      colGrocery: "Food store",
+      colResteAVivre: "Left over",
+      colVsCurrent: "vs today",
+      breakdownTitle: "The detail, line by line",
+      revenues: "Income",
+      expenses: "Expenses",
+      omittedTitle: "What this calculation does not contain",
+      omittedDesc:
+        "These lines are deliberately left empty. A missing figure is never replaced by zero: it is shown as missing.",
+      freshnessTitle: "How fresh the data is",
+      freshnessDesc:
+        "Every source with the period it describes — not the date we downloaded it — and the geographic level at which it is actually measured.",
+      snapshotDate: "Snapshot assembled on {date}",
+      vintage: "Vintage",
+      refresh: "Updated",
+      level: "Level",
+      goToQuartier: "Choose a district in this city",
+      restart: "Change the comparison",
+      disclaimer:
+        "An indicative comparison based on official public data and on assumptions that are displayed. It is not an offer, not advice, and not a guarantee.",
+      empty: {
+        title: "No comparison yet",
+        desc: "Describe your situation today and the offer you are considering to run the calculation.",
+        cta: "Start “Find my job”",
+      },
     },
   },
 };

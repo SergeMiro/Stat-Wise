@@ -39,8 +39,12 @@ export const fr = {
     heroTitle: "Trouvez le quartier adapté à votre vie et à votre famille.",
     heroSubtitle:
       "StatWise transforme les données publiques officielles françaises en décisions claires sur où habiter.",
+    startJob: "Trouver mon job",
     startQuartier: "Trouver mon quartier",
     startFamily: "Grandir ici",
+    jobTitle: "Trouver mon job",
+    jobDesc:
+      "Un salaire plus élevé ailleurs vous laisse-t-il vraiment plus d'argent ? Comparez ce qui reste une fois toutes les factures payées.",
     quartierTitle: "Trouver mon quartier",
     quartierDesc:
       "Classez les zones d'une ville selon votre budget, vos déplacements et vos priorités.",
@@ -71,6 +75,7 @@ export const fr = {
       "Les résultats sont indicatifs et fondés sur les données officielles disponibles. Ils ne constituent ni une garantie ni un conseil personnalisé.",
   },
   wizard: {
+    jobTitle: "Trouver mon job",
     quartierTitle: "Trouver mon quartier",
     familyTitle: "Grandir ici",
     stepOf: "Étape {current} sur {total}",
@@ -401,6 +406,279 @@ export const fr = {
       school_sector_not_guaranteed: "La présence d'écoles ne garantit pas la sectorisation.",
       crime_commune_level: "La donnée de délinquance est au niveau communal.",
       apl_commune_level: "L'accès aux médecins (APL) est mesuré au niveau communal.",
+    },
+  },
+  job: {
+    title: "Trouver mon job",
+    subtitle:
+      "Un salaire plus élevé ailleurs ne vaut que ce qu'il en reste. Comparez le reste à vivre entre votre situation actuelle et l'offre que vous étudiez.",
+    metric: "Reste à vivre",
+    metricDesc: "Ce qui reste chaque mois une fois toutes les factures payées.",
+    generate: "Comparer les deux situations",
+    steps: {
+      today: {
+        title: "Votre situation aujourd'hui",
+        desc: "Ce côté-là est du fait, pas de l'estimation : c'est lui qui ancre la comparaison.",
+      },
+      offer: {
+        title: "L'offre que vous étudiez",
+        desc: "Le logement et les trajets seront estimés à partir des données de la ville.",
+      },
+      household: {
+        title: "Votre foyer",
+        desc: "Le foyer décide de l'alimentation, de l'eau et de la crèche.",
+      },
+      travel: {
+        title: "Vos déplacements",
+        desc: "Deux usages, souvent deux modes : aller travailler, et faire les courses.",
+      },
+    },
+    fields: {
+      city: "Ville",
+      district: "Quartier",
+      districtHint: "Le quartier fixe le loyer au m², la distance au travail et au commerce.",
+      netSalary: "Salaire net mensuel",
+      netSalaryHint: "Avant impôt sur le revenu.",
+      partnerSalary: "Second salaire du foyer",
+      partnerSalaryNone: "Aucun second salaire",
+      rent: "Loyer que vous payez, charges comprises",
+      housingType: "Type de logement",
+      apartment: "Appartement",
+      house: "Maison",
+      surface: "Surface (m²)",
+      oneWayKm: "Distance domicile-travail (aller simple, km)",
+      targetCity: "Ville de l'offre",
+      targetSalary: "Salaire net proposé",
+      targetSurface: "Surface visée (m²)",
+      adults: "Adultes",
+      children: "Enfants à charge",
+      childrenInCreche: "Enfants en crèche",
+      crecheHours: "Heures de crèche par mois",
+      commuteMode: "Pour aller travailler",
+      errandsMode: "Pour faire les courses",
+      daysOnSite: "Jours sur site par semaine",
+      litresPer100Km: "Consommation (L/100 km)",
+      tripsPerMonth: "Courses par mois",
+      bikeAmortization: "Amortissement du vélo",
+      bikeAmortizationHint:
+        "Aucune donnée publique ne chiffre ce poste. Choisissez le montant annuel que vous acceptez : il sera affiché comme votre hypothèse, pas comme une mesure.",
+      bikeCustom: "Montant annuel retenu (€/an)",
+      perYear: "€/an",
+      sameAsToday: "Comme aujourd'hui",
+    },
+    modes: {
+      voiture: "Voiture",
+      transports: "Transports en commun",
+      actif: "Vélo ou marche",
+    },
+    bike: {
+      walk: "Marche à pied — aucun vélo",
+      usedBike: "Vélo mécanique d'occasion",
+      newBike: "Vélo mécanique neuf",
+      electricBike: "Vélo à assistance électrique",
+    },
+    lines: {
+      salaire: "Salaire net (avant impôt sur le revenu)",
+      salaire_conjoint: "Second salaire net du foyer",
+      prise_en_charge_transport: "Prise en charge employeur de l'abonnement",
+      loyer_reel: "Loyer, charges comprises",
+      loyer_estime: "Loyer estimé, charges comprises",
+      electricite: "Électricité",
+      eau: "Eau et assainissement",
+      carburant: "Carburant",
+      usage_vehicule: "Usage du véhicule (entretien, assurance, dépréciation)",
+      abonnement_transport: "Abonnement {network}",
+      courses_transport: "Courses en transport en commun",
+      velo_amortissement: "Vélo — amortissement et entretien",
+      creche: "Crèche (participation familiale)",
+      alimentation: "Alimentation à domicile",
+      impot_revenu: "Impôt sur le revenu",
+      prestations: "APL, allocations familiales, prime d'activité",
+      assurances: "Assurance habitation, mutuelle",
+      charges_copro: "Charges de copropriété non incluses dans le loyer",
+      taxe_fonciere: "Taxe foncière",
+      taxe_habitation: "Taxe d'habitation",
+      cmg: "Complément mode de garde (CMG)",
+      stationnement: "Stationnement résidentiel et péages",
+    },
+    basis: {
+      user_input: "Montant que vous avez saisi.",
+      rent_actual:
+        "Loyer réel que vous payez aujourd'hui — c'est le point d'ancrage de la comparaison.",
+      employer_share:
+        "{share} % de l'abonnement {network} ({pass} €), obligation légale de l'employeur.",
+      rent_estimated:
+        "{perSqm} €/m² × {surface} m² — indicateur de loyer d'annonce de la commune, pas du quartier.",
+      electricity:
+        "{kwhYear} kWh/an par point de livraison résidentiel du secteur × {price} €/kWh, plus l'abonnement. Moyenne du secteur, pas la consommation du logement visé.",
+      water:
+        "{pricePerM3} €/m³ (tarif du service) × {m3PerPerson} m³/personne/an, hypothèse de consommation.",
+      fuel_both:
+        "{commuteKm} km domicile-travail + {groceryKm} km de courses ({groceryOneWay} km jusqu'au commerce alimentaire le plus proche, aller simple) = {totalKm} km/mois × {litres} L/100 km × {price} €/L, prix moyen des stations de la ville.",
+      fuel_commute:
+        "{commuteKm} km domicile-travail = {totalKm} km/mois × {litres} L/100 km × {price} €/L, prix moyen des stations de la ville.",
+      fuel_groceries:
+        "{groceryKm} km de courses ({groceryOneWay} km jusqu'au commerce alimentaire le plus proche, aller simple) = {totalKm} km/mois × {litres} L/100 km × {price} €/L, prix moyen des stations de la ville.",
+      vehicle_use: "{km} km/mois × {perKm} €/km, forfait national dérivé du barème kilométrique.",
+      transit_pass:
+        "Grille tarifaire du réseau, relevée à la main — les abonnements ne figurent pas dans les données ouvertes.",
+      errands_covered_by_pass:
+        "Aucun coût supplémentaire : l'abonnement {network} est déjà payé pour le trajet domicile-travail et couvre ces {journeys} trajets.",
+      errands_tickets:
+        "{journeys} trajets × {ticket} € le ticket. La prise en charge employeur de 50 % ne concerne que le trajet domicile-travail, jamais les courses.",
+      bike_amortization:
+        "{perYear} €/an que vous avez retenus, répartis sur 12 mois, pour {km} km/mois. Aucune donnée publique ne chiffre ce poste : le montant est votre hypothèse, pas une mesure.",
+      bike_none:
+        "Aucun amortissement retenu pour {km} km/mois — marche à pied, ou vélo déjà amorti.",
+      creche:
+        "Barème PSU {vintage}, {hours} h/mois. Le barème est national : il ne varie pas d'une ville à l'autre. Obtenir une place, si.",
+      food_paris:
+        "Panier de référence national + {premium} % (écart Île-de-France mesuré par l'enquête Insee de 2022). Aucune donnée officielle n'existe au niveau du quartier.",
+      food_province:
+        "Panier de référence national. Aucun écart de prix alimentaire n'est mesuré officiellement en dehors de l'Île-de-France, de la Corse et des DOM.",
+    },
+    reasons: {
+      impot_revenu:
+        "Nécessite le moteur de règles OpenFisca et la configuration complète du foyer fiscal. Non intégré : le reste à vivre affiché est donc avant impôt.",
+      prestations:
+        "Même moteur de règles. Ces prestations peuvent déplacer le résultat de plusieurs centaines d'euros, dans les deux sens.",
+      assurances:
+        "Aucune donnée publique ne donne la prime par commune : ces tarifs appartiennent aux assureurs.",
+      charges_copro:
+        "L'indicateur de loyer utilisé est charges comprises ; les charges réelles varient d'un immeuble à l'autre et ne sont pas publiées.",
+      taxe_fonciere:
+        "Ne concerne que les propriétaires. Cette version compare deux situations de location.",
+      taxe_habitation:
+        "Supprimée sur la résidence principale depuis 2023. Elle n'est donc pas comptée.",
+      cmg: "Concerne l'assistante maternelle et la garde à domicile, pas la crèche PSU. À intégrer avec OpenFisca si vous comparez ces modes de garde.",
+      stationnement:
+        "Les tarifs de stationnement sont municipaux et les péages autoroutiers ne sont pas ouverts : aucune API centrale n'existe.",
+    },
+    status: {
+      user: "Saisi",
+      computed: "Calculé",
+      convention: "Hypothèse",
+      unavailable: "Non chiffré",
+      non_applicable: "Sans objet",
+    },
+    geoLevels: {
+      national: "France entière",
+      region: "région",
+      departement: "département",
+      zone_emploi: "zone d'emploi",
+      commune: "commune",
+      iris: "quartier (IRIS)",
+      point: "adresse ou point",
+      user: "votre saisie",
+    },
+    terms: {
+      annual: "annuelle",
+      continuous: "continue",
+      manual: "manuelle",
+      legislative: "législative",
+      every_10_min: "toutes les 10 minutes",
+      biannual_revision: "révision semestrielle",
+      every_5_6_years: "tous les 5 à 6 ans",
+      on_legislative_change: "à chaque évolution législative",
+      on_method_revision: "à chaque révision de la méthode",
+      on_input: "à chaque saisie",
+      realtime_feed: "flux temps réel",
+      tariff_in_force: "grille en vigueur",
+      daily_reading: "relevé du jour",
+      scale_in_force: "barème en vigueur",
+      tariff_table_collected: "grille tarifaire relevée",
+      rule_in_force: "règle en vigueur",
+      current_reference: "référentiel courant",
+      legislation_2026: "législation au 01/01/2026",
+      documented_in_docs: "documentée dans docs/reste-a-vivre-variables.md",
+      your_situation: "votre situation actuelle",
+    },
+    sourceCaveats: {
+      carte_loyers:
+        "Loyer d'annonce charges comprises, à l'échelle de la commune. Ce n'est pas un loyer réel constaté, et l'indicateur ne descend pas au quartier.",
+      insee_salaires:
+        "Salaires en équivalent temps plein. Sert de repère de marché, jamais de salaire individuel.",
+      france_travail_offres:
+        "Le salaire n'est renseigné que dans une partie des offres ; la distribution est donc biaisée.",
+      enedis_conso:
+        "Moyenne par point de livraison résidentiel du secteur, agrégée à partir de 10 sites actifs. Ce n'est pas la consommation du logement visé.",
+      tarif_electricite:
+        "Prix national : il ne crée aucun écart entre deux villes. Seule la consommation en crée un.",
+      sispea_eau:
+        "Le tarif s'applique au périmètre du service, qui ne coïncide pas toujours avec la commune. Les écarts réels vont de 1 à 2 entre communes.",
+      prix_carburants:
+        "Prix d'un jour donné. Un budget annuel doit être calculé sur une moyenne, pas sur le relevé du matin.",
+      bareme_kilometrique:
+        "Forfait national couvrant entretien, assurance et dépréciation. Il ne reflète pas l'écart de prime d'assurance entre départements.",
+      gtfs_tarifs:
+        "Les abonnements ne figurent pas dans les données GTFS ouvertes : cette grille est relevée à la main, réseau par réseau, et peut avoir changé.",
+      code_travail_transport:
+        "S'applique aux abonnements de transport public, jamais aux frais de carburant.",
+      bareme_psu_cnaf:
+        "Le tarif est calculé sur les ressources N-2. Le barème est national : il ne crée pas d'écart entre villes. Obtenir une place, en revanche, dépend entièrement du territoire.",
+      insee_bpe:
+        "La présence d'un équipement ne dit rien de sa qualité, de ses tarifs, ni d'une place disponible.",
+      ban_itineraire:
+        "Les distances de cette version sont des distances de référence par quartier, pas encore un itinéraire adresse à adresse.",
+      insee_ecsp:
+        "Seul écart mesuré : région parisienne contre province (+7 %), Corse et DOM. Aucune donnée officielle n'existe au niveau de la ville ni du quartier.",
+      openfisca:
+        "Moteur de règles, pas de statistiques. Le résultat dépend de la configuration complète du foyer fiscal.",
+      convention_statwise:
+        "Hypothèse de calcul assumée, pas une mesure. Elle est affichée pour pouvoir être contestée et modifiée.",
+      saisie_utilisateur:
+        "C'est la donnée la plus fiable du calcul : elle sert de point d'ancrage à la comparaison.",
+    },
+    result: {
+      title: "Votre reste à vivre, des deux côtés",
+      subtitle: "{currentCity} aujourd'hui, contre {targetCity} au mieux de ses quartiers.",
+      verdictBetter: "Il vous resterait {amount} de plus chaque mois.",
+      verdictWorse: "Il vous resterait {amount} de moins chaque mois.",
+      verdictSame: "Le reste à vivre serait pratiquement identique.",
+      verdictNote:
+        "Avant impôt sur le revenu et hors prestations : ces deux postes ne sont pas encore chiffrés.",
+      here: "Aujourd'hui",
+      there: "Avec l'offre",
+      bestDistrict: "Meilleur quartier",
+      salaryDelta: "Écart de salaire",
+      housingDelta: "Écart de loyer",
+      commuteDelta: "Écart de trajet",
+      hoursPerYear: "{hours} h/an",
+      perMonth: "/ mois",
+      seededTitle: "Données d'amorçage",
+      seededDesc:
+        "Cette version tourne sur des valeurs d'amorçage calibrées sur les vrais jeux de données, pas encore sur les données importées. Les ordres de grandeur sont justes, les montants ne sont pas des mesures.",
+      rankingTitle: "Quartiers de {city}, du plus au moins avantageux",
+      rankingDesc:
+        "À salaire et foyer identiques, seul le quartier change. Le loyer descend, mais le trajet et la distance au commerce peuvent reprendre la différence.",
+      colDistrict: "Quartier",
+      colRent: "Loyer estimé",
+      colCommute: "Trajet",
+      colGrocery: "Commerce",
+      colResteAVivre: "Reste à vivre",
+      colVsCurrent: "vs aujourd'hui",
+      breakdownTitle: "Le détail, ligne par ligne",
+      revenues: "Revenus",
+      expenses: "Dépenses",
+      omittedTitle: "Ce que ce calcul ne contient pas",
+      omittedDesc:
+        "Ces lignes sont volontairement laissées vides. Une absence de donnée n'est jamais remplacée par zéro : elle est affichée comme absente.",
+      freshnessTitle: "Fraîcheur des données utilisées",
+      freshnessDesc:
+        "Chaque source avec l'année qu'elle décrit — pas la date à laquelle nous l'avons téléchargée — et le niveau géographique auquel elle est réellement mesurée.",
+      snapshotDate: "Instantané assemblé le {date}",
+      vintage: "Millésime",
+      refresh: "Mise à jour",
+      level: "Niveau",
+      goToQuartier: "Choisir un quartier dans cette ville",
+      restart: "Modifier la comparaison",
+      disclaimer:
+        "Comparaison indicative fondée sur des données publiques officielles et sur des hypothèses affichées. Ce n'est ni une offre, ni un conseil, ni une garantie.",
+      empty: {
+        title: "Aucune comparaison",
+        desc: "Décrivez votre situation actuelle et l'offre que vous étudiez pour lancer le calcul.",
+        cta: "Lancer « Trouver mon job »",
+      },
     },
   },
 };

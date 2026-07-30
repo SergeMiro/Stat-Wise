@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Baby, Compass } from "lucide-react";
+import { ArrowRight, Baby, Briefcase, Compass } from "lucide-react";
 import { getDictionary, isLocale, localePath } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +11,16 @@ export default async function AppHubPage({ params }: { params: Promise<{ locale:
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
 
+  // Money first: whether a move pays for itself is the question the other two
+  // simulators inherit, so it leads here as well as on the home page.
   const simulators = [
+    {
+      image: "/illustrations/simulators/job.svg",
+      icon: <Briefcase className="size-5" />,
+      title: dict.home.jobTitle,
+      desc: dict.home.jobDesc,
+      href: localePath(locale, "/app/job/new"),
+    },
     {
       image: "/illustrations/simulators/quartier.svg",
       icon: <Compass className="size-5" />,

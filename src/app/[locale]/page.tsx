@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Baby, Compass, Database, ShieldCheck } from "lucide-react";
+import { ArrowRight, Baby, Briefcase, Compass, Database, ShieldCheck } from "lucide-react";
 import { getDictionary, isLocale, localePath } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,17 +33,17 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             {dict.home.heroSubtitle}
           </p>
           <div className="mt-6 flex flex-col gap-2 sm:flex-row">
-            <Button size="lg" render={<Link href={localePath(locale, "/app/quartier/new")} />}>
-              <Compass />
-              {dict.home.startQuartier}
+            <Button size="lg" render={<Link href={localePath(locale, "/app/job/new")} />}>
+              <Briefcase />
+              {dict.home.startJob}
             </Button>
             <Button
               size="lg"
               variant="outline"
-              render={<Link href={localePath(locale, "/app/family/new")} />}
+              render={<Link href={localePath(locale, "/app/quartier/new")} />}
             >
-              <Baby />
-              {dict.home.startFamily}
+              <Compass />
+              {dict.home.startQuartier}
             </Button>
           </div>
         </div>
@@ -60,8 +60,16 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
-      {/* Simulator cards */}
-      <section className="grid gap-4 sm:grid-cols-2">
+      {/* Simulator cards — money first: it is the question the other two inherit */}
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <SimulatorCard
+          image="/illustrations/simulators/job.svg"
+          icon={<Briefcase className="size-5" />}
+          title={dict.home.jobTitle}
+          description={dict.home.jobDesc}
+          cta={dict.common.start}
+          href={localePath(locale, "/app/job/new")}
+        />
         <SimulatorCard
           image="/illustrations/simulators/quartier.svg"
           icon={<Compass className="size-5" />}
