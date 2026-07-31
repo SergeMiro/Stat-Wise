@@ -31,6 +31,8 @@
  * both simulators speak of the same places; a test enforces it.
  */
 
+import measured from "./distances.json" with { type: "json" };
+
 /** Position of a district inside its city. Drives rent, energy and distances. */
 export type DistrictArchetype = "central" | "residential" | "peripheral";
 
@@ -55,13 +57,36 @@ export type DistrictSnapshot = {
    * gives part of the saving back in fuel.
    */
   distanceToGroceryKm: number;
+  /**
+   * Road minutes to the reference workplace, when they were measured. Used only
+   * for the car, since a routed car time says nothing about a bus or a bicycle.
+   */
+  distanceToJobMinutes: number | null;
+  /**
+   * Whether the two distances above were measured on the road network or are
+   * still the archetype model. Shown to the reader, because the difference
+   * between a measurement and a model is the whole point of the provenance rule.
+   */
+  distanceSource: DistanceSource;
+  /** The OSM place the route started from, when measured. */
+  anchorName: string | null;
+  /** The shop the grocery distance was measured to, when found. */
+  groceryName: string | null;
 };
+
+export type DistanceSource = "measured" | "derived";
 
 export type CitySnapshot = {
   /** Must match a city id in `src/lib/mock/cities.ts`. */
   id: string;
   name: string;
   department: string;
+  /**
+   * Reference point for the workplace — the town hall. Real routing measures the
+   * commute from a district to here, which is why it belongs in the data and not
+   * in a component.
+   */
+  center: GeoPoint;
   /** True for Île-de-France, the only spatial price gap Insee actually measures. */
   parisRegion: boolean;
   /** €/m³, water supply + collective sanitation. */
@@ -81,6 +106,8 @@ export type CitySnapshot = {
 };
 
 export type AlurZone = "tres_tendue" | "tendue" | "autre";
+
+export type GeoPoint = { lat: number; lon: number };
 
 /** Flipped to false the day the engine reads imported data instead of this file. */
 export const SNAPSHOT_IS_SEEDED = true;
@@ -121,6 +148,16 @@ function seed(text: string): number {
 }
 
 const round1 = (n: number) => Math.round(n * 10) / 10;
+
+/**
+ * Floors a measured distance at 100 m.
+ *
+ * A shop across the street routes to 40 m, which rounds to 0.0 km — and in this
+ * codebase a zero means "costs nothing", while a missing value means "unknown".
+ * Neither is true here: the journey is real, just short. Rounding it away would
+ * quietly turn a measurement into one of the two things it is not.
+ */
+const atLeastAStep = (km: number) => Math.max(0.1, round1(km));
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
 type CitySpec = Omit<CitySnapshot, "districts"> & {
@@ -142,6 +179,15 @@ function buildDistrict(
   // ±6 % around the archetype so districts of one archetype are not clones.
   const flat = round2(centralRent * a.rent * (0.94 + 0.12 * s1));
 
+  /*
+    Measured distances win over the model when the ETL found this district. A
+    district it could not anchor keeps its modelled value and is labelled
+    `derived`, rather than being handed a distance measured from the wrong place.
+  */
+  const hit = (measured.entries as Record<string, MeasuredEntry | undefined>)[
+    `${cityId}:${spec.id}`
+  ];
+
   return {
     id: spec.id,
     name: spec.name,
@@ -152,10 +198,29 @@ function buildDistrict(
       high: round2(flat * RENT_SPREAD.high),
     },
     electricityKwhYear: Math.round(a.kwh * (0.92 + 0.16 * s2)),
-    distanceToJobKm: round1(a.jobKm * (0.8 + 0.4 * s2)),
-    distanceToGroceryKm: round1(a.groceryKm * (0.8 + 0.4 * s1)),
+    distanceToJobKm: hit ? atLeastAStep(hit.jobKm) : round1(a.jobKm * (0.8 + 0.4 * s2)),
+    distanceToGroceryKm:
+      hit && hit.groceryKm !== null
+        ? atLeastAStep(hit.groceryKm)
+        : round1(a.groceryKm * (0.8 + 0.4 * s1)),
+    distanceToJobMinutes: hit ? hit.jobMinutes : null,
+    distanceSource: hit ? "measured" : "derived",
+    anchorName: hit ? hit.anchorName : null,
+    groceryName: hit ? (hit.groceryName ?? null) : null,
   };
 }
+
+type MeasuredEntry = {
+  jobKm: number;
+  jobMinutes: number;
+  groceryKm: number | null;
+  anchorName: string;
+  groceryName: string | null;
+};
+
+/** Date the measured distances were collected, shown next to them. */
+export const DISTANCES_GENERATED_AT: string = measured.generatedAt;
+export const DISTANCES_COVERAGE = measured.coverage;
 
 // --- the cities -------------------------------------------------------------
 
@@ -174,6 +239,7 @@ function buildDistrict(
 const CITY_SPECS: CitySpec[] = [
   {
     id: "paris",
+    center: { lat: 48.8566, lon: 2.3522 },
     name: "Paris",
     department: "Paris (75)",
     parisRegion: true,
@@ -198,6 +264,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "marseille",
+    center: { lat: 43.2965, lon: 5.3698 },
     name: "Marseille",
     department: "Bouches-du-Rhône (13)",
     parisRegion: false,
@@ -222,6 +289,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "lyon",
+    center: { lat: 45.764, lon: 4.8357 },
     name: "Lyon",
     department: "Rhône (69)",
     parisRegion: false,
@@ -246,6 +314,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "toulouse",
+    center: { lat: 43.6047, lon: 1.4442 },
     name: "Toulouse",
     department: "Haute-Garonne (31)",
     parisRegion: false,
@@ -269,6 +338,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "nice",
+    center: { lat: 43.7102, lon: 7.262 },
     name: "Nice",
     department: "Alpes-Maritimes (06)",
     parisRegion: false,
@@ -292,6 +362,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "nantes",
+    center: { lat: 47.2184, lon: -1.5536 },
     name: "Nantes",
     department: "Loire-Atlantique (44)",
     parisRegion: false,
@@ -315,6 +386,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "montpellier",
+    center: { lat: 43.6108, lon: 3.8767 },
     name: "Montpellier",
     department: "Hérault (34)",
     parisRegion: false,
@@ -339,6 +411,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "strasbourg",
+    center: { lat: 48.5734, lon: 7.7521 },
     name: "Strasbourg",
     department: "Bas-Rhin (67)",
     parisRegion: false,
@@ -362,6 +435,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "bordeaux",
+    center: { lat: 44.8378, lon: -0.5792 },
     name: "Bordeaux",
     department: "Gironde (33)",
     parisRegion: false,
@@ -385,6 +459,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "lille",
+    center: { lat: 50.6292, lon: 3.0573 },
     name: "Lille",
     department: "Nord (59)",
     parisRegion: false,
@@ -408,6 +483,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "versailles",
+    center: { lat: 48.8049, lon: 2.1204 },
     name: "Versailles",
     department: "Yvelines (78)",
     parisRegion: true,
@@ -431,6 +507,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "dijon",
+    center: { lat: 47.3216, lon: 5.0415 },
     name: "Dijon",
     department: "Côte-d'Or (21)",
     parisRegion: false,
@@ -454,6 +531,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "avignon",
+    center: { lat: 43.9493, lon: 4.8055 },
     name: "Avignon",
     department: "Vaucluse (84)",
     parisRegion: false,
@@ -475,6 +553,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "petite-commune",
+    center: { lat: 47.327, lon: 5.0855 },
     name: "Saint-Apollinaire",
     department: "Côte-d'Or (21)",
     parisRegion: false,

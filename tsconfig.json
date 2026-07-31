@@ -10,6 +10,10 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
+    // The ETL scripts are run straight by Node's type stripper, which requires the
+    // explicit .ts extension on imports. Allowing it keeps those scripts inside
+    // typecheck instead of exiling them to unchecked .mjs.
+    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,

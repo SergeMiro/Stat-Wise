@@ -7,6 +7,8 @@ import {
   collectSources,
   compare,
   DATA_SOURCES,
+  DISTANCES_COVERAGE,
+  DISTANCES_GENERATED_AT,
   JOB_DATASET_VERSION,
   JOB_ENGINE_VERSION,
   SNAPSHOT_DATE,
@@ -296,6 +298,9 @@ export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }
                   <tr key={side.districtId} className={i === 0 ? "bg-accent/40" : undefined}>
                     <th scope="row" className="px-3 py-2 text-left font-medium">
                       {side.districtName}
+                      <span className="text-muted-foreground ml-2 font-mono text-[10px] font-normal">
+                        {side.distanceSource === "measured" ? r.measuredBadge : r.derivedBadge}
+                      </span>
                       {i === 0 ? (
                         <span className="text-primary ml-2 text-xs font-normal">
                           {r.bestDistrict}
@@ -306,8 +311,13 @@ export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }
                     <td className="tabular text-muted-foreground px-3 py-2 text-right">
                       {formatDistanceKm(locale, side.oneWayKm)}
                     </td>
-                    <td className="tabular text-muted-foreground px-3 py-2 text-right">
-                      {formatDistanceKm(locale, side.groceryKm)}
+                    <td className="text-muted-foreground px-3 py-2 text-right">
+                      <span className="tabular">{formatDistanceKm(locale, side.groceryKm)}</span>
+                      {side.groceryName ? (
+                        <span className="block max-w-[9rem] truncate text-[10px]">
+                          {side.groceryName}
+                        </span>
+                      ) : null}
                     </td>
                     <td className="tabular px-3 py-2 text-right font-medium">
                       {formatCurrency(locale, side.resteAVivre)}
@@ -409,8 +419,18 @@ export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }
           </AccordionTrigger>
           <AccordionContent>
             <p className="text-muted-foreground mb-1 text-xs">{r.freshnessDesc}</p>
-            <p className="text-muted-foreground mb-3 font-mono text-[11px]">
+            <p className="text-muted-foreground mb-1 font-mono text-[11px]">
               {fill(r.snapshotDate, { date: SNAPSHOT_DATE })}
+            </p>
+            <p className="text-muted-foreground mb-3 text-xs">
+              <span className="font-medium">{r.distancesTitle}: </span>
+              {DISTANCES_COVERAGE.measured > 0
+                ? fill(r.distancesMeasured, {
+                    measured: DISTANCES_COVERAGE.measured,
+                    total: DISTANCES_COVERAGE.districts,
+                    date: DISTANCES_GENERATED_AT,
+                  })
+                : r.distancesNone}
             </p>
             <ul className="space-y-3 pb-2">
               {sources.map((code) => {

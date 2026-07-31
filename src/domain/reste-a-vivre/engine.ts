@@ -641,8 +641,19 @@ const buildSide = (context: SideContext): SideResult => {
   const revenus = revenueLines(context);
   const depenses = expenseLines(context);
   const km = context.actualKm ?? context.district.distanceToJobKm;
+  /*
+    A routed car time beats a flat average speed — but only for a car, and only
+    when the distance is the measured one. If the user gave their own kilometres,
+    the measured minutes belong to a different journey.
+  */
+  const measuredMinutes =
+    context.actualKm === undefined &&
+    context.commute.mode === "voiture" &&
+    context.district.distanceToJobMinutes !== null
+      ? context.district.distanceToJobMinutes
+      : null;
   const speed = p.averageSpeedKmh[context.commute.mode];
-  const oneWayMinutes = Math.round((km / speed) * 60);
+  const oneWayMinutes = measuredMinutes ?? Math.round((km / speed) * 60);
   const totalRevenus = total(revenus);
   const totalDepenses = total(depenses);
   const resteAVivre = round(totalRevenus - totalDepenses);
@@ -683,6 +694,8 @@ const buildSide = (context: SideContext): SideResult => {
     oneWayKm: km,
     oneWayMinutes,
     groceryKm: context.district.distanceToGroceryKm,
+    distanceSource: context.district.distanceSource,
+    groceryName: context.district.groceryName,
   };
 };
 

@@ -662,9 +662,9 @@ export const en: Dictionary = {
       bareme_psu_cnaf:
         "The rate is computed on N-2 resources. The scale is national: it creates no gap between cities. Getting a place, on the other hand, depends entirely on the area.",
       insee_bpe:
-        "The presence of an amenity says nothing about its quality, its prices, or whether a place is free.",
+        "The presence of an amenity says nothing about its quality, its prices, or whether a place is free. The nearest food shop comes from OpenStreetMap, where a small organic grocer and a hypermarket carry the same tag: the shop's name is shown so you can judge whether it is where you would do a weekly shop.",
       ban_itineraire:
-        "Distances in this version are reference distances per district, not yet address-to-address routing.",
+        "Measured distances are real road routes, but they start from an anchor point for the district (an OpenStreetMap place node) and run to the town hall — not from one precise address to another. Districts without an anchor keep a modelled distance, and that is stated.",
       insee_ecsp:
         "The only measured gap: the Paris region against the rest of France (+7 %), Corsica and the overseas départements. No official data exists at city or district level.",
       openfisca:
@@ -737,6 +737,13 @@ export const en: Dictionary = {
       freshnessDesc:
         "Every source with the period it describes — not the date we downloaded it — and the geographic level at which it is actually measured.",
       snapshotDate: "Snapshot assembled on {date}",
+      distancesTitle: "Distances",
+      distancesMeasured:
+        "{measured} of {total} districts have distances measured on the road network (collected {date}). The rest keep the modelled value.",
+      distancesNone:
+        "No measured distances yet: all of them come from the district-archetype model.",
+      measuredBadge: "measured",
+      derivedBadge: "modelled",
       vintage: "Vintage",
       refresh: "Updated",
       level: "Level",

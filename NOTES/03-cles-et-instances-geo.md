@@ -131,3 +131,66 @@ MapLibre GL JS ключа не требует вообще — это библи
    результат в снапшот — с датой снятия.
 
 То есть работа есть, но она **вся на нашей стороне** и не ждёт ничьих ключей.
+
+---
+
+## Résultat de la première passe ETL — 2026-07-31
+
+`node --experimental-strip-types scripts/etl/build-job-distances.ts`
+
+**67 quartiers sur 93 mesurés.** Les 26 autres gardent la valeur du modèle et
+portent l'étiquette `modélisé` dans le tableau — jamais une distance mesurée
+depuis un autre endroit.
+
+### Ce qui a été appris
+
+**BAN ne convient pas pour ancrer un quartier.** C'est un géocodeur d'adresses :
+« Le Marais, Paris » renvoie « Rue Le Marois 75016 », un autre lieu dans un autre
+arrondissement, avec un score plausible de 0,56. Les ancrages viennent donc des
+nœuds `place` d'OpenStreetMap, qui sont les quartiers eux-mêmes.
+
+**`area[...]` fait tomber Overpass en 504** sous charge. Un bbox autour de la
+mairie fonctionne et coûte bien moins cher.
+
+**Overpass répond 429 puis 504 très souvent.** Le script fait quatre tentatives
+avec attente croissante ; sans cela la passe échoue à moitié.
+
+### Les deux défauts trouvés, et ce qui a été fait
+
+**1. Le tag OSM `shop=supermarket` couvre aussi les petites épiceries.** Sur les
+67 commerces trouvés, **32 ne sont pas une grande enseigne** : Biocoop, Naturalia,
+« Alimentation Générale », monop'. La distance mesurée est donc plus courte que
+celle des courses hebdomadaires réelles, ce qui flatte le centre-ville.
+
+Ce n'est pas caché : le **nom du commerce est affiché** à côté des kilomètres, et
+la mise en garde de la source le dit. Le lecteur voit « 0,4 km — Biocoop » et
+juge lui-même. L'impact en euros est petit (1–2 €/mois), l'impact sur la
+crédibilité ne l'est pas.
+
+_À faire ensuite :_ refaire la passe commerces en exigeant `shop=hypermarket` ou
+une enseigne connue, en réutilisant les ancrages déjà enregistrés — 14 appels
+Overpass et 67 itinéraires, pas la passe complète.
+
+**2. Une distance réelle peut s'arrondir à 0,0 km.** Confluence → Carrefour et
+Libération → mairie sont tombés à zéro. Dans ce projet un zéro veut dire « ne
+coûte rien » et une absence veut dire « inconnu » : ni l'un ni l'autre n'est vrai
+ici, le trajet existe, il est juste court. Les distances mesurées sont donc
+plancherées à 100 m (`atLeastAStep`). Le test qui exigeait `groceryKm > 0` a
+attrapé exactement ça.
+
+### Quartiers sans ancrage
+
+```
+Avignon en entier (5)          — aucun nom ne correspond à un nœud place
+Nantes presque en entier (6)   — idem
+Saint-Apollinaire (2)          — commune trop petite, et 0 commerce trouvé
+Isolés : Presqu'île (Lyon), Grande Île / Neustadt / Orangerie (Strasbourg),
+Centre / Moulins (Lille), Écusson (Montpellier), Saint-Pierre (Bordeaux),
+Cours Julien / Prado – Castellane (Marseille), Riquier (Nice),
+Chevreul – Parc (Dijon)
+```
+
+La cause est presque toujours un nom différent dans OSM, pas un quartier absent.
+Le remède n'est pas un ajustement du script mais une table de correspondance
+`notre nom → nom OSM`, à écrire à la main et à relire — donc une décision, pas
+un bricolage automatique.

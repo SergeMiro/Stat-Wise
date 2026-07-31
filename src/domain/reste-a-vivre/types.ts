@@ -1,3 +1,4 @@
+import type { DistanceSource } from "./snapshot";
 import type { SourceCode } from "./sources";
 
 /**
@@ -190,6 +191,15 @@ export type SideResult = {
   oneWayMinutes: number;
   /** One-way distance to the nearest large food store, in km. */
   groceryKm: number;
+  /** Whether this district's distances were measured on the road or modelled. */
+  distanceSource: DistanceSource;
+  /**
+   * The shop the grocery distance was measured to. Shown to the reader, because
+   * OpenStreetMap tags a small organic shop and a hypermarket alike: naming the
+   * shop is what lets someone judge whether it is where they would do a weekly
+   * shop, instead of trusting a bare number.
+   */
+  groceryName: string | null;
 };
 
 /** One bar of the difference, so the result answers "why" and not only "how much". */

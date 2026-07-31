@@ -671,9 +671,9 @@ export const fr = {
       bareme_psu_cnaf:
         "Le tarif est calculé sur les ressources N-2. Le barème est national : il ne crée pas d'écart entre villes. Obtenir une place, en revanche, dépend entièrement du territoire.",
       insee_bpe:
-        "La présence d'un équipement ne dit rien de sa qualité, de ses tarifs, ni d'une place disponible.",
+        "La présence d'un équipement ne dit rien de sa qualité, de ses tarifs, ni d'une place disponible. Le commerce le plus proche vient d'OpenStreetMap, où une petite épicerie bio et un hypermarché portent la même étiquette : le nom du commerce est affiché pour que vous puissiez juger s'il correspond à vos courses de la semaine.",
       ban_itineraire:
-        "Les distances de cette version sont des distances de référence par quartier, pas encore un itinéraire adresse à adresse.",
+        "Les distances mesurées sont de vrais itinéraires routiers, mais partant d'un point d'ancrage du quartier (nœud OpenStreetMap) vers la mairie — pas d'une adresse précise à une autre. Les quartiers sans ancrage gardent une distance modélisée, et c'est indiqué.",
       insee_ecsp:
         "Seul écart mesuré : région parisienne contre province (+7 %), Corse et DOM. Aucune donnée officielle n'existe au niveau de la ville ni du quartier.",
       openfisca:
@@ -748,6 +748,13 @@ export const fr = {
       freshnessDesc:
         "Chaque source avec l'année qu'elle décrit — pas la date à laquelle nous l'avons téléchargée — et le niveau géographique auquel elle est réellement mesurée.",
       snapshotDate: "Instantané assemblé le {date}",
+      distancesTitle: "Distances",
+      distancesMeasured:
+        "{measured} quartiers sur {total} ont des distances mesurées sur le réseau routier (relevé du {date}). Les autres gardent la valeur du modèle.",
+      distancesNone:
+        "Aucune distance mesurée pour l'instant : toutes viennent du modèle par archétype de quartier.",
+      measuredBadge: "mesuré",
+      derivedBadge: "modélisé",
       vintage: "Millésime",
       refresh: "Mise à jour",
       level: "Niveau",
