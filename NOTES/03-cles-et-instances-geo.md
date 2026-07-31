@@ -134,7 +134,11 @@ MapLibre GL JS ключа не требует вообще — это библи
 
 ---
 
-## Résultat de la première passe ETL — 2026-07-31
+## Résultat des passes ETL — 2026-07-31
+
+> **État actuel : 77 quartiers sur 93 mesurés.** La section ci-dessous décrit la
+> _première_ passe (67 sur 93) et reste là parce que ce qu'elle a appris est encore
+> vrai. Ce qui a changé depuis est en bas, sous « Deuxième et troisième passes ».
 
 `node --experimental-strip-types scripts/etl/build-job-distances.ts`
 
@@ -194,3 +198,68 @@ La cause est presque toujours un nom différent dans OSM, pas un quartier absent
 Le remède n'est pas un ajustement du script mais une table de correspondance
 `notre nom → nom OSM`, à écrire à la main et à relire — donc une décision, pas
 un bricolage automatique.
+
+---
+
+## Deuxième et troisième passes — ce qui a changé
+
+**77 quartiers sur 93.** Trois corrections, dont deux portaient sur mes propres
+erreurs.
+
+### La table de correspondance des noms n'était pas nécessaire
+
+L'hypothèse de la première passe était fausse. Les 26 quartiers introuvables ne
+manquaient pas à OpenStreetMap et leurs noms n'étaient pas en cause : ils sont
+cartographiés en **ways et relations** — un contour autour du quartier — et non en
+nœuds. La requête ne demandait que des nœuds. Autour d'Avignon : 100 lieux en
+nœuds seuls, **290** avec les trois types. Marseille est passée de 0 lieu
+exploitable à 266, Avignon à 284.
+
+Six quartiers de plus sont atteints par **une** correspondance partielle encadrée :
+le nom doit s'y trouver comme phrase entière, jamais sur un mot partagé, et chaque
+acceptation est journalisée. Les six sont justes — `Centre → Lille-Centre`,
+`Hauts-Pavés – Saint-Félix → Hauts-Pavés`, `Dervallières – Zola → Zola`.
+
+Restent **16 quartiers** sans ancrage, dont Bordeaux et Saint-Apollinaire, dont les
+requêtes Overpass n'ont rien renvoyé à aucune tentative. Ils gardent la valeur du
+modèle et l'étiquette `modélisé`.
+
+### L'ETL effaçait ce qu'il avait mesuré
+
+La deuxième passe a annoncé **62** quartiers, soit **cinq de moins** qu'avant.
+Marseille, Bordeaux et Avignon avaient expiré côté Overpass, et le script écrivait
+un objet neuf : une indisponibilité passagère supprimait donc silencieusement des
+mesures valides et publiait le résultat comme la nouvelle vérité. Un ETL qui perd
+des mesures sur un incident réseau est pire qu'un ETL qui n'a pas tourné.
+
+Il repart maintenant de ce qui est sur le disque et n'écrase que ce qu'il a
+réellement mesuré. La passe suivante a ainsi conservé six mesures là où le service
+a échoué de nouveau.
+
+### Le filtre commerces ne faisait pas ce que j'avais annoncé
+
+Deux fois de suite.
+
+D'abord il acceptait tout supermarché portant simplement un tag `brand` — et
+Biocoop comme Naturalia en ont un — donc 21 des 77 commerces les plus proches
+étaient encore de petites épiceries. « Avoir une marque » n'est pas « être une
+enseigne où l'on fait ses courses de la semaine ». La marque est désormais comparée
+à la liste, pas testée pour son existence.
+
+Ensuite, en reportant une distance mesurée précédemment, je la réétiquetais
+`large_chain` — exactement le mélange silencieux de deux standards que ce champ
+existe pour empêcher. Une distance reportée conserve maintenant le standard sous
+lequel elle a été mesurée.
+
+Le résultat, visible dans les données : **64 commerces** mesurés sur un hypermarché
+ou une enseigne nommée, **13** héritées de la passe plus large et marquées
+`any_supermarket`. Le nom du commerce reste affiché dans les deux cas, pour que le
+lecteur juge lui-même.
+
+### Note d'exploitation
+
+Un `git push` sur `main` n'a pas déclenché de build Vercel ce jour-là, alors que les
+poussées précédentes l'avaient fait. Le projet est bien connecté au dépôt (`vercel
+git connect` le confirme), donc il s'agit d'un événement non délivré, pas d'une
+intégration cassée. Solution de repli : `npx vercel deploy --prod --yes` depuis le
+dossier lié — le build est identique.
