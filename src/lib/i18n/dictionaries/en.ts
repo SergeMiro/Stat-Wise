@@ -681,6 +681,46 @@ export const en: Dictionary = {
       verdictWorse: "You would be left with {amount} less each month.",
       verdictSame: "The money left over would be practically identical.",
       verdictNote: "Before income tax and excluding benefits: neither of those is quantified yet.",
+      verdictTiers: {
+        excellent: {
+          emoji: "🎉",
+          title: "The move is clearly worth it",
+          body: "You would be left with {amount} more a month — {percent} of what you have left today. At that size the gap comfortably survives the approximations in this calculation.",
+        },
+        good: {
+          emoji: "😀",
+          title: "A clear gain",
+          body: "{amount} more a month, or {percent} of what you have left. A real gain, but check the actual rent before deciding: rent is what can melt it away.",
+        },
+        modest: {
+          emoji: "🙂",
+          title: "You gain a little",
+          body: "{amount} a month, or {percent}. Real but modest — and the same order as the uncertainty on rent. Do not move for this sum alone.",
+        },
+        marginal: {
+          emoji: "😐",
+          title: "It is a draw",
+          body: "{amount} a month, or {percent}. Call it equivalent: at this size the calculation cannot decide for you. Decide on what we do not quantify — the job, the people, the time on the road.",
+        },
+        negative: {
+          emoji: "🙁",
+          title: "Financially, this move costs you",
+          body: "You would be left with {amount} less every month. The higher salary does not cover what comes with it: housing, travel, childcare.",
+        },
+      },
+      verdictOutsized:
+        "You would be left with {amount} more a month — more than double what you have left today. A gap that size is worth re-checking against a real rent before you pack.",
+      verdictSignOnly:
+        "No percentage is shown: what you have left today is too small for a ratio to mean anything.",
+      downloadTitle: "Take this result with you",
+      downloadDesc:
+        "The spreadsheet holds every line with its status and its source. The image is made to be sent to someone.",
+      downloadImage: "Image (PNG)",
+      downloadPdf: "PDF",
+      downloadXlsx: "Spreadsheet (XLSX)",
+      downloadPending: "Preparing…",
+      downloadFailed: "The download failed. Please try again.",
+      shareCardFooter: "Indicative calculation · sources and vintages in the full report",
       here: "Today",
       there: "With the offer",
       rangeLabel: "Between {low} and {high}, depending on the rent you find",

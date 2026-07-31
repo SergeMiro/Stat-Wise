@@ -36,6 +36,8 @@ export {
   type DistrictSnapshot,
 } from "./snapshot";
 
+export { gradeVerdict, isCelebration, type Verdict, type VerdictTier } from "./verdict";
+
 export {
   collectSources,
   DATA_SOURCES,

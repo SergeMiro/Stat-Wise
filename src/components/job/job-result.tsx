@@ -6,6 +6,7 @@ import { Briefcase, Compass, RotateCcw, TriangleAlert } from "lucide-react";
 import {
   collectSources,
   compare,
+  gradeVerdict,
   DATA_SOURCES,
   DISTANCES_COVERAGE,
   DISTANCES_GENERATED_AT,
@@ -42,6 +43,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { EmptyState } from "@/components/states";
+import { JobVerdictBanner } from "./job-verdict-banner";
+import { JobDownloads } from "./job-downloads";
 
 export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const [input, , ready] = useHydratedState<CompareInput | null>(null, () => loadJobInput());
@@ -72,6 +75,7 @@ export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }
   const ranked = [target, ...result.alternatives];
 
   const delta = result.deltaResteAVivre;
+  const graded = gradeVerdict(result);
   const verdict =
     Math.abs(delta) < 10
       ? r.verdictSame
@@ -105,6 +109,8 @@ export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }
           </div>
         </div>
       ) : null}
+
+      <JobVerdictBanner locale={locale} dict={dict} verdict={graded} delta={delta} />
 
       {/* Verdict */}
       <section className="bg-card mb-5 rounded-2xl border p-5">
@@ -464,6 +470,8 @@ export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+
+      <JobDownloads locale={locale} dict={dict} result={result} verdict={graded} />
 
       {/* Actions */}
       <div className="grid gap-2 sm:grid-cols-2">

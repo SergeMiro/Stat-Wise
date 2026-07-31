@@ -691,6 +691,46 @@ export const fr = {
       verdictSame: "Le reste à vivre serait pratiquement identique.",
       verdictNote:
         "Avant impôt sur le revenu et hors prestations : ces deux postes ne sont pas encore chiffrés.",
+      verdictTiers: {
+        excellent: {
+          emoji: "🎉",
+          title: "Le déménagement en vaut clairement la peine",
+          body: "Il vous resterait {amount} de plus par mois, soit {percent} de ce qui vous reste aujourd'hui. À ce niveau, l'écart survit largement aux approximations de ce calcul.",
+        },
+        good: {
+          emoji: "😀",
+          title: "Le gain est net",
+          body: "{amount} de plus par mois, soit {percent} de ce qui vous reste. Un vrai gain, mais vérifiez le loyer réel avant de décider : c'est lui qui peut le faire fondre.",
+        },
+        modest: {
+          emoji: "🙂",
+          title: "Vous gagnez un peu",
+          body: "{amount} par mois, soit {percent}. C'est réel mais modeste — et du même ordre que l'incertitude sur le loyer. Ne déménagez pas pour cette somme seule.",
+        },
+        marginal: {
+          emoji: "😐",
+          title: "C'est un match nul",
+          body: "{amount} par mois, soit {percent}. Autant dire équivalent : à ce niveau, le calcul ne peut pas trancher. Décidez sur le poste que nous ne chiffrons pas — le travail, les proches, le temps de trajet.",
+        },
+        negative: {
+          emoji: "🙁",
+          title: "Financièrement, ce déménagement vous coûte",
+          body: "Il vous resterait {amount} de moins chaque mois. Le salaire plus élevé ne compense pas ce qui vient avec : logement, trajets, garde.",
+        },
+      },
+      verdictOutsized:
+        "Il vous resterait {amount} de plus par mois — plus du double de ce qu'il vous reste aujourd'hui. Un écart de cette taille mérite d'être revérifié sur le loyer réel avant de faire vos valises.",
+      verdictSignOnly:
+        "Le pourcentage n'est pas affiché : ce qui vous reste aujourd'hui est trop faible pour qu'un rapport ait un sens.",
+      downloadTitle: "Emporter ce résultat",
+      downloadDesc:
+        "Le tableur contient chaque ligne avec son statut et sa source. L'image est faite pour être envoyée à quelqu'un.",
+      downloadImage: "Image (PNG)",
+      downloadPdf: "PDF",
+      downloadXlsx: "Tableur (XLSX)",
+      downloadPending: "Préparation…",
+      downloadFailed: "Le téléchargement a échoué. Réessayez.",
+      shareCardFooter: "Calcul indicatif · sources et millésimes dans le rapport complet",
       here: "Aujourd'hui",
       there: "Avec l'offre",
       rangeLabel: "Entre {low} et {high}, selon le loyer que vous trouverez",

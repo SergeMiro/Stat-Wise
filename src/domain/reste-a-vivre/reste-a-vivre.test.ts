@@ -5,6 +5,7 @@ import { en } from "@/lib/i18n/dictionaries/en";
 import { compare, crecheMonthlyCost, foodMonthlyCost, type CompareInput } from "./engine";
 import { cities, crecheScale, nationalParams } from "./snapshot";
 import { DATA_SOURCES, SOURCE_CODES } from "./sources";
+import { gradeVerdict, isCelebration } from "./verdict";
 import type { Explanation, Line, SideResult } from "./types";
 
 /**
@@ -664,4 +665,96 @@ describe("translation coverage", () => {
       }
     });
   }
+});
+
+// --- how the outcome is graded ----------------------------------------------
+
+describe("verdict grading", () => {
+  /** Builds a comparison-shaped stub: only the four fields the grader reads. */
+  const graded = (delta: number, real: number, comparable = real) =>
+    gradeVerdict({
+      deltaResteAVivre: delta,
+      current: { resteAVivreReel: real, resteAVivre: comparable },
+    } as Parameters<typeof gradeVerdict>[0]);
+
+  it("grades against what the household actually has left", () => {
+    // 200 € on top of 1 000 € is 20 % — the top tier.
+    expect(graded(200, 1000).tier).toBe("excellent");
+    expect(graded(200, 1000).ratio).toBeCloseTo(0.2, 3);
+  });
+
+  it("separates the four positive bands at their boundaries", () => {
+    expect(graded(150, 1000).tier).toBe("excellent"); // 15 %
+    expect(graded(149, 1000).tier).toBe("good");
+    expect(graded(100, 1000).tier).toBe("good"); // 10 %
+    expect(graded(99, 1000).tier).toBe("modest");
+    expect(graded(50, 1000).tier).toBe("modest"); // 5 %
+    expect(graded(49, 1000).tier).toBe("marginal");
+    expect(graded(0, 1000).tier).toBe("marginal");
+  });
+
+  it("calls a loss a loss", () => {
+    expect(graded(-1, 1000).tier).toBe("negative");
+    expect(graded(-400, 1000).tier).toBe("negative");
+  });
+
+  it("never celebrates on a denominator too small to divide by", () => {
+    /*
+      The trap: 60 € more when only 10 € is left is a 600 % ratio, which would
+      fire confetti on a household that is barely afloat. With no sane basis the
+      grade must fall back to the sign alone.
+    */
+    const v = graded(60, 10, 20);
+    expect(v.ratio).toBeNull();
+    expect(v.signOnly).toBe(true);
+    expect(v.tier).toBe("marginal");
+    expect(isCelebration(v.tier)).toBe(false);
+  });
+
+  it("falls back to the comparable figure when the real one is too small", () => {
+    // Declared spending eats the remainder: real 10 €, comparable 800 €.
+    const v = graded(200, 10, 800);
+    expect(v.basis).toBe(800);
+    expect(v.tier).toBe("excellent");
+    expect(v.signOnly).toBe(false);
+  });
+
+  it("still reports a loss when the household is underwater", () => {
+    const v = graded(-50, -200, -100);
+    expect(v.tier).toBe("negative");
+    expect(v.ratio).toBeNull();
+  });
+
+  it("reserves confetti for the top tier alone", () => {
+    expect(isCelebration("excellent")).toBe(true);
+    for (const tier of ["good", "modest", "marginal", "negative"] as const) {
+      expect(isCelebration(tier)).toBe(false);
+    }
+  });
+});
+
+describe("verdict — an outsized gain", () => {
+  const graded = (delta: number, real: number, comparable = real) =>
+    gradeVerdict({
+      deltaResteAVivre: delta,
+      current: { resteAVivreReel: real, resteAVivre: comparable },
+    } as Parameters<typeof gradeVerdict>[0]);
+
+  it("flags a gain at least as large as what is left today", () => {
+    // The reference scenario: 570 € more when 278 € is left — a true 205 %.
+    const v = graded(570, 278);
+    expect(v.tier).toBe("excellent");
+    expect(v.outsized).toBe(true);
+    expect(v.ratio).toBeGreaterThan(2);
+  });
+
+  it("does not flag an ordinary gain", () => {
+    expect(graded(200, 1000).outsized).toBe(false);
+    expect(graded(999, 1000).outsized).toBe(false);
+    expect(graded(1000, 1000).outsized).toBe(true);
+  });
+
+  it("never flags a loss", () => {
+    expect(graded(-5000, 1000).outsized).toBe(false);
+  });
 });
