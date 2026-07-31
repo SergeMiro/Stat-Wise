@@ -3,7 +3,13 @@ import { listCities } from "@/lib/mock/cities";
 import { fr } from "@/lib/i18n/dictionaries/fr";
 import { en } from "@/lib/i18n/dictionaries/en";
 import { compare, crecheMonthlyCost, foodMonthlyCost, type CompareInput } from "./engine";
-import { cities, crecheScale, nationalParams } from "./snapshot";
+import {
+  cities,
+  crecheScale,
+  MARKET_COVERAGE,
+  nationalParams,
+  RENT_IS_MEASURED,
+} from "./snapshot";
 import { DATA_SOURCES, SOURCE_CODES } from "./sources";
 import { gradeVerdict, isCelebration } from "./verdict";
 import type { Explanation, Line, SideResult } from "./types";
@@ -775,6 +781,16 @@ describe("fiscal lines", () => {
   const withFiscal = compare({ ...baseInput, fiscal })!;
   const without = compare(baseInput)!;
 
+  it("flags whether the fiscal figures were computed, matching the lines", () => {
+    // The result page picks its disclaimer from this flag. If it ever disagreed
+    // with the lines, the page would deny a number printed just below it.
+    expect(withFiscal.fiscalComputed).toBe(true);
+    expect(lineOf(withFiscal.current, "impot_revenu")?.status).toBe("computed");
+
+    expect(without.fiscalComputed).toBe(false);
+    expect(without.current.omitted.map((l) => l.key)).toContain("impot_revenu");
+  });
+
   it("leaves tax and benefits unquantified when the engine did not answer", () => {
     const keys = without.current.omitted.map((l) => l.key);
     expect(keys).toContain("impot_revenu");
@@ -907,5 +923,36 @@ describe("declared income", () => {
     const r = withIncome({ declaredBenefitsMonthly: 180 });
     expect(r.current.resteAVivre).toBeCloseTo(plain.current.resteAVivre + 180, 2);
     expect(r.deltaResteAVivre).toBeLessThan(plain.deltaResteAVivre);
+  });
+});
+
+describe("données de marché mesurées", () => {
+  /*
+    The seeded litre sat ~12 % below the July 2026 readings and the seeded rents
+    were wrong by up to 4 €/m². Both now come from `market.json`. If an ETL run
+    loses a city, the fallback would serve the stale figure and look current — so
+    the loss has to break the build instead.
+  */
+  it("resolves every city from the imported market data", () => {
+    expect(MARKET_COVERAGE.resolved).toBe(cities.length);
+    expect(MARKET_COVERAGE.missing).toEqual([]);
+    expect(MARKET_COVERAGE.fuelResolved).toBe(cities.length);
+    for (const city of cities) expect(RENT_IS_MEASURED(city.id)).toBe(true);
+  });
+
+  it("keeps every measured figure inside a plausible French range", () => {
+    for (const city of cities) {
+      // Wider than any real spread, narrow enough to catch a unit or decimal slip
+      // — a price read in centimes or per 1000 L would land far outside.
+      expect(city.fuelPricePerLitre).toBeGreaterThan(1.2);
+      expect(city.fuelPricePerLitre).toBeLessThan(3);
+      for (const district of city.districts) {
+        expect(district.rentPerSqm.appartement).toBeGreaterThan(5);
+        expect(district.rentPerSqm.appartement).toBeLessThan(60);
+        // The published interval must bracket the figure it belongs to.
+        expect(district.rentPerSqmRange.low).toBeLessThan(district.rentPerSqm.appartement);
+        expect(district.rentPerSqmRange.high).toBeGreaterThan(district.rentPerSqm.appartement);
+      }
+    }
   });
 });

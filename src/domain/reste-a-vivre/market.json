@@ -1,0 +1,182 @@
+{
+  "generatedAt": "2026-07-31",
+  "rentSource": "Carte des loyers 2025 (ANIL / CEREMA), loyer d'annonce charges comprises",
+  "fuelSource": "Prix des carburants — flux instantané, médiane des stations du département",
+  "note": "Paris, Lyon et Marseille sont publiés par arrondissement : la référence centrale est le 75e centile des arrondissements.",
+  "coverage": {
+    "cities": 14,
+    "resolved": 14,
+    "missing": [],
+    "fuelResolved": 14
+  },
+  "cities": {
+    "paris": {
+      "rentPerSqm": {
+        "appartement": 35.38,
+        "maison": 26.45
+      },
+      "rentRange": {
+        "low": 27.26,
+        "high": 47.06
+      },
+      "observations": 269792,
+      "fuelPricePerLitre": 1.99
+    },
+    "marseille": {
+      "rentPerSqm": {
+        "appartement": 16.79,
+        "maison": 17.96
+      },
+      "rentRange": {
+        "low": 13.06,
+        "high": 21.93
+      },
+      "observations": 148089,
+      "fuelPricePerLitre": 2.001
+    },
+    "lyon": {
+      "rentPerSqm": {
+        "appartement": 17.06,
+        "maison": 17.56
+      },
+      "rentRange": {
+        "low": 12.86,
+        "high": 23.01
+      },
+      "observations": 144607,
+      "fuelPricePerLitre": 2.01
+    },
+    "toulouse": {
+      "rentPerSqm": {
+        "appartement": 13.98,
+        "maison": 12.86
+      },
+      "rentRange": {
+        "low": 11.17,
+        "high": 17.51
+      },
+      "observations": 225512,
+      "fuelPricePerLitre": 1.999
+    },
+    "nice": {
+      "rentPerSqm": {
+        "appartement": 20.43,
+        "maison": 21.6
+      },
+      "rentRange": {
+        "low": 15.44,
+        "high": 27.04
+      },
+      "observations": 71615,
+      "fuelPricePerLitre": 2.018
+    },
+    "nantes": {
+      "rentPerSqm": {
+        "appartement": 14.5,
+        "maison": 14.35
+      },
+      "rentRange": {
+        "low": 11.35,
+        "high": 18.54
+      },
+      "observations": 65568,
+      "fuelPricePerLitre": 2.009
+    },
+    "montpellier": {
+      "rentPerSqm": {
+        "appartement": 15.49,
+        "maison": 14.32
+      },
+      "rentRange": {
+        "low": 12.63,
+        "high": 19
+      },
+      "observations": 118801,
+      "fuelPricePerLitre": 2.019
+    },
+    "strasbourg": {
+      "rentPerSqm": {
+        "appartement": 15.57,
+        "maison": 15.74
+      },
+      "rentRange": {
+        "low": 11.86,
+        "high": 20.43
+      },
+      "observations": 59541,
+      "fuelPricePerLitre": 2.096
+    },
+    "bordeaux": {
+      "rentPerSqm": {
+        "appartement": 15.99,
+        "maison": 15.51
+      },
+      "rentRange": {
+        "low": 12.27,
+        "high": 20.84
+      },
+      "observations": 84641,
+      "fuelPricePerLitre": 1.999
+    },
+    "lille": {
+      "rentPerSqm": {
+        "appartement": 15.76,
+        "maison": 12.74
+      },
+      "rentRange": {
+        "low": 12.22,
+        "high": 20.33
+      },
+      "observations": 77376,
+      "fuelPricePerLitre": 1.999
+    },
+    "versailles": {
+      "rentPerSqm": {
+        "appartement": 24.31,
+        "maison": 24.34
+      },
+      "rentRange": {
+        "low": 19.29,
+        "high": 30.63
+      },
+      "observations": 14588,
+      "fuelPricePerLitre": 2.008
+    },
+    "dijon": {
+      "rentPerSqm": {
+        "appartement": 13.34,
+        "maison": 13.08
+      },
+      "rentRange": {
+        "low": 10.83,
+        "high": 16.43
+      },
+      "observations": 51194,
+      "fuelPricePerLitre": 2.049
+    },
+    "avignon": {
+      "rentPerSqm": {
+        "appartement": 12.27,
+        "maison": 11.52
+      },
+      "rentRange": {
+        "low": 9.55,
+        "high": 15.77
+      },
+      "observations": 18575,
+      "fuelPricePerLitre": 2.029
+    },
+    "petite-commune": {
+      "rentPerSqm": {
+        "appartement": 13.96,
+        "maison": 13.06
+      },
+      "rentRange": {
+        "low": 11.57,
+        "high": 16.84
+      },
+      "observations": 712,
+      "fuelPricePerLitre": 2.049
+    }
+  }
+}

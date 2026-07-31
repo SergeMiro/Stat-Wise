@@ -18,6 +18,20 @@ import { lineBasis, lineLabel, lineReason, statusLabel } from "@/lib/job-text";
 
 const CARD = { width: 1200, height: 630 };
 
+/**
+ * The footer disclaimer, chosen by whether the rules engine answered.
+ *
+ * Shared by the card, the PDF and the spreadsheet: a downloaded file outlives the
+ * session it came from, so it must not carry a disclaimer the on-screen result
+ * contradicted.
+ */
+const noteOf = (r: Dictionary["job"]["result"], result: Comparison): string =>
+  result.fiscalComputed ? r.verdictNoteFiscal : r.verdictNote;
+
+/** The same statement, cut to the one line a 1200×630 card has room for. */
+const cardNoteOf = (r: Dictionary["job"]["result"], result: Comparison): string =>
+  result.fiscalComputed ? r.verdictNoteShort : r.verdictNoteShortNone;
+
 type ExportContext = {
   locale: Locale;
   dict: Dictionary;
@@ -166,18 +180,33 @@ export async function buildShareCard(
     y,
   );
 
-  // The two things a shared image must never lose.
+  /*
+    The two things a shared image must never lose — anchored to the bottom edge and
+    grown upward from there.
+
+    The previous version started the block at a fixed offset and wrote downward,
+    which silently assumed a one-line verdict title and a one-line note. A two-line
+    title pushed the flowing content onto the note and the card came out with two
+    sentences printed on top of each other. Measuring the block means the gap below
+    the last flowing line is whatever is left, never negative.
+  */
+  const contentBottom = y;
   ctx.font = "400 20px system-ui, -apple-system, Segoe UI, sans-serif";
-  let footY = CARD.height - pad - 52;
-  for (const line of wrap(ctx, r.verdictNote, CARD.width - pad * 2, 2)) {
-    ctx.fillText(line, pad, footY);
-    footY += 26;
+  const noteLines = wrap(ctx, cardNoteOf(r, result), CARD.width - pad * 2, 2);
+  const footerLine = `${r.shareCardFooter} · ${fill(r.snapshotDate, { date: SNAPSHOT_DATE })}`;
+  const lineHeight = 26;
+  // Baseline of the last line, then step back up one line per note line.
+  const footerBaseline = CARD.height - pad + 10;
+  let footY = footerBaseline - noteLines.length * lineHeight;
+  if (footY - contentBottom < 22) {
+    // Nothing to shuffle: say so in the console rather than overprint the card.
+    console.warn("share card: footer and content are within 22px", { contentBottom, footY });
   }
-  ctx.fillText(
-    `${r.shareCardFooter} · ${fill(r.snapshotDate, { date: SNAPSHOT_DATE })}`,
-    pad,
-    footY + 4,
-  );
+  for (const line of noteLines) {
+    ctx.fillText(line, pad, footY);
+    footY += lineHeight;
+  }
+  ctx.fillText(footerLine, pad, footY);
 
   return new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
@@ -256,7 +285,7 @@ export async function downloadPdf(context: ExportContext): Promise<void> {
   y += 8;
   doc.setFontSize(8);
   doc.text(
-    `${r.verdictNote}  |  ${fill(r.snapshotDate, { date: SNAPSHOT_DATE })}  |  ${context.dict.brand.name} ${JOB_ENGINE_VERSION} / ${JOB_DATASET_VERSION}`,
+    `${noteOf(r, context.result)}  |  ${fill(r.snapshotDate, { date: SNAPSHOT_DATE })}  |  ${context.dict.brand.name} ${JOB_ENGINE_VERSION} / ${JOB_DATASET_VERSION}`,
     margin,
     y,
     { maxWidth: pageWidth - margin * 2 },
@@ -339,7 +368,7 @@ export async function downloadSpreadsheet(context: ExportContext): Promise<void>
     [r.requiredSalaryTitle, result.requiredTargetSalary ?? ""],
     [r.moveCostTotal, result.moveCost.total],
     [],
-    [r.verdictNote],
+    [noteOf(r, result)],
     [fill(r.snapshotDate, { date: SNAPSHOT_DATE })],
     [`${JOB_ENGINE_VERSION} / ${JOB_DATASET_VERSION}`],
   ];

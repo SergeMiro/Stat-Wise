@@ -606,7 +606,7 @@ export const en: Dictionary = {
       purpose_commute: "{commuteKm} km commuting",
       purpose_groceries:
         "{groceryKm} km shopping ({groceryOneWay} km to the nearest food store, one way)",
-      fuel: "{purpose} = {totalKm} km/month × {litres} L/100 km × {price} €/L, average price across the city's stations.",
+      fuel: "{purpose} = {totalKm} km/month × {litres} L/100 km × {price} €/L, median price across the département's stations.",
       charge_home:
         "{purpose} = {totalKm} km/month × {kwhPer100} kWh/100 km, of which {sharePct} % charged at home, so {kwh} kWh × {price} €/kWh. This is on top of the Electricity line: the area's consumption figure does not account for a vehicle.",
       charge_public:
@@ -717,7 +717,7 @@ export const en: Dictionary = {
     },
     sourceCaveats: {
       carte_loyers:
-        "Advertised rent, charges included, at commune level. It is not an observed rent, and the indicator does not reach the district.",
+        "Advertised rent, charges included, at commune level, with the confidence interval the source publishes. It is not an observed rent, and the indicator does not reach the district: the spread between districts is modelled from the commune figure, not measured.",
       insee_salaires:
         "Full-time equivalent salaries. A market benchmark, never an individual salary.",
       france_travail_offres:
@@ -729,7 +729,7 @@ export const en: Dictionary = {
       sispea_eau:
         "The tariff applies to the service's perimeter, which does not always match the commune. Real differences run from 1 to 2 between communes.",
       prix_carburants:
-        "A single day's price. An annual budget must be built on an average, not on this morning's reading.",
+        "The median across the département's stations, read on a single day. One particular station can be 20 cents off it, and an annual budget must be built on an average, not on this morning's reading.",
       bareme_kilometrique:
         "A national flat rate covering servicing, insurance and depreciation. It does not reflect insurance differences between départements. For a fully electric vehicle the allowance is increased by 20 % — but that uplift also covers charging, which we bill separately.",
       irve_bornes:
@@ -758,7 +758,11 @@ export const en: Dictionary = {
       verdictBetter: "You would be left with {amount} more each month.",
       verdictWorse: "You would be left with {amount} less each month.",
       verdictSame: "The money left over would be practically identical.",
-      verdictNote: "Before income tax and excluding benefits: neither of those is quantified yet.",
+      verdictNote: "Before income tax and excluding benefits: neither of those is quantified here.",
+      verdictNoteFiscal:
+        "Income tax and benefits computed by OpenFisca-France on the legislation in force, assuming a steady income across the year.",
+      verdictNoteShort: "Income tax and benefits computed by OpenFisca-France.",
+      verdictNoteShortNone: "Income tax and benefits not quantified here.",
       verdictTiers: {
         excellent: {
           emoji: "🎉",
@@ -835,7 +839,7 @@ export const en: Dictionary = {
       perMonth: "/ month",
       seededTitle: "Seed data",
       seededDesc:
-        "This version runs on seed values calibrated against the real datasets, not yet on imported data. The orders of magnitude are right; the amounts are not measurements.",
+        "Rents, fuel and distances are now measured: 2025 advertised rents from the Carte des loyers (ANIL/CEREMA), fuel prices read per département, distances by road routing. Electricity, water and transit fares are still seed values. Each line's status and sources say which of the two you are looking at.",
       rankingTitle: "Districts of {city}, most to least advantageous",
       rankingDesc:
         "With the same salary and household, only the district changes. Rent goes down, but the commute and the distance to the shops can take the difference back.",

@@ -613,7 +613,7 @@ export const fr = {
       purpose_commute: "{commuteKm} km domicile-travail",
       purpose_groceries:
         "{groceryKm} km de courses ({groceryOneWay} km jusqu'au commerce alimentaire le plus proche, aller simple)",
-      fuel: "{purpose} = {totalKm} km/mois × {litres} L/100 km × {price} €/L, prix moyen des stations de la ville.",
+      fuel: "{purpose} = {totalKm} km/mois × {litres} L/100 km × {price} €/L, prix médian des stations du département.",
       charge_home:
         "{purpose} = {totalKm} km/mois × {kwhPer100} kWh/100 km, dont {sharePct} % rechargés à domicile, soit {kwh} kWh × {price} €/kWh. Ce montant s'ajoute à la ligne Électricité : la consommation du secteur ne tient pas compte d'un véhicule.",
       charge_public:
@@ -725,7 +725,7 @@ export const fr = {
     },
     sourceCaveats: {
       carte_loyers:
-        "Loyer d'annonce charges comprises, à l'échelle de la commune. Ce n'est pas un loyer réel constaté, et l'indicateur ne descend pas au quartier.",
+        "Loyer d'annonce charges comprises, à l'échelle de la commune, avec l'intervalle de confiance publié par la source. Ce n'est pas un loyer réel constaté, et l'indicateur ne descend pas au quartier : l'écart entre quartiers est modélisé à partir du chiffre communal, pas mesuré.",
       insee_salaires:
         "Salaires en équivalent temps plein. Sert de repère de marché, jamais de salaire individuel.",
       france_travail_offres:
@@ -737,7 +737,7 @@ export const fr = {
       sispea_eau:
         "Le tarif s'applique au périmètre du service, qui ne coïncide pas toujours avec la commune. Les écarts réels vont de 1 à 2 entre communes.",
       prix_carburants:
-        "Prix d'un jour donné. Un budget annuel doit être calculé sur une moyenne, pas sur le relevé du matin.",
+        "Médiane des stations du département, relevée un jour donné. Une station précise peut s'en écarter de 20 centimes, et un budget annuel doit être calculé sur une moyenne, pas sur le relevé du matin.",
       bareme_kilometrique:
         "Forfait national couvrant entretien, assurance et dépréciation. Il ne reflète pas l'écart de prime d'assurance entre départements. Pour un véhicule 100 % électrique, le barème est majoré de 20 % — mais cette majoration couvre aussi la recharge, que nous comptons à part.",
       irve_bornes:
@@ -768,7 +768,12 @@ export const fr = {
       verdictWorse: "Il vous resterait {amount} de moins chaque mois.",
       verdictSame: "Le reste à vivre serait pratiquement identique.",
       verdictNote:
-        "Avant impôt sur le revenu et hors prestations : ces deux postes ne sont pas encore chiffrés.",
+        "Avant impôt sur le revenu et hors prestations : ces deux postes ne sont pas chiffrés ici.",
+      verdictNoteFiscal:
+        "Impôt sur le revenu et prestations calculés par OpenFisca-France sur la législation en vigueur, à revenu constant sur l'année.",
+      /* The card has one line for this. The full sentence lives in the report. */
+      verdictNoteShort: "Impôt et prestations calculés par OpenFisca-France.",
+      verdictNoteShortNone: "Impôt et prestations non chiffrés ici.",
       verdictTiers: {
         excellent: {
           emoji: "🎉",
@@ -846,7 +851,7 @@ export const fr = {
       perMonth: "/ mois",
       seededTitle: "Données d'amorçage",
       seededDesc:
-        "Cette version tourne sur des valeurs d'amorçage calibrées sur les vrais jeux de données, pas encore sur les données importées. Les ordres de grandeur sont justes, les montants ne sont pas des mesures.",
+        "Loyers, carburant et distances sont désormais mesurés : loyers d'annonce 2025 de la Carte des loyers (ANIL/CEREMA), prix des carburants relevés par département, distances par itinéraire routier. L'électricité, l'eau et les tarifs de transport restent des valeurs d'amorçage. Le statut et les sources de chaque ligne indiquent lequel des deux vous regardez.",
       rankingTitle: "Quartiers de {city}, du plus au moins avantageux",
       rankingDesc:
         "À salaire et foyer identiques, seul le quartier change. Le loyer descend, mais le trajet et la distance au commerce peuvent reprendre la différence.",

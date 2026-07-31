@@ -1,10 +1,11 @@
 /**
- * Seeded snapshot for the reste-à-vivre engine.
+ * Partly measured, partly seeded snapshot for the reste-à-vivre engine.
  *
- * ⚠️ These are SEED VALUES, sized to the real datasets so the simulator reads
- * correctly end to end. They are NOT yet read from the imported data. The UI
- * labels every run as seeded — see `SNAPSHOT_IS_SEEDED`, which the result page
- * renders as a visible banner rather than fine print.
+ * ⚠️ Read the mapping below before trusting a figure. Rents, fuel and travel
+ * distances are read from imported data. Electricity, water and transit fares are
+ * still SEED VALUES, sized to the real datasets so the simulator reads correctly
+ * end to end. The UI keeps labelling runs as seeded — see `SNAPSHOT_IS_SEEDED` —
+ * because a withdrawn banner would imply every line is a measurement.
  *
  * District figures are **derived**, not typed in one by one. Each city carries a
  * central reference rent and each district an archetype; the rest follows from a
@@ -16,15 +17,15 @@
  * shapes below are the shapes the importers have to produce.
  *
  * Field → source mapping:
- *   rentPerSqm          → Carte des loyers (ANIL/CEREMA), commune, charges comprises
- *   rentPerSqmRange     → same, P25/P75 spread
- *   electricityKwhYear  → Enedis, consommation résidentielle par IRIS
- *   waterPricePerM3     → SISPEA via Hub'Eau, périmètre du service
- *   fuelPricePerLitre   → prix-carburants.gouv.fr, médiane des stations à 5 km
- *   transitPassMonthly  → grille tarifaire du réseau, relevée à la main
+ *   rentPerSqm          → MEASURED: Carte des loyers 2025 (ANIL/CEREMA), commune
+ *   rentPerSqmRange     → MEASURED: the source's own confidence interval
+ *   electricityKwhYear  → seeded; Enedis, consommation résidentielle par IRIS
+ *   waterPricePerM3     → seeded; SISPEA via Hub'Eau, périmètre du service
+ *   fuelPricePerLitre   → MEASURED: prix des carburants, médiane du département
+ *   transitPassMonthly  → seeded; grille tarifaire du réseau, à relever
  *   transitTicketUnit   → GTFS fare_attributes, quand le réseau les publie
- *   distanceToJobKm     → à remplacer par un vrai calcul BAN + itinéraire
- *   distanceToGroceryKm → BPE (commerces alimentaires) + BAN + itinéraire
+ *   distanceToJobKm     → MEASURED where `distances.json` has the district
+ *   distanceToGroceryKm → MEASURED where `distances.json` has the district
  *   alurZone            → décret plafonnant les honoraires de location
  *
  * `id`, `name` and `department` are the same as in `src/lib/mock/cities.ts`, so
@@ -32,6 +33,7 @@
  */
 
 import measured from "./distances.json" with { type: "json" };
+import market from "./market.json" with { type: "json" };
 
 /** Position of a district inside its city. Drives rent, energy and distances. */
 export type DistrictArchetype = "central" | "residential" | "peripheral";
@@ -116,10 +118,18 @@ export type AlurZone = "tres_tendue" | "tendue" | "autre";
 
 export type GeoPoint = { lat: number; lon: number };
 
-/** Flipped to false the day the engine reads imported data instead of this file. */
+/**
+ * Still true, and deliberately so.
+ *
+ * Rents and travel distances are now measured — the two heaviest items. Energy,
+ * water and transit fares are not: they remain seeded. The banner stays until the
+ * last of them is real, because a reader who sees it withdrawn will reasonably
+ * assume every figure is a measurement. `MARKET_COVERAGE` and the per-line status
+ * are what say which is which.
+ */
 export const SNAPSHOT_IS_SEEDED = true;
 
-export const JOB_DATASET_VERSION = "seed-2026.07";
+export const JOB_DATASET_VERSION = "loyers2025-carburants2026.07";
 
 // --- the derivation model ---------------------------------------------------
 
@@ -173,6 +183,16 @@ type CitySpec = Omit<CitySnapshot, "districts"> & {
   districts: Array<{ id: string; name: string; archetype: DistrictArchetype }>;
 };
 
+type MarketRow = {
+  rentPerSqm: { appartement: number; maison: number };
+  rentRange: { low: number; high: number };
+  observations: number;
+  fuelPricePerLitre: number | null;
+};
+
+const marketOf = (cityId: string): MarketRow | undefined =>
+  (market.cities as Record<string, MarketRow | undefined>)[cityId];
+
 function buildDistrict(
   cityId: string,
   centralRent: number,
@@ -183,8 +203,26 @@ function buildDistrict(
   const s1 = seed(`${cityId}:${spec.id}`);
   const s2 = seed(`${spec.id}:${cityId}`);
 
+  /*
+    The commune's real rent when the market pass resolved it, the seeded reference
+    otherwise. Both are then shaped by the archetype, because the published figure
+    is one number for the whole commune and districts inside it are not alike.
+  */
+  const row = marketOf(cityId);
+  const reference = row?.rentPerSqm.appartement ?? centralRent;
+
   // ±6 % around the archetype so districts of one archetype are not clones.
-  const flat = round2(centralRent * a.rent * (0.94 + 0.12 * s1));
+  const flat = round2(reference * a.rent * (0.94 + 0.12 * s1));
+
+  /*
+    The range comes from the source's own confidence interval when we have it, kept
+    proportional to this district's position. Multiplying the median by 0.85 and 1.18
+    was a stand-in for exactly this, and a published interval beats a guessed one.
+  */
+  const spread = row
+    ? { low: row.rentRange.low / row.rentPerSqm.appartement, high: row.rentRange.high / row.rentPerSqm.appartement }
+    : RENT_SPREAD;
+  const houseRatio = row ? row.rentPerSqm.maison / row.rentPerSqm.appartement : HOUSE_RENT_RATIO;
 
   /*
     Measured distances win over the model when the ETL found this district. A
@@ -199,11 +237,8 @@ function buildDistrict(
     id: spec.id,
     name: spec.name,
     archetype: spec.archetype,
-    rentPerSqm: { appartement: flat, maison: round2(flat * HOUSE_RENT_RATIO) },
-    rentPerSqmRange: {
-      low: round2(flat * RENT_SPREAD.low),
-      high: round2(flat * RENT_SPREAD.high),
-    },
+    rentPerSqm: { appartement: flat, maison: round2(flat * houseRatio) },
+    rentPerSqmRange: { low: round2(flat * spread.low), high: round2(flat * spread.high) },
     electricityKwhYear: Math.round(a.kwh * (0.92 + 0.16 * s2)),
     distanceToJobKm: hit ? atLeastAStep(hit.jobKm) : round1(a.jobKm * (0.8 + 0.4 * s2)),
     distanceToGroceryKm:
@@ -595,11 +630,26 @@ const CITY_SPECS: CitySpec[] = [
 
 export const cities: CitySnapshot[] = CITY_SPECS.map((spec) => {
   const { centralRentPerSqm, districts, ...city } = spec;
+  const row = marketOf(spec.id);
   return {
     ...city,
+    // A city the fuel pass could not price keeps its seeded litre.
+    /*
+      The literal in CITY_SPECS is a last-resort amorce, ~12 % below the July 2026
+      readings. A test asserts every city resolves from `market.json`, so a future
+      ETL run that loses a city fails the build instead of quietly serving the old
+      price as if it were current.
+    */
+    fuelPricePerLitre: row?.fuelPricePerLitre ?? city.fuelPricePerLitre,
     districts: districts.map((d) => buildDistrict(spec.id, centralRentPerSqm, d)),
   };
 });
+
+/** How much of the market data is measured, for the banner and the fine print. */
+export const MARKET_COVERAGE = market.coverage;
+export const MARKET_GENERATED_AT: string = market.generatedAt;
+/** Cities whose rent is a real published figure rather than a seed. */
+export const RENT_IS_MEASURED = (cityId: string): boolean => marketOf(cityId) !== undefined;
 
 /**
  * National parameters. None of these create a difference between two cities —

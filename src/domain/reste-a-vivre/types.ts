@@ -279,4 +279,13 @@ export type Comparison = {
   alternatives: SideResult[];
   /** Lines we refuse to invent — the honest health warning. */
   omitted: Line[];
+  /**
+   * Whether income tax and benefits were actually computed for both sides.
+   *
+   * The result page carries a disclaimer saying those two items are not
+   * quantified. That was true before the rules engine was wired in and false
+   * afterwards — it sat above a table showing a computed tax line. The engine now
+   * states which of the two it produced so the sentence cannot drift again.
+   */
+  fiscalComputed: boolean;
 };

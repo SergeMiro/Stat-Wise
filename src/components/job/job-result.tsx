@@ -121,7 +121,14 @@ export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }
             high: formatSignedCurrency(locale, result.deltaRange.high),
           })}
         </p>
-        <p className="text-muted-foreground mt-2 text-xs">{r.verdictNote}</p>
+        {/*
+          Which disclaimer is true depends on whether the rules engine answered.
+          Printing the "not quantified" one above a table containing a computed tax
+          line is worse than printing nothing.
+        */}
+        <p className="text-muted-foreground mt-2 text-xs">
+          {result.fiscalComputed ? r.verdictNoteFiscal : r.verdictNote}
+        </p>
 
         {/*
           Two numbers, not one. The comparable figure is what the verdict rests on;

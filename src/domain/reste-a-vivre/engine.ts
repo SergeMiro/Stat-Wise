@@ -1074,5 +1074,6 @@ export const compare = (input: CompareInput): Comparison | null => {
     moveCost: buildMoveCost(targetCity, rentOf(best), surface, input.removalCost),
     alternatives,
     omitted,
+    fiscalComputed: input.fiscal !== undefined,
   };
 };

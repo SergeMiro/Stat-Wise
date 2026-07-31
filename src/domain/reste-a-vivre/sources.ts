@@ -209,7 +209,7 @@ export const SOURCE_CODES = Object.keys(SOURCES) as SourceCode[];
  * Date the seeded snapshot was assembled. Displayed next to every figure so a
  * stale deployment is visible rather than silently trusted.
  */
-export const SNAPSHOT_DATE = "2026-07-30";
+export const SNAPSHOT_DATE = "2026-07-31";
 
 /** Deduplicated source codes behind a set of lines, in first-seen order. */
 export const collectSources = (
