@@ -18,7 +18,9 @@ import {
 } from "lucide-react";
 import {
   bikeAmortizationPresets,
+  compare,
   findCity,
+  type CompareInput,
   listJobCities,
   type HousingType,
   type TravelMode,
@@ -50,9 +52,31 @@ import { ChoiceGroup } from "@/components/quartier/choice-group";
 
 const STEP_KEYS = ["today", "offer", "household", "travel", "budget"] as const;
 
+/**
+ * Legislation year asked of the rules engine. Bumped deliberately rather than
+ * read from the clock: a result computed against next year's draft law on the 1st
+ * of January would change without anyone deciding to change it.
+ */
+const FISCAL_YEAR = 2026;
+
+/**
+ * The rent the winning district will actually charge.
+ *
+ * Housing benefit is driven by the rent, so asking the rules engine about the
+ * first district in the list while the result shows a different one would compute
+ * a benefit for a flat nobody is moving into. The engine is pure and cheap, so it
+ * is run once without tax to find the winner, and its rent is what gets sent.
+ */
+function targetRentOfWinner(input: CompareInput): number {
+  const first = compare(input);
+  const rent = first?.target.depenses.find((line) => line.key === "loyer")?.amount;
+  return Math.round(rent ?? input.current.actualRent);
+}
+
 export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
   const [draft, setDraft, hydrated] = useHydratedState<JobDraft>(defaultJobDraft, () => {
     const stored = loadJobDraft();
     return stored ? { ...defaultJobDraft, ...stored } : null;
@@ -104,9 +128,44 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
     draft.targetCommuteMode === "actif" ||
     draft.errandsMode === "actif";
 
-  function onFinish() {
+  /*
+    Tax and benefits are fetched here rather than on the result page, so the result
+    is complete on first paint instead of shifting under the reader a second later.
+    A failure is not an error the user has to deal with: the comparison goes ahead
+    and those lines stay `non chiffré`, exactly as before the rules engine existed.
+  */
+  async function onFinish() {
     const input = draftToInput(draft);
     if (!input) return;
+    setSubmitting(true);
+    try {
+      const response = await fetch("/api/fiscal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          year: FISCAL_YEAR,
+          children: input.household.children,
+          childrenInCreche: input.household.childrenInCreche,
+          current: {
+            cityId: input.current.cityId,
+            netSalary: input.current.netSalary,
+            partnerNetSalary: input.current.partnerNetSalary,
+            rent: input.current.actualRent,
+          },
+          target: {
+            cityId: input.target.cityId,
+            netSalary: input.target.netSalary,
+            partnerNetSalary: input.target.partnerNetSalary,
+            // The target rent is our estimate, so the benefit it drives is too.
+            rent: targetRentOfWinner(input),
+          },
+        }),
+      });
+      const body = (await response.json()) as { fiscal?: CompareInput["fiscal"] };
+      if (body.fiscal) input.fiscal = body.fiscal;
+    } catch {
+      // Deliberately silent: the comparison is still worth showing without it.
+    }
     saveJobInput(input);
     router.push(localePath(locale, "/app/job/result"));
   }
@@ -579,9 +638,9 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
             <ArrowRight />
           </Button>
         ) : (
-          <Button onClick={onFinish} size="lg">
+          <Button onClick={onFinish} size="lg" disabled={submitting}>
             <Sparkles />
-            {dict.job.generate}
+            {submitting ? dict.job.computing : dict.job.generate}
           </Button>
         )}
       </div>

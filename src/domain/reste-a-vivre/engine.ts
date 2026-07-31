@@ -5,6 +5,7 @@ import type {
   ErrandsInput,
   Explanation,
   FamilyTravelInput,
+  FiscalResult,
   Household,
   HousingType,
   Line,
@@ -128,6 +129,8 @@ type SideContext = {
   familyTripsPerYear: number;
   /** Declared monthly spending that does not change with the city. */
   otherMonthly: number;
+  /** Tax and benefits, when the rules engine answered. */
+  fiscal?: FiscalResult;
   netSalary: number;
   partnerNetSalary: number;
   housingType: HousingType;
@@ -519,6 +522,21 @@ const expenseLines = (context: SideContext): Line[] => {
     });
   }
 
+  if (context.fiscal) {
+    lines.push({
+      key: "impot_revenu",
+      label: { key: "impot_revenu" },
+      kind: "contrainte",
+      amount: round(context.fiscal.incomeTaxMonthly),
+      status: "computed",
+      basis: {
+        key: "income_tax",
+        params: { year: String(context.fiscal.year) },
+      },
+      sources: ["openfisca"],
+    });
+  }
+
   lines.push({
     key: "alimentation",
     label: { key: "alimentation" },
@@ -539,8 +557,11 @@ const expenseLines = (context: SideContext): Line[] => {
 
 /** Lines we deliberately refuse to invent. They stay visible in the result. */
 const omittedLines = (context: SideContext): Line[] => {
-  const lines: Line[] = [
-    {
+  const lines: Line[] = [];
+
+  // Income tax is only unquantified while the rules engine has not answered.
+  if (!context.fiscal) {
+    lines.push({
       key: "impot_revenu",
       label: { key: "impot_revenu" },
       kind: "contrainte",
@@ -548,16 +569,25 @@ const omittedLines = (context: SideContext): Line[] => {
       status: "unavailable",
       reason: { key: "impot_revenu" },
       sources: ["openfisca"],
-    },
-    {
-      key: "prestations",
-      label: { key: "prestations" },
-      kind: "revenu",
-      amount: null,
-      status: "unavailable",
-      reason: { key: "prestations" },
-      sources: ["openfisca"],
-    },
+    });
+  }
+
+  /*
+    Benefits stay unquantified whether or not the rules engine answered. It will
+    answer — and the answer is wrong for the reason set out in
+    `src/lib/openfisca-payload.ts`. An admitted gap beats a credible mistake.
+  */
+  lines.push({
+    key: "prestations",
+    label: { key: "prestations" },
+    kind: "revenu",
+    amount: null,
+    status: "unavailable",
+    reason: { key: "prestations" },
+    sources: ["openfisca"],
+  });
+
+  lines.push(
     {
       key: "assurances",
       label: { key: "assurances" },
@@ -594,7 +624,7 @@ const omittedLines = (context: SideContext): Line[] => {
       reason: { key: "taxe_habitation" },
       sources: [],
     },
-  ];
+  );
 
   if (context.household.childrenInCreche > 0) {
     lines.push({
@@ -723,6 +753,11 @@ export type CompareInput = {
   otherMonthly: number;
   /** €, what the removal itself will cost. Part of the up-front block. */
   removalCost: number;
+  /**
+   * Tax and benefits per side, when the rules engine answered. Absent means those
+   * lines stay `non chiffré` — the behaviour before OpenFisca was wired in.
+   */
+  fiscal?: { current: FiscalResult; target: FiscalResult };
 };
 
 /** Which bucket of the waterfall a line belongs to. */
@@ -861,6 +896,7 @@ export const compare = (input: CompareInput): Comparison | null => {
     familyKm: input.familyTravel.currentKm,
     familyTripsPerYear: input.familyTravel.tripsPerYear,
     otherMonthly: input.otherMonthly,
+    fiscal: input.fiscal?.current,
     netSalary: input.current.netSalary,
     partnerNetSalary: input.current.partnerNetSalary,
     housingType: input.current.housingType,
@@ -881,6 +917,7 @@ export const compare = (input: CompareInput): Comparison | null => {
       familyKm: input.familyTravel.targetKm,
       familyTripsPerYear: input.familyTravel.tripsPerYear,
       otherMonthly: input.otherMonthly,
+      fiscal: input.fiscal?.target,
       netSalary,
       partnerNetSalary: input.target.partnerNetSalary,
       housingType: input.target.housingType,

@@ -87,6 +87,13 @@ export type CitySnapshot = {
    * in a component.
    */
   center: GeoPoint;
+  /**
+   * INSEE commune code. Needed by the socio-fiscal rules engine: housing benefit
+   * depends on which zone the commune sits in, so a wrong code silently produces
+   * a benefit for the wrong part of France. Every code here came from the BAN
+   * municipality lookup, not from memory.
+   */
+  communeCode: string;
   /** True for Île-de-France, the only spatial price gap Insee actually measures. */
   parisRegion: boolean;
   /** €/m³, water supply + collective sanitation. */
@@ -239,6 +246,7 @@ export const DISTANCES_COVERAGE = measured.coverage;
 const CITY_SPECS: CitySpec[] = [
   {
     id: "paris",
+    communeCode: "75056",
     center: { lat: 48.8566, lon: 2.3522 },
     name: "Paris",
     department: "Paris (75)",
@@ -264,6 +272,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "marseille",
+    communeCode: "13055",
     center: { lat: 43.2965, lon: 5.3698 },
     name: "Marseille",
     department: "Bouches-du-Rhône (13)",
@@ -289,6 +298,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "lyon",
+    communeCode: "69123",
     center: { lat: 45.764, lon: 4.8357 },
     name: "Lyon",
     department: "Rhône (69)",
@@ -314,6 +324,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "toulouse",
+    communeCode: "31555",
     center: { lat: 43.6047, lon: 1.4442 },
     name: "Toulouse",
     department: "Haute-Garonne (31)",
@@ -338,6 +349,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "nice",
+    communeCode: "06088",
     center: { lat: 43.7102, lon: 7.262 },
     name: "Nice",
     department: "Alpes-Maritimes (06)",
@@ -362,6 +374,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "nantes",
+    communeCode: "44109",
     center: { lat: 47.2184, lon: -1.5536 },
     name: "Nantes",
     department: "Loire-Atlantique (44)",
@@ -386,6 +399,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "montpellier",
+    communeCode: "34172",
     center: { lat: 43.6108, lon: 3.8767 },
     name: "Montpellier",
     department: "Hérault (34)",
@@ -411,6 +425,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "strasbourg",
+    communeCode: "67482",
     center: { lat: 48.5734, lon: 7.7521 },
     name: "Strasbourg",
     department: "Bas-Rhin (67)",
@@ -435,6 +450,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "bordeaux",
+    communeCode: "33063",
     center: { lat: 44.8378, lon: -0.5792 },
     name: "Bordeaux",
     department: "Gironde (33)",
@@ -459,6 +475,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "lille",
+    communeCode: "59350",
     center: { lat: 50.6292, lon: 3.0573 },
     name: "Lille",
     department: "Nord (59)",
@@ -483,6 +500,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "versailles",
+    communeCode: "78646",
     center: { lat: 48.8049, lon: 2.1204 },
     name: "Versailles",
     department: "Yvelines (78)",
@@ -507,6 +525,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "dijon",
+    communeCode: "21231",
     center: { lat: 47.3216, lon: 5.0415 },
     name: "Dijon",
     department: "Côte-d'Or (21)",
@@ -531,6 +550,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "avignon",
+    communeCode: "84007",
     center: { lat: 43.9493, lon: 4.8055 },
     name: "Avignon",
     department: "Vaucluse (84)",
@@ -553,6 +573,7 @@ const CITY_SPECS: CitySpec[] = [
   },
   {
     id: "petite-commune",
+    communeCode: "21540",
     center: { lat: 47.327, lon: 5.0855 },
     name: "Saint-Apollinaire",
     department: "Côte-d'Or (21)",

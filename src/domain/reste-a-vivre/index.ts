@@ -57,6 +57,7 @@ export type {
   ErrandsInput,
   Explanation,
   FamilyTravelInput,
+  FiscalResult,
   Household,
   HousingType,
   Interpolation,

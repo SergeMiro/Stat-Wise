@@ -415,6 +415,7 @@ export const fr = {
     metric: "Reste à vivre",
     metricDesc: "Ce qui reste chaque mois une fois toutes les factures payées.",
     generate: "Comparer les deux situations",
+    computing: "Calcul en cours…",
     steps: {
       today: {
         title: "Votre situation aujourd'hui",
@@ -557,6 +558,8 @@ export const fr = {
       vehicle_use: "{km} km/mois × {perKm} €/km, forfait national dérivé du barème kilométrique.",
       vehicle_use_ev:
         "{km} km/mois × {perKm} €/km : le forfait de {base} €/km majoré de {upliftPct} % comme le prévoit le barème kilométrique pour un véhicule 100 % électrique. Attention : cette majoration fiscale couvre aussi la recharge, que nous comptons séparément — nous l'appliquons donc ici à l'usure et à la dépréciation seules. C'est une hypothèse, pas la règle fiscale.",
+      income_tax:
+        "Calculé par le moteur de règles OpenFisca-France sur la législation {year}, à partir de votre foyer fiscal. Le salaire imposable est estimé à partir du net (+2 % environ, part non déductible de la CSG) : c'est le point faible de ce calcul.",
       transit_pass:
         "Grille tarifaire du réseau, relevée à la main — les abonnements ne figurent pas dans les données ouvertes.",
       transit_free:
@@ -588,7 +591,7 @@ export const fr = {
       impot_revenu:
         "Nécessite le moteur de règles OpenFisca et la configuration complète du foyer fiscal. Non intégré : le reste à vivre affiché est donc avant impôt.",
       prestations:
-        "Même moteur de règles. Ces prestations peuvent déplacer le résultat de plusieurs centaines d'euros, dans les deux sens.",
+        "Aide au logement, allocations familiales, RSA, prime d'activité. Le moteur de règles répond — mais faux : sans enfant il renvoie 0 €, et avec un seul enfant il saute à 426,77 € pour un foyer gagnant 2 300 €/mois avec 900 € de loyer, des deux côtés à la fois. Le revenu cesse d'être compté dès qu'un enfant est déclaré, parce que la base de ressources se construit sur l'année N-2 et sur un statut de parent isolé que nous n'établissons pas. Un chiffre crédible mais faux de ~400 €/mois aurait flatté tous les foyers avec enfants : nous préférons le vide, jusqu'à ce que la base de ressources soit faite correctement.",
       assurances:
         "Aucune donnée publique ne donne la prime par commune : ces tarifs appartiennent aux assureurs.",
       charges_copro:

@@ -202,6 +202,24 @@ export type SideResult = {
   groceryName: string | null;
 };
 
+/**
+ * Income tax from the socio-fiscal rules engine, in euros per month.
+ *
+ * Optional everywhere: when the engine cannot be reached the line goes back to
+ * being `non chiffré`, which is what it was before this was wired in. The
+ * calculation engine stays pure — it receives a number, it never makes the call.
+ *
+ * Benefits are absent on purpose. See `src/lib/openfisca-payload.ts`: the rules
+ * engine answers for housing benefit, and the answer is wrong in a way that reads
+ * as right.
+ */
+export type FiscalResult = {
+  /** Positive when the household owes tax. */
+  incomeTaxMonthly: number;
+  /** Legislation year the figure was computed against. */
+  year: number;
+};
+
 /** One bar of the difference, so the result answers "why" and not only "how much". */
 export type WaterfallStep = { key: string; amount: number };
 

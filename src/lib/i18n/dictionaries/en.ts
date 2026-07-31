@@ -408,6 +408,7 @@ export const en: Dictionary = {
     metric: "Money left over",
     metricDesc: "What remains each month once every bill is paid.",
     generate: "Compare the two situations",
+    computing: "Calculating…",
     steps: {
       today: {
         title: "Your situation today",
@@ -551,6 +552,8 @@ export const en: Dictionary = {
         "{km} km/month × {perKm} €/km, a national flat rate derived from the mileage allowance.",
       vehicle_use_ev:
         "{km} km/month × {perKm} €/km: the {base} €/km flat rate increased by {upliftPct} %, as the mileage allowance provides for a fully electric vehicle. Note: that fiscal uplift also covers charging, which we bill separately — so we apply it here to wear and depreciation alone. It is an assumption, not the tax rule.",
+      income_tax:
+        "Computed by the OpenFisca-France rules engine against {year} legislation, from your tax household. Taxable salary is estimated from the net figure (about +2 %, the non-deductible part of the CSG): that is the weak link in this calculation.",
       transit_pass:
         "The network's tariff table, collected by hand — passes are not published in the open data.",
       transit_free:
@@ -582,7 +585,7 @@ export const en: Dictionary = {
       impot_revenu:
         "Requires the OpenFisca rules engine and the full configuration of the tax household. Not wired in: the figure shown is therefore before income tax.",
       prestations:
-        "Same rules engine. These benefits can move the result by several hundred euros, in either direction.",
+        "Housing benefit, family allowances, RSA, activity bonus. The rules engine answers — but wrongly: with no children it returns 0 €, and with a single child it jumps to 426.77 € for a household earning 2,300 €/month with 900 € of rent, on both sides at once. Income stops being counted the moment a child is declared, because the resource base is built from year N-2 and from a lone-parent status this request never establishes. A credible but wrong figure of ~400 €/month would have flattered every household with children: we prefer the gap until the resource base is built properly.",
       assurances:
         "No public dataset gives the premium per commune: those prices belong to the insurers.",
       charges_copro:

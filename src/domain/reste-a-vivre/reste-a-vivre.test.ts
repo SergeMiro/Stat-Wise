@@ -758,3 +758,54 @@ describe("verdict — an outsized gain", () => {
     expect(graded(-5000, 1000).outsized).toBe(false);
   });
 });
+
+// --- tax and benefits from the rules engine ---------------------------------
+
+describe("fiscal lines", () => {
+  const fiscal = {
+    current: { incomeTaxMonthly: 101.5, year: 2026 },
+    target: { incomeTaxMonthly: 168, year: 2026 },
+  };
+  const withFiscal = compare({ ...baseInput, fiscal })!;
+  const without = compare(baseInput)!;
+
+  it("leaves tax and benefits unquantified when the engine did not answer", () => {
+    const keys = without.current.omitted.map((l) => l.key);
+    expect(keys).toContain("impot_revenu");
+    expect(keys).toContain("prestations");
+    expect(lineOf(without.current, "impot_revenu")).toBeUndefined();
+  });
+
+  it("turns income tax into a real line once it did", () => {
+    expect(lineOf(withFiscal.current, "impot_revenu")?.amount).toBeCloseTo(101.5, 2);
+    expect(withFiscal.current.omitted.map((l) => l.key)).not.toContain("impot_revenu");
+  });
+
+  it("keeps benefits unquantified even when the engine answered", () => {
+    /*
+      The engine will happily return a housing benefit, and it is wrong — see the
+      note on FiscalResult. Both sides must keep the gap, or every household with
+      children gains a phantom ~400 €/month.
+    */
+    for (const side of [withFiscal.current, withFiscal.target, without.current]) {
+      const line = side.omitted.find((l) => l.key === "prestations")!;
+      expect(line.amount).toBeNull();
+      expect(line.reason).toBeDefined();
+      expect(side.revenus.some((l) => l.key === "prestations")).toBe(false);
+    }
+  });
+
+  it("counts tax as an expense, not as income", () => {
+    // The rules engine returns a negative number for tax owed; if that sign leaked
+    // through, paying tax would raise the reste à vivre.
+    expect(withFiscal.current.resteAVivre).toBeLessThan(without.current.resteAVivre);
+  });
+
+  it("scales tax with the amount owed", () => {
+    const heavier = compare({
+      ...baseInput,
+      fiscal: { ...fiscal, current: { incomeTaxMonthly: 300, year: 2026 } },
+    })!;
+    expect(heavier.current.resteAVivre).toBeLessThan(withFiscal.current.resteAVivre);
+  });
+});
