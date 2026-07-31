@@ -164,6 +164,20 @@ export type FamilyTravelInput = {
   tripsPerYear: number;
 };
 
+/**
+ * Income the household already has, declared rather than modelled.
+ *
+ * Dividends and rental income do not change with the city, so they sit on both
+ * sides and cancel in the difference — they are here to make the absolute figure
+ * true, not to move the verdict. Benefits are different: they depend on the rent
+ * and the commune, so today's amount is applied to today's side only.
+ */
+export type OtherIncomeInput = {
+  dividendsMonthly: number;
+  rentalMonthly: number;
+  declaredBenefitsMonthly: number;
+};
+
 export type SideResult = {
   cityId: string;
   cityName: string;

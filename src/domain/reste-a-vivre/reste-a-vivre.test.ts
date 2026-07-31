@@ -50,6 +50,7 @@ const baseInput: CompareInput = {
   familyTravel: { currentKm: 30, targetKm: 200, tripsPerYear: 6 },
   otherMonthly: 420,
   removalCost: 1200,
+  otherIncome: { dividendsMonthly: 0, rentalMonthly: 0, declaredBenefitsMonthly: 0 },
 };
 
 const electric = (over: Partial<CompareInput["vehicle"]> = {}): CompareInput => ({
@@ -807,5 +808,62 @@ describe("fiscal lines", () => {
       fiscal: { ...fiscal, current: { incomeTaxMonthly: 300, year: 2026 } },
     })!;
     expect(heavier.current.resteAVivre).toBeLessThan(withFiscal.current.resteAVivre);
+  });
+});
+
+// --- declared income --------------------------------------------------------
+
+describe("declared income", () => {
+  const withIncome = (over: Partial<CompareInput["otherIncome"]>) =>
+    compare({ ...baseInput, otherIncome: { ...baseInput.otherIncome, ...over } })!;
+
+  it("puts dividends and rental income on both sides", () => {
+    const r = withIncome({ dividendsMonthly: 200, rentalMonthly: 350 });
+    for (const side of [r.current, r.target]) {
+      expect(side.revenus.find((l) => l.key === "dividendes")?.amount).toBe(200);
+      expect(side.revenus.find((l) => l.key === "revenus_fonciers")?.amount).toBe(350);
+    }
+  });
+
+  it("leaves the verdict untouched, since they do not change with the city", () => {
+    const plain = compare(baseInput)!;
+    const rich = withIncome({ dividendsMonthly: 200, rentalMonthly: 350 });
+    expect(rich.deltaResteAVivre).toBeCloseTo(plain.deltaResteAVivre, 2);
+    expect(rich.current.resteAVivre).toBeGreaterThan(plain.current.resteAVivre);
+  });
+
+  it("emits no line at all for an income of zero", () => {
+    const r = compare(baseInput)!;
+    expect(r.current.revenus.some((l) => l.key === "dividendes")).toBe(false);
+    expect(r.current.revenus.some((l) => l.key === "revenus_fonciers")).toBe(false);
+  });
+
+  it("applies declared benefits to today's side only", () => {
+    /*
+      Housing benefit follows the rent and the commune's zone. Repeating today's
+      amount in the target city would invent money in favour of the move — the
+      single most tempting mistake in this whole model.
+    */
+    const r = withIncome({ declaredBenefitsMonthly: 180 });
+    expect(r.current.revenus.find((l) => l.key === "prestations_declarees")?.amount).toBe(180);
+    expect(r.target.revenus.some((l) => l.key === "prestations_declarees")).toBe(false);
+  });
+
+  it("tells the target side why its benefits are missing instead of copying them", () => {
+    const r = withIncome({ declaredBenefitsMonthly: 180 });
+    expect(r.target.omitted.find((l) => l.key === "prestations")?.reason?.key).toBe(
+      "prestations_target",
+    );
+    // No declared benefits, no special wording.
+    expect(
+      compare(baseInput)!.target.omitted.find((l) => l.key === "prestations")?.reason?.key,
+    ).toBe("prestations");
+  });
+
+  it("makes declared benefits improve today rather than the offer", () => {
+    const plain = compare(baseInput)!;
+    const r = withIncome({ declaredBenefitsMonthly: 180 });
+    expect(r.current.resteAVivre).toBeCloseTo(plain.current.resteAVivre + 180, 2);
+    expect(r.deltaResteAVivre).toBeLessThan(plain.deltaResteAVivre);
   });
 });

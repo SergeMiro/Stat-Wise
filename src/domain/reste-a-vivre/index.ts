@@ -63,6 +63,7 @@ export type {
   Interpolation,
   Line,
   MoveCost,
+  OtherIncomeInput,
   LineKind,
   LineStatus,
   Num,

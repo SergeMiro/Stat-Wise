@@ -49,8 +49,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChoiceGroup } from "@/components/quartier/choice-group";
+import { JobSectionButton, JobSectionPicker } from "./job-section-picker";
+import { activeSections, SECTIONS, sectionState, type SectionId } from "@/lib/job-sections";
 
-const STEP_KEYS = ["today", "offer", "household", "travel", "budget"] as const;
+/**
+ * The wizard walks whatever sections are enabled, in registry order.
+ *
+ * `phase` matters more than it looks: the picker is shown before the run and again
+ * on demand, and returning from it must land the user back on the section they
+ * were on — not at the start, and not past the ones they have just switched on.
+ * `sectionIndex` is therefore held as a section *id*, not a number, because the
+ * number means something different once the list changes underneath it.
+ */
+type Phase = "picking" | "running" | "editing";
 
 /**
  * Legislation year asked of the rules engine. Bumped deliberately rather than
@@ -75,7 +86,8 @@ function targetRentOfWinner(input: CompareInput): number {
 
 export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const router = useRouter();
-  const [step, setStep] = useState(0);
+  const [phase, setPhase] = useState<Phase>("picking");
+  const [currentSection, setCurrentSection] = useState<SectionId>("today");
   const [submitting, setSubmitting] = useState(false);
   const [draft, setDraft, hydrated] = useHydratedState<JobDraft>(defaultJobDraft, () => {
     const stored = loadJobDraft();
@@ -90,10 +102,15 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
 
   const cities = listJobCities();
   const f = dict.job.fields;
-  const total = STEP_KEYS.length;
-  const stepKey = STEP_KEYS[step];
-  const stepMeta = dict.job.steps[stepKey];
-  const pct = ((step + 1) / total) * 100;
+  const walk = activeSections(draft.enabledSections);
+  const index = Math.max(0, walk.indexOf(currentSection));
+  const stepKey = walk[index] ?? "today";
+  const total = walk.length;
+  const stepMeta = (dict.job.steps as Record<string, { title: string; desc: string }>)[stepKey];
+  const pct = ((index + 1) / total) * 100;
+  const pendingCount = SECTIONS.filter(
+    (section) => sectionState(section, draft.enabledSections, draft) === "pending",
+  ).length;
 
   const currentCity = useMemo(() => findCity(draft.currentCityId), [draft.currentCityId]);
   const districts = currentCity?.districts ?? [];
@@ -135,6 +152,7 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
     and those lines stay `non chiffré`, exactly as before the rules engine existed.
   */
   async function onFinish() {
+    markReviewed(stepKey);
     const input = draftToInput(draft);
     if (!input) return;
     setSubmitting(true);
@@ -170,17 +188,69 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
     router.push(localePath(locale, "/app/job/result"));
   }
 
+  /** Leaving a section is what marks it reviewed — no effect, no visit tracking. */
+  function markReviewed(id: SectionId) {
+    if (id === "household" && !draft.householdReviewed) update({ householdReviewed: true });
+    if (id === "travel" && !draft.travelReviewed) update({ travelReviewed: true });
+  }
+
+  function goNext() {
+    markReviewed(stepKey);
+    const next = walk[index + 1];
+    if (next) setCurrentSection(next);
+  }
+
   function back() {
-    if (step === 0) router.push(localePath(locale, "/app"));
-    else setStep((n) => n - 1);
+    const previous = walk[index - 1];
+    if (previous) setCurrentSection(previous);
+    else setPhase("picking");
+  }
+
+  if (phase !== "running") {
+    return (
+      <JobSectionPicker
+        dict={dict}
+        draft={draft}
+        mode={phase === "picking" ? "start" : "edit"}
+        onToggle={(enabledSections) => update({ enabledSections })}
+        onConfirm={() => {
+          /*
+            Where to land after the picker.
+            
+            Switching a section on is a request to fill it, and the registry order
+            means it may sit *behind* the current position — where "Continue" would
+            never reach it again. So the return lands on the first enabled section
+            that is still empty; only when everything is filled does it stay put.
+            Without this, re-enabling a section from the last screen silently did
+            nothing, which is how this was found.
+          */
+          const next = activeSections(draft.enabledSections);
+          const firstPending = SECTIONS.find(
+            (section) =>
+              next.includes(section.id) &&
+              sectionState(section, draft.enabledSections, draft) === "pending",
+          );
+          if (firstPending) setCurrentSection(firstPending.id);
+          else if (!next.includes(currentSection)) setCurrentSection(next[0] ?? "today");
+          setPhase("running");
+        }}
+      />
+    );
   }
 
   return (
     <div className="mx-auto max-w-xl px-4 py-5">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <span className="text-muted-foreground text-xs">
+          {(dict.job.sections.names as Record<string, string>)[stepKey]}
+        </span>
+        <JobSectionButton dict={dict} onOpen={() => setPhase("editing")} pending={pendingCount} />
+      </div>
+
       {/* Progress header */}
       <div className="mb-4 space-y-2">
         <div className="text-muted-foreground flex items-center justify-between text-xs">
-          <span>{fill(dict.wizard.stepOf, { current: step + 1, total })}</span>
+          <span>{fill(dict.wizard.stepOf, { current: index + 1, total })}</span>
           {hydrated ? <span>{dict.wizard.draftSaved}</span> : null}
         </div>
         <div className="bg-muted h-1 w-full overflow-hidden rounded-full">
@@ -568,39 +638,84 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
               ) : null}
             </div>
           )}
-          {/* ---- Family and the rest of the budget ---- */}
-          {stepKey === "budget" && (
-            <div className="space-y-5">
-              <div className="space-y-3">
-                <p className="text-muted-foreground text-xs">{f.familyHint}</p>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <NumberField
-                    id="family-km-current"
-                    label={f.familyKmCurrent}
-                    value={draft.familyKmCurrent}
-                    min={0}
-                    step={10}
-                    onChange={(familyKmCurrent) => update({ familyKmCurrent })}
-                  />
-                  <NumberField
-                    id="family-km-target"
-                    label={f.familyKmTarget}
-                    value={draft.familyKmTarget}
-                    min={0}
-                    step={10}
-                    onChange={(familyKmTarget) => update({ familyKmTarget })}
-                  />
-                </div>
+          {/* ---- Trips to close family ---- */}
+          {stepKey === "family" && (
+            <div className="space-y-3">
+              <p className="text-muted-foreground text-xs">{f.familyHint}</p>
+              <div className="grid gap-3 sm:grid-cols-2">
                 <NumberField
-                  id="family-trips"
-                  label={f.familyTripsPerYear}
-                  value={draft.familyTripsPerYear}
+                  id="family-km-current"
+                  label={f.familyKmCurrent}
+                  value={draft.familyKmCurrent}
                   min={0}
-                  step={1}
-                  onChange={(familyTripsPerYear) => update({ familyTripsPerYear })}
+                  step={10}
+                  onChange={(familyKmCurrent) => update({ familyKmCurrent })}
+                />
+                <NumberField
+                  id="family-km-target"
+                  label={f.familyKmTarget}
+                  value={draft.familyKmTarget}
+                  min={0}
+                  step={10}
+                  onChange={(familyKmTarget) => update({ familyKmTarget })}
                 />
               </div>
+              <NumberField
+                id="family-trips"
+                label={f.familyTripsPerYear}
+                value={draft.familyTripsPerYear}
+                min={0}
+                step={1}
+                onChange={(familyTripsPerYear) => update({ familyTripsPerYear })}
+              />
+            </div>
+          )}
 
+          {/* ---- Dividends ---- */}
+          {stepKey === "dividends" && (
+            <NumberField
+              id="dividends"
+              label={f.dividendsMonthly}
+              hint={f.placeInvariantHint}
+              suffix="€"
+              value={draft.dividendsMonthly}
+              min={0}
+              step={50}
+              onChange={(dividendsMonthly) => update({ dividendsMonthly })}
+            />
+          )}
+
+          {/* ---- Rental income ---- */}
+          {stepKey === "rental" && (
+            <NumberField
+              id="rental"
+              label={f.rentalMonthly}
+              hint={f.placeInvariantHint}
+              suffix="€"
+              value={draft.rentalMonthly}
+              min={0}
+              step={50}
+              onChange={(rentalMonthly) => update({ rentalMonthly })}
+            />
+          )}
+
+          {/* ---- Benefits already received ---- */}
+          {stepKey === "aide" && (
+            <NumberField
+              id="benefits"
+              label={f.declaredBenefitsMonthly}
+              hint={f.declaredBenefitsHint}
+              suffix="€"
+              value={draft.declaredBenefitsMonthly}
+              min={0}
+              step={20}
+              onChange={(declaredBenefitsMonthly) => update({ declaredBenefitsMonthly })}
+            />
+          )}
+
+          {/* ---- The rest of the budget ---- */}
+          {stepKey === "other" && (
+            <div className="space-y-5">
               <NumberField
                 id="other-monthly"
                 label={f.otherMonthly}
@@ -611,7 +726,6 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
                 step={20}
                 onChange={(otherMonthly) => update({ otherMonthly })}
               />
-
               <NumberField
                 id="removal-cost"
                 label={f.removalCost}
@@ -632,8 +746,8 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
           <ArrowLeft />
           {dict.common.back}
         </Button>
-        {step < total - 1 ? (
-          <Button onClick={() => setStep((n) => n + 1)} size="lg">
+        {index < total - 1 ? (
+          <Button onClick={goNext} size="lg">
             {dict.common.next}
             <ArrowRight />
           </Button>

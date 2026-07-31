@@ -10,6 +10,7 @@ import type {
   HousingType,
   Line,
   MoveCost,
+  OtherIncomeInput,
   SideResult,
   TargetSide,
   VehicleInput,
@@ -129,8 +130,11 @@ type SideContext = {
   familyTripsPerYear: number;
   /** Declared monthly spending that does not change with the city. */
   otherMonthly: number;
-  /** Tax and benefits, when the rules engine answered. */
+  /** Tax, when the rules engine answered. */
   fiscal?: FiscalResult;
+  otherIncome: OtherIncomeInput;
+  /** True on the side the household lives on today. */
+  isCurrentSide: boolean;
   netSalary: number;
   partnerNetSalary: number;
   housingType: HousingType;
@@ -188,6 +192,40 @@ const revenueLines = (context: SideContext): Line[] => {
         },
       },
       sources: ["code_travail_transport", "gtfs_tarifs"],
+    });
+  }
+
+  for (const [key, amount] of [
+    ["dividendes", context.otherIncome.dividendsMonthly],
+    ["revenus_fonciers", context.otherIncome.rentalMonthly],
+  ] as const) {
+    if (amount > 0) {
+      lines.push({
+        key,
+        label: { key },
+        kind: "revenu",
+        amount: round(amount),
+        status: "user",
+        basis: { key: "place_invariant_income" },
+        sources: ["saisie_utilisateur"],
+      });
+    }
+  }
+
+  /*
+    Benefits the household already receives, on today's side only. Housing benefit
+    is driven by the rent and the commune's zone, so repeating today's amount in
+    another city would be inventing money in favour of the move.
+  */
+  if (context.isCurrentSide && context.otherIncome.declaredBenefitsMonthly > 0) {
+    lines.push({
+      key: "prestations_declarees",
+      label: { key: "prestations_declarees" },
+      kind: "revenu",
+      amount: round(context.otherIncome.declaredBenefitsMonthly),
+      status: "user",
+      basis: { key: "declared_benefits" },
+      sources: ["saisie_utilisateur"],
     });
   }
 
@@ -583,7 +621,12 @@ const omittedLines = (context: SideContext): Line[] => {
     kind: "revenu",
     amount: null,
     status: "unavailable",
-    reason: { key: "prestations" },
+    reason: {
+      key:
+        !context.isCurrentSide && context.otherIncome.declaredBenefitsMonthly > 0
+          ? "prestations_target"
+          : "prestations",
+    },
     sources: ["openfisca"],
   });
 
@@ -753,6 +796,7 @@ export type CompareInput = {
   otherMonthly: number;
   /** €, what the removal itself will cost. Part of the up-front block. */
   removalCost: number;
+  otherIncome: OtherIncomeInput;
   /**
    * Tax and benefits per side, when the rules engine answered. Absent means those
    * lines stay `non chiffré` — the behaviour before OpenFisca was wired in.
@@ -897,6 +941,8 @@ export const compare = (input: CompareInput): Comparison | null => {
     familyTripsPerYear: input.familyTravel.tripsPerYear,
     otherMonthly: input.otherMonthly,
     fiscal: input.fiscal?.current,
+    otherIncome: input.otherIncome,
+    isCurrentSide: true,
     netSalary: input.current.netSalary,
     partnerNetSalary: input.current.partnerNetSalary,
     housingType: input.current.housingType,
@@ -918,6 +964,8 @@ export const compare = (input: CompareInput): Comparison | null => {
       familyTripsPerYear: input.familyTravel.tripsPerYear,
       otherMonthly: input.otherMonthly,
       fiscal: input.fiscal?.target,
+      otherIncome: input.otherIncome,
+      isCurrentSide: false,
       netSalary,
       partnerNetSalary: input.target.partnerNetSalary,
       housingType: input.target.housingType,

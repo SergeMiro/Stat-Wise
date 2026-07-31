@@ -405,6 +405,43 @@ export const en: Dictionary = {
     title: "Find my job",
     subtitle:
       "A higher salary elsewhere is only worth what survives it. Compare the money left over between your situation today and the offer you are considering.",
+    sections: {
+      startTitle: "What the simulation will ask you",
+      reassurance:
+        "Do not let the list put you off: it takes about two minutes, and you need no documents. Everything is already ticked — just untick what does not apply to you, and we will not ask about it.",
+      startCta: "Start the simulation",
+      editTitle: "Add or remove sections",
+      editDesc:
+        'You can switch a section back on at any point. You will return to where you were, and "Continue" will take you through the ones you have just added.',
+      editCta: "Back to the simulation",
+      headerButton: "Sections",
+      legendFilled: "filled in",
+      legendPending: "to fill in",
+      legendDisabled: "switched off",
+      requiredNote: "Essential: without it there is nothing to compare.",
+      names: {
+        today: "Your situation today",
+        offer: "The offer you are considering",
+        household: "Your household",
+        travel: "Travel and vehicle",
+        dividends: "Dividends",
+        rental: "Rental income",
+        aide: "Benefits (CAF)",
+        family: "Trips to close family",
+        other: "The rest of your budget",
+      },
+      descriptions: {
+        today: "City, district, rent, salary, current commute",
+        offer: "City and salary offered",
+        household: "Adults, children, nursery",
+        travel: "Car or transit, petrol or electric, shopping",
+        dividends: "Investment income, net",
+        rental: "Rent you receive, net",
+        aide: "Housing benefit, allowances — what you get today",
+        family: "Distance and visits per year",
+        other: "Insurance, phone, leisure, subscriptions",
+      },
+    },
     metric: "Money left over",
     metricDesc: "What remains each month once every bill is paid.",
     generate: "Compare the two situations",
@@ -426,9 +463,25 @@ export const en: Dictionary = {
         title: "Your travel",
         desc: "Two purposes, often two modes: getting to work, and doing the shopping.",
       },
-      budget: {
-        title: "Your family and the rest of the budget",
-        desc: "Two things calculators forget, and both change the answer.",
+      family: {
+        title: "Your close family",
+        desc: "The real reason people turn a move down, and the one nobody puts a figure on.",
+      },
+      dividends: {
+        title: "Dividends",
+        desc: "Investment income, net. Leave at zero if you have none.",
+      },
+      rental: {
+        title: "Rental income",
+        desc: "Rent you receive, net. Leave at zero if you have none.",
+      },
+      aide: {
+        title: "Benefits",
+        desc: "What you receive today. We will not carry it over to the other city.",
+      },
+      other: {
+        title: "The rest of your budget",
+        desc: "One figure, and the amount left over finally becomes true.",
       },
     },
     fields: {
@@ -482,6 +535,13 @@ export const en: Dictionary = {
       otherMonthlyHint:
         "Insurance, health top-up, phone, internet, clothing, leisure, restaurants, subscriptions, haircuts, sport, pets, gifts, bank charges, loans. One figure: these do not change from one city to another, so they do not distort the comparison — but without them the amount left over looks far too good.",
       removalCost: "Cost of the removal (€)",
+      dividendsMonthly: "Net dividends per month",
+      rentalMonthly: "Net rental income per month",
+      declaredBenefitsMonthly: "Benefits received today, per month",
+      placeInvariantHint:
+        "This income does not change with the city: it makes the amount left over true without influencing the comparison.",
+      declaredBenefitsHint:
+        "What the CAF pays you today: housing benefit, allowances. Counted on your current situation only — in the other city the amount will differ, because housing benefit depends on the rent and the zone.",
     },
     modes: {
       voiture: "Car",
@@ -512,6 +572,9 @@ export const en: Dictionary = {
       velo_amortissement: "Bicycle — amortisation and upkeep",
       creche: "Nursery (family contribution)",
       alimentation: "Food at home",
+      dividendes: "Dividends",
+      revenus_fonciers: "Rental income",
+      prestations_declarees: "Benefits you receive today",
       deplacements_famille: "Trips to close family",
       autres_depenses: "The rest of your budget",
       depot_garantie: "Tenancy deposit",
@@ -554,6 +617,10 @@ export const en: Dictionary = {
         "{km} km/month × {perKm} €/km: the {base} €/km flat rate increased by {upliftPct} %, as the mileage allowance provides for a fully electric vehicle. Note: that fiscal uplift also covers charging, which we bill separately — so we apply it here to wear and depreciation alone. It is an assumption, not the tax rule.",
       income_tax:
         "Computed by the OpenFisca-France rules engine against {year} legislation, from your tax household. Taxable salary is estimated from the net figure (about +2 %, the non-deductible part of the CSG): that is the weak link in this calculation.",
+      place_invariant_income:
+        "The figure you declared. This income does not change with the city: it makes the amount left over true without weighing on the comparison.",
+      declared_benefits:
+        "What you receive today, as you declared it. Counted on your current situation only.",
       transit_pass:
         "The network's tariff table, collected by hand — passes are not published in the open data.",
       transit_free:
@@ -593,6 +660,8 @@ export const en: Dictionary = {
       taxe_fonciere: "Concerns owners only. This version compares two rental situations.",
       taxe_habitation: "Abolished on main residences since 2023. It is therefore not counted.",
       cmg: "Applies to childminders and home-based care, not to a PSU nursery. To be wired in with OpenFisca if you compare those arrangements.",
+      prestations_target:
+        "You declared what you receive today, and we do not carry it over to the other city: housing benefit depends on the rent and the commune's zone, so it will be different there. Copying it would have invented money in favour of the move.",
       stationnement:
         "Parking tariffs are set by each municipality and motorway tolls are not open: no central API exists.",
       borne_domicile:

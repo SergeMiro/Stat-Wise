@@ -1,3 +1,4 @@
+import { ALL_SECTION_IDS, type SectionId } from "@/lib/job-sections";
 import {
   findCity,
   findDistrict,
@@ -14,8 +15,8 @@ import {
   version is bumped rather than migrated: a stale payload would silently produce
   NaN totals, and there is nothing in a wizard draft worth a migration path.
 */
-export const JOB_DRAFT_KEY = "statwise:job:draft:v3";
-export const JOB_INPUT_KEY = "statwise:job:input:v3";
+export const JOB_DRAFT_KEY = "statwise:job:draft:v4";
+export const JOB_INPUT_KEY = "statwise:job:input:v4";
 
 /**
  * Editable wizard state for "Trouver mon job".
@@ -71,6 +72,27 @@ export type JobDraft = {
   otherMonthly: number;
   /** €, cost of the removal itself. Part of the up-front block. */
   removalCost: number;
+
+  /** Net monthly dividends. Does not change with the city, so it applies to both sides. */
+  dividendsMonthly: number;
+  /** Net monthly rental income (revenus fonciers). Also place-invariant. */
+  rentalMonthly: number;
+  /**
+   * What the CAF pays today, as the household knows it. Applied to the current
+   * side only: housing benefit depends on the rent and the commune's zone, so
+   * carrying today's figure to another city would invent money.
+   */
+  declaredBenefitsMonthly: number;
+
+  /** Which sections the user wants to walk. Required ones are always included. */
+  enabledSections: SectionId[];
+  /**
+   * Whether these two blocks were reviewed. "Single adult, no children" and
+   * "no car" are real answers that leave every field at its default, so a filled
+   * section cannot be detected from the values alone.
+   */
+  householdReviewed: boolean;
+  travelReviewed: boolean;
 };
 
 /**
@@ -116,6 +138,15 @@ export const defaultJobDraft: JobDraft = {
 
   otherMonthly: 420,
   removalCost: moveCostRules.defaultRemovalCost,
+
+  dividendsMonthly: 0,
+  rentalMonthly: 0,
+  declaredBenefitsMonthly: 0,
+
+  // Everything on by default: the list is there to be pruned, not assembled.
+  enabledSections: ALL_SECTION_IDS,
+  householdReviewed: false,
+  travelReviewed: false,
 };
 
 /** Maps the editable draft to the engine input, or null if the places are unknown. */
@@ -184,6 +215,11 @@ export function draftToInput(draft: JobDraft): CompareInput | null {
     },
     otherMonthly: Math.max(0, draft.otherMonthly),
     removalCost: Math.max(0, draft.removalCost),
+    otherIncome: {
+      dividendsMonthly: Math.max(0, draft.dividendsMonthly),
+      rentalMonthly: Math.max(0, draft.rentalMonthly),
+      declaredBenefitsMonthly: Math.max(0, draft.declaredBenefitsMonthly),
+    },
   };
 }
 

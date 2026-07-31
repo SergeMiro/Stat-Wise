@@ -412,6 +412,43 @@ export const fr = {
     title: "Trouver mon job",
     subtitle:
       "Un salaire plus élevé ailleurs ne vaut que ce qu'il en reste. Comparez le reste à vivre entre votre situation actuelle et l'offre que vous étudiez.",
+    sections: {
+      startTitle: "Ce que la simulation va vous demander",
+      reassurance:
+        "Ne vous laissez pas décourager par la liste : cela vous prendra environ deux minutes, et vous n'avez besoin d'aucun document. Tout est déjà coché — décochez simplement ce qui ne vous concerne pas, et nous ne vous le demanderons pas.",
+      startCta: "Commencer la simulation",
+      editTitle: "Ajouter ou retirer des sections",
+      editDesc:
+        "Vous pouvez rallumer une section à tout moment. Vous reviendrez ensuite là où vous en étiez, et « Continuer » vous emmènera dans celles que vous venez d'ajouter.",
+      editCta: "Revenir à la simulation",
+      headerButton: "Sections",
+      legendFilled: "remplie",
+      legendPending: "à remplir",
+      legendDisabled: "désactivée",
+      requiredNote: "Indispensable : sans elle il n'y a rien à comparer.",
+      names: {
+        today: "Votre situation aujourd'hui",
+        offer: "L'offre que vous étudiez",
+        household: "Votre foyer",
+        travel: "Déplacements et véhicule",
+        dividends: "Dividendes",
+        rental: "Revenus fonciers",
+        aide: "Aides sociales (CAF)",
+        family: "Trajets vers vos proches",
+        other: "Le reste de votre budget",
+      },
+      descriptions: {
+        today: "Ville, quartier, loyer, salaire, trajet actuel",
+        offer: "Ville et salaire proposés",
+        household: "Adultes, enfants, crèche",
+        travel: "Voiture ou transports, thermique ou électrique, courses",
+        dividends: "Revenus de placements, nets",
+        rental: "Loyers que vous percevez, nets",
+        aide: "APL, allocations — ce que vous touchez aujourd'hui",
+        family: "Distance et nombre de visites par an",
+        other: "Assurances, téléphone, loisirs, abonnements",
+      },
+    },
     metric: "Reste à vivre",
     metricDesc: "Ce qui reste chaque mois une fois toutes les factures payées.",
     generate: "Comparer les deux situations",
@@ -433,9 +470,25 @@ export const fr = {
         title: "Vos déplacements",
         desc: "Deux usages, souvent deux modes : aller travailler, et faire les courses.",
       },
-      budget: {
-        title: "Vos proches et le reste du budget",
-        desc: "Deux choses que les calculateurs oublient, et qui changent la réponse.",
+      family: {
+        title: "Vos proches",
+        desc: "La vraie raison qui fait renoncer à un déménagement, et que personne ne chiffre.",
+      },
+      dividends: {
+        title: "Dividendes",
+        desc: "Revenus de placements, nets. Laissez à zéro si vous n'en avez pas.",
+      },
+      rental: {
+        title: "Revenus fonciers",
+        desc: "Loyers que vous percevez, nets. Laissez à zéro si vous n'en avez pas.",
+      },
+      aide: {
+        title: "Aides sociales",
+        desc: "Ce que vous percevez aujourd'hui. Nous ne le reporterons pas sur l'autre ville.",
+      },
+      other: {
+        title: "Le reste de votre budget",
+        desc: "Une seule somme, et le montant qui vous reste devient enfin juste.",
       },
     },
     fields: {
@@ -488,6 +541,13 @@ export const fr = {
       otherMonthlyHint:
         "Assurances, mutuelle, téléphone, internet, vêtements, loisirs, restaurants, abonnements, coiffeur, sport, animaux, cadeaux, banque, crédits. Une seule somme : ces postes ne changent pas d'une ville à l'autre, donc ils ne faussent pas la comparaison — mais sans eux le montant restant est trop optimiste.",
       removalCost: "Coût du déménagement (€)",
+      dividendsMonthly: "Dividendes nets par mois",
+      rentalMonthly: "Revenus fonciers nets par mois",
+      declaredBenefitsMonthly: "Aides perçues aujourd'hui, par mois",
+      placeInvariantHint:
+        "Ce revenu ne change pas avec la ville : il rend juste le montant qui vous reste, sans influencer la comparaison.",
+      declaredBenefitsHint:
+        "Ce que la CAF vous verse aujourd'hui : APL, allocations. Compté sur votre situation actuelle uniquement — dans l'autre ville le montant sera différent, parce que l'aide au logement dépend du loyer et de la zone.",
     },
     modes: {
       voiture: "Voiture",
@@ -518,6 +578,9 @@ export const fr = {
       velo_amortissement: "Vélo — amortissement et entretien",
       creche: "Crèche (participation familiale)",
       alimentation: "Alimentation à domicile",
+      dividendes: "Dividendes",
+      revenus_fonciers: "Revenus fonciers",
+      prestations_declarees: "Aides que vous percevez aujourd'hui",
       deplacements_famille: "Trajets vers vos proches",
       autres_depenses: "Le reste de votre budget",
       depot_garantie: "Dépôt de garantie",
@@ -560,6 +623,10 @@ export const fr = {
         "{km} km/mois × {perKm} €/km : le forfait de {base} €/km majoré de {upliftPct} % comme le prévoit le barème kilométrique pour un véhicule 100 % électrique. Attention : cette majoration fiscale couvre aussi la recharge, que nous comptons séparément — nous l'appliquons donc ici à l'usure et à la dépréciation seules. C'est une hypothèse, pas la règle fiscale.",
       income_tax:
         "Calculé par le moteur de règles OpenFisca-France sur la législation {year}, à partir de votre foyer fiscal. Le salaire imposable est estimé à partir du net (+2 % environ, part non déductible de la CSG) : c'est le point faible de ce calcul.",
+      place_invariant_income:
+        "Montant que vous avez déclaré. Ce revenu ne change pas avec la ville : il rend le montant restant juste, sans peser sur la comparaison.",
+      declared_benefits:
+        "Montant que vous percevez aujourd'hui, tel que vous l'avez déclaré. Compté uniquement sur votre situation actuelle.",
       transit_pass:
         "Grille tarifaire du réseau, relevée à la main — les abonnements ne figurent pas dans les données ouvertes.",
       transit_free:
@@ -601,6 +668,8 @@ export const fr = {
       taxe_habitation:
         "Supprimée sur la résidence principale depuis 2023. Elle n'est donc pas comptée.",
       cmg: "Concerne l'assistante maternelle et la garde à domicile, pas la crèche PSU. À intégrer avec OpenFisca si vous comparez ces modes de garde.",
+      prestations_target:
+        "Vous avez déclaré ce que vous percevez aujourd'hui, et nous ne le reportons pas sur l'autre ville : l'aide au logement dépend du loyer et de la zone de la commune, elle y sera différente. La recopier aurait inventé de l'argent en faveur du déménagement.",
       stationnement:
         "Les tarifs de stationnement sont municipaux et les péages autoroutiers ne sont pas ouverts : aucune API centrale n'existe.",
       borne_domicile:
