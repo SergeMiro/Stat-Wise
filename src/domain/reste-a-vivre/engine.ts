@@ -213,11 +213,36 @@ const revenueLines = (context: SideContext): Line[] => {
   }
 
   /*
-    Benefits the household already receives, on today's side only. Housing benefit
-    is driven by the rent and the commune's zone, so repeating today's amount in
-    another city would be inventing money in favour of the move.
+    Benefits. When the rules engine answered, its figure is used on both sides — it
+    is computed from that side's own rent and commune, which is exactly why it
+    belongs in a place-driven comparison.
+
+    Status is `convention`, not `computed`: the arithmetic is the engine's, but the
+    resource base rests on assuming last year's income matched this year's. That
+    assumption can move the answer between 0 € and several hundred, which is a
+    different order of doubt from the tax line.
   */
-  if (context.isCurrentSide && context.otherIncome.declaredBenefitsMonthly > 0) {
+  if (context.fiscal) {
+    const benefits = context.fiscal.housingBenefitMonthly + context.fiscal.familyBenefitsMonthly;
+    if (benefits > 0) {
+      lines.push({
+        key: "prestations",
+        label: { key: "prestations" },
+        kind: "revenu",
+        amount: round(benefits),
+        status: "convention",
+        basis: {
+          key: context.isCurrentSide ? "benefits" : "benefits_target",
+          params: {
+            housing: { n: context.fiscal.housingBenefitMonthly, d: 0 },
+            family: { n: context.fiscal.familyBenefitsMonthly, d: 0 },
+            year: String(context.fiscal.year),
+          },
+        },
+        sources: ["openfisca"],
+      });
+    }
+  } else if (context.isCurrentSide && context.otherIncome.declaredBenefitsMonthly > 0) {
     lines.push({
       key: "prestations_declarees",
       label: { key: "prestations_declarees" },
@@ -611,24 +636,31 @@ const omittedLines = (context: SideContext): Line[] => {
   }
 
   /*
-    Benefits stay unquantified whether or not the rules engine answered. It will
-    answer — and the answer is wrong for the reason set out in
-    `src/lib/openfisca-payload.ts`. An admitted gap beats a credible mistake.
+    Only a gap when the rules engine said nothing, or said zero. A household above
+    the thresholds genuinely receives nothing, and that is an answer rather than a
+    hole — but the line stays visible so nobody wonders whether we forgot it.
   */
-  lines.push({
-    key: "prestations",
-    label: { key: "prestations" },
-    kind: "revenu",
-    amount: null,
-    status: "unavailable",
-    reason: {
-      key:
-        !context.isCurrentSide && context.otherIncome.declaredBenefitsMonthly > 0
-          ? "prestations_target"
-          : "prestations",
-    },
-    sources: ["openfisca"],
-  });
+  const computedBenefits = context.fiscal
+    ? context.fiscal.housingBenefitMonthly + context.fiscal.familyBenefitsMonthly
+    : 0;
+  if (!context.fiscal || computedBenefits <= 0) {
+    lines.push({
+      key: "prestations",
+      label: { key: "prestations" },
+      kind: "revenu",
+      amount: context.fiscal ? 0 : null,
+      status: context.fiscal ? "computed" : "unavailable",
+      reason: context.fiscal
+        ? { key: "prestations_none" }
+        : {
+            key:
+              !context.isCurrentSide && context.otherIncome.declaredBenefitsMonthly > 0
+                ? "prestations_target"
+                : "prestations",
+          },
+      sources: ["openfisca"],
+    });
+  }
 
   lines.push(
     {

@@ -763,9 +763,14 @@ describe("verdict — an outsized gain", () => {
 // --- tax and benefits from the rules engine ---------------------------------
 
 describe("fiscal lines", () => {
+  const noBenefit = {
+    housingBenefitMonthly: 0,
+    familyBenefitsMonthly: 0,
+    assumesSteadyIncome: true,
+  };
   const fiscal = {
-    current: { incomeTaxMonthly: 101.5, year: 2026 },
-    target: { incomeTaxMonthly: 168, year: 2026 },
+    current: { incomeTaxMonthly: 101.5, year: 2026, ...noBenefit },
+    target: { incomeTaxMonthly: 168, year: 2026, ...noBenefit },
   };
   const withFiscal = compare({ ...baseInput, fiscal })!;
   const without = compare(baseInput)!;
@@ -782,18 +787,55 @@ describe("fiscal lines", () => {
     expect(withFiscal.current.omitted.map((l) => l.key)).not.toContain("impot_revenu");
   });
 
-  it("keeps benefits unquantified even when the engine answered", () => {
+  it("reports a zero benefit as an answer, not as a hole", () => {
     /*
-      The engine will happily return a housing benefit, and it is wrong — see the
-      note on FiscalResult. Both sides must keep the gap, or every household with
-      children gains a phantom ~400 €/month.
+      Above the thresholds a household genuinely receives nothing. That is a result,
+      so the line reads 0 € and `computed`; it stays visible so nobody wonders
+      whether it was forgotten. Only a silent rules engine produces a null.
     */
-    for (const side of [withFiscal.current, withFiscal.target, without.current]) {
-      const line = side.omitted.find((l) => l.key === "prestations")!;
-      expect(line.amount).toBeNull();
-      expect(line.reason).toBeDefined();
-      expect(side.revenus.some((l) => l.key === "prestations")).toBe(false);
-    }
+    const answered = withFiscal.current.omitted.find((l) => l.key === "prestations")!;
+    expect(answered.amount).toBe(0);
+    expect(answered.status).toBe("computed");
+
+    const silent = without.current.omitted.find((l) => l.key === "prestations")!;
+    expect(silent.amount).toBeNull();
+    expect(silent.status).toBe("unavailable");
+  });
+
+  it("counts a benefit the engine did return, on the side it belongs to", () => {
+    const generous = compare({
+      ...baseInput,
+      fiscal: {
+        current: {
+          incomeTaxMonthly: 0,
+          housingBenefitMonthly: 303.87,
+          familyBenefitsMonthly: 151.8,
+          assumesSteadyIncome: true,
+          year: 2026,
+        },
+        target: { ...fiscal.target, housingBenefitMonthly: 42 },
+      },
+    })!;
+    expect(generous.current.revenus.find((l) => l.key === "prestations")?.amount).toBeCloseTo(
+      455.67,
+      2,
+    );
+    // An assumption about last year's income sits under it, so not `computed`.
+    expect(generous.current.revenus.find((l) => l.key === "prestations")?.status).toBe(
+      "convention",
+    );
+    // And the target side gets its own figure, computed from its own rent.
+    expect(generous.target.revenus.find((l) => l.key === "prestations")?.amount).toBeCloseTo(42, 2);
+  });
+
+  it("ignores the declared figure once the engine can compute it", () => {
+    // Otherwise the household would be paid its benefits twice.
+    const both = compare({
+      ...baseInput,
+      fiscal,
+      otherIncome: { ...baseInput.otherIncome, declaredBenefitsMonthly: 180 },
+    })!;
+    expect(both.current.revenus.some((l) => l.key === "prestations_declarees")).toBe(false);
   });
 
   it("counts tax as an expense, not as income", () => {
@@ -805,7 +847,7 @@ describe("fiscal lines", () => {
   it("scales tax with the amount owed", () => {
     const heavier = compare({
       ...baseInput,
-      fiscal: { ...fiscal, current: { incomeTaxMonthly: 300, year: 2026 } },
+      fiscal: { ...fiscal, current: { incomeTaxMonthly: 300, year: 2026, ...noBenefit } },
     })!;
     expect(heavier.current.resteAVivre).toBeLessThan(withFiscal.current.resteAVivre);
   });

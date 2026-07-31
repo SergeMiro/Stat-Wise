@@ -230,6 +230,14 @@ export type SideResult = {
 export type FiscalResult = {
   /** Positive when the household owes tax. */
   incomeTaxMonthly: number;
+  housingBenefitMonthly: number;
+  familyBenefitsMonthly: number;
+  /**
+   * True when last year's income had to be assumed equal to this year's, which is
+   * what the housing benefit resource base is built from. It changes what the
+   * figure means for someone taking a pay rise, so the line says so.
+   */
+  assumesSteadyIncome: boolean;
   /** Legislation year the figure was computed against. */
   year: number;
 };

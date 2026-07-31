@@ -627,6 +627,10 @@ export const fr = {
         "Montant que vous avez déclaré. Ce revenu ne change pas avec la ville : il rend le montant restant juste, sans peser sur la comparaison.",
       declared_benefits:
         "Montant que vous percevez aujourd'hui, tel que vous l'avez déclaré. Compté uniquement sur votre situation actuelle.",
+      benefits:
+        "Aide au logement {housing} € + allocations familiales {family} €, calculées par OpenFisca-France sur la législation {year}. Hypothèse : vos revenus de l'an dernier sont supposés identiques à ceux d'aujourd'hui, car c'est sur les douze mois précédents que se calcule la base de ressources. L'âge des enfants n'étant pas demandé, il est également supposé.",
+      benefits_target:
+        "Aide au logement {housing} € + allocations familiales {family} €, calculées pour ce loyer et cette commune sur la législation {year}. Attention : c'est le montant en régime stable. La première année, votre aide dépendra encore de votre salaire actuel, plus bas — elle sera donc plus élevée que ce chiffre.",
       transit_pass:
         "Grille tarifaire du réseau, relevée à la main — les abonnements ne figurent pas dans les données ouvertes.",
       transit_free:
@@ -668,6 +672,8 @@ export const fr = {
       taxe_habitation:
         "Supprimée sur la résidence principale depuis 2023. Elle n'est donc pas comptée.",
       cmg: "Concerne l'assistante maternelle et la garde à domicile, pas la crèche PSU. À intégrer avec OpenFisca si vous comparez ces modes de garde.",
+      prestations_none:
+        "Vos ressources dépassent les plafonds : le moteur de règles ne vous accorde aucune aide. C'est un résultat, pas une donnée manquante.",
       prestations_target:
         "Vous avez déclaré ce que vous percevez aujourd'hui, et nous ne le reportons pas sur l'autre ville : l'aide au logement dépend du loyer et de la zone de la commune, elle y sera différente. La recopier aurait inventé de l'argent en faveur du déménagement.",
       stationnement:

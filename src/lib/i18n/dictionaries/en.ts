@@ -621,6 +621,10 @@ export const en: Dictionary = {
         "The figure you declared. This income does not change with the city: it makes the amount left over true without weighing on the comparison.",
       declared_benefits:
         "What you receive today, as you declared it. Counted on your current situation only.",
+      benefits:
+        "Housing benefit {housing} € plus family allowances {family} €, computed by OpenFisca-France against {year} legislation. Assumption: last year's income is taken to match this year's, because the resource base is built from the preceding twelve months. Children's ages are not asked for and are assumed too.",
+      benefits_target:
+        "Housing benefit {housing} € plus family allowances {family} €, computed for this rent and this commune against {year} legislation. Note: this is the steady state. In the first year your benefit will still reflect your current, lower salary, so it will be higher than this figure.",
       transit_pass:
         "The network's tariff table, collected by hand — passes are not published in the open data.",
       transit_free:
@@ -660,6 +664,8 @@ export const en: Dictionary = {
       taxe_fonciere: "Concerns owners only. This version compares two rental situations.",
       taxe_habitation: "Abolished on main residences since 2023. It is therefore not counted.",
       cmg: "Applies to childminders and home-based care, not to a PSU nursery. To be wired in with OpenFisca if you compare those arrangements.",
+      prestations_none:
+        "Your resources are above the thresholds: the rules engine grants you nothing. That is a result, not missing data.",
       prestations_target:
         "You declared what you receive today, and we do not carry it over to the other city: housing benefit depends on the rent and the commune's zone, so it will be different there. Copying it would have invented money in favour of the move.",
       stationnement:

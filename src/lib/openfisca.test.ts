@@ -58,7 +58,8 @@ describe("payload", () => {
 });
 
 describe("reading the answer", () => {
-  const answer = (tax: number) => ({
+  const answer = (tax: number, housing = 0, family = 0) => ({
+    familles: { famille: { aide_logement: { "2026-01": housing }, af: { "2026-01": family } } },
     foyers_fiscaux: { foyer: { impot_revenu_restant_a_payer: { "2026": tax } } },
   });
 
@@ -71,20 +72,53 @@ describe("reading the answer", () => {
     expect(readResponse(answer(500), request)!.incomeTaxMonthly).toBe(0);
   });
 
-  it("asks for no benefits at all", () => {
-    /*
-      Deliberate: the engine answers for aide_logement, and the answer is wrong in
-      a way that reads as right. See the note on FiscalResult. If a future change
-      re-adds them, this test is the reminder to fix the resource base first.
-    */
-    const payload = buildPayload(request);
-    expect(payload.familles.famille.aide_logement).toBeUndefined();
-    expect(payload.familles.famille.af).toBeUndefined();
+  it("passes benefits through per month", () => {
+    const result = readResponse(answer(0, 303.87, 151.8), request)!;
+    expect(result.housingBenefitMonthly).toBeCloseTo(303.87, 2);
+    expect(result.familyBenefitsMonthly).toBeCloseTo(151.8, 2);
+    // Flagged, because the resource base rests on an assumed previous year.
+    expect(result.assumesSteadyIncome).toBe(true);
   });
 
   it("returns null rather than a partial answer", () => {
     expect(readResponse({ error: "boom" }, request)).toBeNull();
     expect(readResponse({}, request)).toBeNull();
     expect(readResponse({ foyers_fiscaux: { foyer: {} } }, request)).toBeNull();
+  });
+});
+
+describe("the resource base", () => {
+  /*
+    This is the fix that made housing benefit usable, and the reason it needs a
+    test of its own: with only the current year in the payload, OpenFisca built a
+    resource base of 0 € and paid the maximum benefit to everyone. The base reads
+    the twelve months before the month asked about, so the previous year has to be
+    there. Nothing in the response would reveal the mistake — the number simply
+    comes back too large.
+  */
+  it("supplies the previous year as well as the current one", () => {
+    const p = buildPayload(request);
+    const salary = p.individus.vous.salaire_imposable as Record<string, number>;
+    expect(Object.keys(salary).sort()).toEqual(["2025", "2026"]);
+    expect(salary["2025"]).toBe(salary["2026"]);
+  });
+
+  it("does so for the second earner too", () => {
+    const p = buildPayload({ ...request, netSalary: 2000, partnerNetSalary: 1000 });
+    const salary = p.individus.conjoint.salaire_imposable as Record<string, number>;
+    expect(Object.keys(salary).sort()).toEqual(["2025", "2026"]);
+  });
+
+  it("asks for the benefits it now trusts", () => {
+    const p = buildPayload(request);
+    expect(p.familles.famille.aide_logement).toEqual({ "2026-01": null });
+    expect(p.familles.famille.af).toEqual({ "2026-01": null });
+  });
+
+  it("still asks for neither RSA nor the activity bonus", () => {
+    // Those need an employment status and three months of resources we never collect.
+    const p = buildPayload(request);
+    expect(p.familles.famille.rsa).toBeUndefined();
+    expect(p.familles.famille.ppa).toBeUndefined();
   });
 });

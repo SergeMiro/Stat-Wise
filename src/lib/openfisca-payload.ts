@@ -11,23 +11,44 @@
 /**
  * What the engine needs back, in euros per month.
  *
- * Income tax only — benefits are deliberately absent. Asking for `aide_logement`
- * worked, but the answer was wrong in a way that looked right: with no children it
- * returned 0 €, and adding a single child jumped it to 426,77 € for a household
- * earning 2 300 €/month with a 900 € rent, on both sides of the comparison at once.
- * That is close to the maximum benefit, i.e. income stopped being counted as soon
- * as a child was declared — the resource base for housing benefit is built from
- * year N-2 and from a `parent_isolé` status this payload never establishes.
+ * Housing benefit was broken and is now fixed, and the fix is the whole reason this
+ * comment is long. Asking for `aide_logement` first returned 426,77 € for a
+ * household earning 2 300 €/month with a 900 € rent — close to the maximum — and
+ * the same figure on both sides. Asking the engine for the intermediate
+ * `aide_logement_base_ressources` showed why: it was **0**, so no income was
+ * reaching the calculation at all.
  *
- * A benefit overstated by ~400 €/month on both sides would have flattered every
- * household with children. Housing benefit, family allowances, RSA and the
- * activity bonus therefore stay `non chiffré` until the resource base is built
- * properly. Income tax is kept because it was verified to behave: 1 298 €/year
- * with no children, 371 €/year with one, moving correctly with salary.
+ * The resource base is not built from the year being computed. Supplying salary for
+ * 2026 alone left it at 0; so did 2024 plus 2026. Supplying **the previous year**
+ * made it 23 300 € and the benefit fell to 0 €, which is the right answer. So the
+ * window is the twelve months before the month asked about, not N-2.
+ *
+ * With that, three cases behave: a single parent on 1 600 €/month with two children
+ * and 700 € of rent gets 303,87 €; the same household on 2 300 € gets 0 €; on
+ * 3 700 € it stays 0 €. Family allowances land at 151,80 € for two children and 0 €
+ * for one, which is the published rate.
+ *
+ * `rsa` and `ppa` remain excluded: they need an employment status and a three-month
+ * resource history the wizard never asks for, and a test call returned 606 € of RSA
+ * for a household earning 1 600 €/month.
  */
 export type FiscalResult = {
   /** Income tax, positive when the household owes money. */
   incomeTaxMonthly: number;
+  /** Aide au logement. Rests on an assumption about last year — see `assumesSteadyIncome`. */
+  housingBenefitMonthly: number;
+  /** Allocations familiales. */
+  familyBenefitsMonthly: number;
+  /**
+   * Always true today, and it matters.
+   *
+   * The resource base needs last year's income, which the wizard does not ask for,
+   * so this year's is reused. For a household whose income has been stable that is
+   * right. For someone taking a pay rise it is not: their real housing benefit in
+   * the first year still reflects the lower salary, so the figure shown for the
+   * offer is the steady state and not the first twelve months. The line says so.
+   */
+  assumesSteadyIncome: boolean;
   /** Legislation year the answer was computed against. */
   year: number;
 };
@@ -83,14 +104,22 @@ export function buildPayload(request: FiscalRequest): Payload {
       ? request.netSalary / (request.netSalary + request.partnerNetSalary)
       : 1;
 
+  /*
+    Two years of salary, not one. The housing benefit resource base reads the twelve
+    months before the month asked about, so a payload carrying only the current year
+    leaves that base at zero — and a zero base pays the maximum benefit to everyone.
+  */
+  const salaryOf = (share: number) => ({
+    [year - 1]: Math.round(taxableYear * share),
+    [year]: Math.round(taxableYear * share),
+  });
+
   const individus: Record<string, Record<string, unknown>> = {
-    vous: { salaire_imposable: { [year]: Math.round(taxableYear * firstShare) } },
+    vous: { salaire_imposable: salaryOf(firstShare) },
   };
   const parents = ["vous"];
   if (request.partnerNetSalary > 0) {
-    individus.conjoint = {
-      salaire_imposable: { [year]: Math.round(taxableYear * (1 - firstShare)) },
-    };
+    individus.conjoint = { salaire_imposable: salaryOf(1 - firstShare) };
     parents.push("conjoint");
   }
 
@@ -110,6 +139,8 @@ export function buildPayload(request: FiscalRequest): Payload {
       famille: {
         parents,
         enfants,
+        aide_logement: { [`${year}-01`]: null },
+        af: { [`${year}-01`]: null },
       },
     },
     foyers_fiscaux: {
@@ -135,18 +166,27 @@ export function buildPayload(request: FiscalRequest): Payload {
 /** Reads the three figures out of a response, applying the sign convention. */
 export function readResponse(body: unknown, request: FiscalRequest): FiscalResult | null {
   const { year } = request;
+  const month = `${year}-01`;
   const data = body as {
+    familles?: { famille?: Record<string, Record<string, number>> };
     foyers_fiscaux?: { foyer?: Record<string, Record<string, number>> };
     error?: unknown;
   };
   if (!data || data.error) return null;
 
   const tax = data.foyers_fiscaux?.foyer?.impot_revenu_restant_a_payer?.[year];
-  if (typeof tax !== "number") return null;
+  const housing = data.familles?.famille?.aide_logement?.[month];
+  const family = data.familles?.famille?.af?.[month];
+  if (typeof tax !== "number" || typeof housing !== "number" || typeof family !== "number") {
+    return null;
+  }
 
   return {
     // Negative means tax owed; the engine wants a positive expense.
     incomeTaxMonthly: Math.max(0, Math.round((-tax / 12) * 100) / 100),
+    housingBenefitMonthly: Math.max(0, Math.round(housing * 100) / 100),
+    familyBenefitsMonthly: Math.max(0, Math.round(family * 100) / 100),
+    assumesSteadyIncome: true,
     year,
   };
 }
