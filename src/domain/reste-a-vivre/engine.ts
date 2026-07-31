@@ -22,6 +22,7 @@ import {
   HOUSE_RENT_RATIO,
   moveCostRules,
   nationalParams as p,
+  SEWERAGE_NATIONAL,
   type CitySnapshot,
   type DistrictSnapshot,
 } from "./snapshot";
@@ -300,9 +301,14 @@ const expenseLines = (context: SideContext): Line[] => {
     label: { key: "electricite" },
     kind: "contrainte",
     amount: round(kwhMonthly * p.electricityPricePerKwh + p.electricitySubscriptionMonthly),
-    status: "computed",
+    /*
+      Enedis does not serve every commune — Bas-Rhin has its own distributor — and a
+      commune it does not serve is running on the panel median, not on a measurement.
+      The line says which of the two it is.
+    */
+    status: city.electricityMeasured ? "computed" : "convention",
     basis: {
-      key: "electricity",
+      key: city.electricityMeasured ? "electricity" : "electricity_modelled",
       params: {
         kwhYear: { n: district.electricityKwhYear, d: 0 },
         price: { n: p.electricityPricePerKwh, d: 4 },
@@ -322,6 +328,7 @@ const expenseLines = (context: SideContext): Line[] => {
       params: {
         pricePerM3: { n: city.waterPricePerM3, d: 2 },
         m3PerPerson: { n: p.waterM3PerPersonYear, d: 0 },
+        sewerage: { n: SEWERAGE_NATIONAL.pricePerM3, d: 2 },
       },
     },
     sources: ["sispea_eau", "convention_statwise"],
@@ -671,6 +678,22 @@ const omittedLines = (context: SideContext): Line[] => {
       status: "unavailable",
       reason: { key: "assurances" },
       sources: [],
+    },
+    {
+      /*
+        The electricity line is Enedis consumption, which is electricity and nothing
+        else. A dwelling on gas or on a réseau de chaleur pays for its heating
+        somewhere this engine cannot see. Saying so is the alternative to quietly
+        inflating the kWh until the total looks right, which is what the seeded
+        figures did while citing Enedis as their source.
+      */
+      key: "chauffage_autre",
+      label: { key: "chauffage_autre" },
+      kind: "contrainte",
+      amount: null,
+      status: "unavailable",
+      reason: { key: "chauffage_autre" },
+      sources: ["enedis_conso"],
     },
     {
       key: "charges_copro",

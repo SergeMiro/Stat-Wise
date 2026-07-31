@@ -1,0 +1,110 @@
+{
+  "generatedAt": "2026-07-31",
+  "waterSource": "SISPEA via Hub'Eau — D102.0 (eau potable, commune) + D204.0 (assainissement, médiane nationale)",
+  "electricitySource": "Enedis — consommation annuelle résidentielle par adresse, moyenne par point de livraison",
+  "note": "L'électricité ne couvre pas le chauffage au gaz ni les réseaux de chaleur ; le moteur déclare ce poste comme non chiffré.",
+  "sewerageNational": {
+    "pricePerM3": 2.04,
+    "year": 2019,
+    "communes": 2187
+  },
+  "electricityNational": {
+    "kwhYear": 3172,
+    "year": 2024
+  },
+  "coverage": {
+    "cities": 14,
+    "water": 14,
+    "electricity": 13,
+    "waterMissing": [],
+    "powerMissing": [
+      "strasbourg (élec 67482: aucune ligne (réseau non desservi par Enedis ?))"
+    ]
+  },
+  "cities": {
+    "paris": {
+      "waterPotablePerM3": 1.76,
+      "waterYear": 2018,
+      "electricityKwhYear": 2631,
+      "electricityYear": 2024
+    },
+    "marseille": {
+      "waterPotablePerM3": 1.95,
+      "waterYear": 2018,
+      "electricityKwhYear": 3186,
+      "electricityYear": 2024
+    },
+    "lyon": {
+      "waterPotablePerM3": 1.82,
+      "waterYear": 2019,
+      "electricityKwhYear": 2657,
+      "electricityYear": 2024
+    },
+    "toulouse": {
+      "waterPotablePerM3": 1.78,
+      "waterYear": 2018,
+      "electricityKwhYear": 2664,
+      "electricityYear": 2024
+    },
+    "nice": {
+      "waterPotablePerM3": 1.8,
+      "waterYear": 2018,
+      "electricityKwhYear": 2941,
+      "electricityYear": 2024
+    },
+    "nantes": {
+      "waterPotablePerM3": 1.86,
+      "waterYear": 2018,
+      "electricityKwhYear": 2493,
+      "electricityYear": 2024
+    },
+    "montpellier": {
+      "waterPotablePerM3": 1.52,
+      "waterYear": 2018,
+      "electricityKwhYear": 2661,
+      "electricityYear": 2024
+    },
+    "strasbourg": {
+      "waterPotablePerM3": 1.61,
+      "waterYear": 2018,
+      "electricityKwhYear": null,
+      "electricityYear": null
+    },
+    "bordeaux": {
+      "waterPotablePerM3": 2.07,
+      "waterYear": 2018,
+      "electricityKwhYear": 2961,
+      "electricityYear": 2024
+    },
+    "lille": {
+      "waterPotablePerM3": 1.97,
+      "waterYear": 2018,
+      "electricityKwhYear": 2883,
+      "electricityYear": 2024
+    },
+    "versailles": {
+      "waterPotablePerM3": 2,
+      "waterYear": 2015,
+      "electricityKwhYear": 2913,
+      "electricityYear": 2024
+    },
+    "dijon": {
+      "waterPotablePerM3": 1.94,
+      "waterYear": 2018,
+      "electricityKwhYear": 2555,
+      "electricityYear": 2024
+    },
+    "avignon": {
+      "waterPotablePerM3": 1.11,
+      "waterYear": 2018,
+      "electricityKwhYear": 3368,
+      "electricityYear": 2024
+    },
+    "petite-commune": {
+      "waterPotablePerM3": 2.16,
+      "waterYear": 2018,
+      "electricityKwhYear": 3849,
+      "electricityYear": 2024
+    }
+  }
+}

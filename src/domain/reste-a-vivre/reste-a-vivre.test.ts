@@ -6,9 +6,13 @@ import { compare, crecheMonthlyCost, foodMonthlyCost, type CompareInput } from "
 import {
   cities,
   crecheScale,
+  ELECTRICITY_VINTAGE,
   MARKET_COVERAGE,
   nationalParams,
   RENT_IS_MEASURED,
+  SEWERAGE_NATIONAL,
+  UTILITIES_COVERAGE,
+  WATER_VINTAGE,
 } from "./snapshot";
 import { DATA_SOURCES, SOURCE_CODES } from "./sources";
 import { gradeVerdict, isCelebration } from "./verdict";
@@ -953,6 +957,63 @@ describe("données de marché mesurées", () => {
         expect(district.rentPerSqmRange.low).toBeLessThan(district.rentPerSqm.appartement);
         expect(district.rentPerSqmRange.high).toBeGreaterThan(district.rentPerSqm.appartement);
       }
+    }
+  });
+});
+
+describe("eau et électricité mesurées", () => {
+  it("prices water for every city, from the local half plus the national one", () => {
+    expect(UTILITIES_COVERAGE.water).toBe(cities.length);
+    expect(UTILITIES_COVERAGE.waterMissing).toEqual([]);
+    expect(SEWERAGE_NATIONAL.pricePerM3).toBeGreaterThan(0.5);
+    for (const city of cities) {
+      expect(WATER_VINTAGE(city.id)).not.toBeNull();
+      // The full bill is always dearer than the sewerage half alone.
+      expect(city.waterPricePerM3).toBeGreaterThan(SEWERAGE_NATIONAL.pricePerM3);
+      expect(city.waterPricePerM3).toBeLessThan(10);
+    }
+  });
+
+  it("marks a commune Enedis does not serve instead of pretending it measured it", () => {
+    const modelled = cities.filter((c) => !c.electricityMeasured);
+    for (const city of modelled) expect(ELECTRICITY_VINTAGE(city.id)).toBeNull();
+    for (const city of cities.filter((c) => c.electricityMeasured)) {
+      expect(ELECTRICITY_VINTAGE(city.id)).not.toBeNull();
+    }
+    expect(UTILITIES_COVERAGE.electricity).toBe(cities.length - modelled.length);
+  });
+
+  it("keeps the modelled commune inside the range of the measured ones", () => {
+    /*
+      The fallback used to be a national archetype constant, which made the one
+      unserved city read ~30 % dearer than every measured city — a coverage
+      artefact, not a real difference. It must sit among its peers, not outside.
+    */
+    // `residential`, not `central`: the small commune has no central district, and
+    // it is also the archetype the commune average anchors on.
+    const anchor = (id: string) =>
+      cities.find((c) => c.id === id)!.districts.find((d) => d.archetype === "residential")!
+        .electricityKwhYear;
+    const measured = cities.filter((c) => c.electricityMeasured).map((c) => anchor(c.id));
+    const low = Math.min(...measured);
+    const high = Math.max(...measured);
+    for (const city of cities.filter((c) => !c.electricityMeasured)) {
+      expect(anchor(city.id)).toBeGreaterThanOrEqual(low);
+      expect(anchor(city.id)).toBeLessThanOrEqual(high);
+    }
+  });
+
+  it("declares heating that is not electricity rather than absorbing it", () => {
+    /*
+      The kWh figure is Enedis consumption, electricity only. Before it was
+      measured, the seed quietly carried heating too. The gap must be visible.
+    */
+    const result = compare(baseInput)!;
+    for (const side of [result.current, result.target]) {
+      const heating = side.omitted.find((l) => l.key === "chauffage_autre");
+      expect(heating).toBeDefined();
+      expect(heating!.amount).toBeNull();
+      expect(heating!.status).toBe("unavailable");
     }
   });
 });

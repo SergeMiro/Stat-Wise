@@ -590,6 +590,7 @@ export const fr = {
       impot_revenu: "Impôt sur le revenu",
       prestations: "APL, allocations familiales, prime d'activité",
       assurances: "Assurance habitation, mutuelle",
+      chauffage_autre: "Chauffage au gaz ou réseau de chaleur",
       charges_copro: "Charges de copropriété non incluses dans le loyer",
       taxe_fonciere: "Taxe foncière",
       taxe_habitation: "Taxe d'habitation",
@@ -607,7 +608,9 @@ export const fr = {
       electricity:
         "{kwhYear} kWh/an par point de livraison résidentiel du secteur × {price} €/kWh, plus l'abonnement. Moyenne du secteur, pas la consommation du logement visé.",
       water:
-        "{pricePerM3} €/m³ (tarif du service) × {m3PerPerson} m³/personne/an, hypothèse de consommation.",
+        "{pricePerM3} €/m³ × {m3PerPerson} m³/personne/an (hypothèse de consommation). Le prix réunit l'eau potable de la commune et {sewerage} €/m³ d'assainissement, médiane nationale faute de publication locale.",
+      electricity_modelled:
+        "{kwhYear} kWh/an × {price} €/kWh, plus l'abonnement. Enedis ne dessert pas cette commune : la consommation est la médiane des grandes communes mesurées, pas un relevé local.",
       purpose_both:
         "{commuteKm} km domicile-travail + {groceryKm} km de courses ({groceryOneWay} km jusqu'au commerce alimentaire le plus proche, aller simple)",
       purpose_commute: "{commuteKm} km domicile-travail",
@@ -665,6 +668,8 @@ export const fr = {
         "Aide au logement, allocations familiales, RSA, prime d'activité. Le moteur de règles répond — mais faux : sans enfant il renvoie 0 €, et avec un seul enfant il saute à 426,77 € pour un foyer gagnant 2 300 €/mois avec 900 € de loyer, des deux côtés à la fois. Le revenu cesse d'être compté dès qu'un enfant est déclaré, parce que la base de ressources se construit sur l'année N-2 et sur un statut de parent isolé que nous n'établissons pas. Un chiffre crédible mais faux de ~400 €/mois aurait flatté tous les foyers avec enfants : nous préférons le vide, jusqu'à ce que la base de ressources soit faite correctement.",
       assurances:
         "Aucune donnée publique ne donne la prime par commune : ces tarifs appartiennent aux assureurs.",
+      chauffage_autre:
+        "La ligne Électricité ne couvre que l'électricité. Un logement chauffé au gaz ou raccordé à un réseau de chaleur paie ce poste ailleurs, et rien ne nous dit comment le vôtre est chauffé.",
       charges_copro:
         "L'indicateur de loyer utilisé est charges comprises ; les charges réelles varient d'un immeuble à l'autre et ne sont pas publiées.",
       taxe_fonciere:
@@ -731,11 +736,11 @@ export const fr = {
       france_travail_offres:
         "Le salaire n'est renseigné que dans une partie des offres ; la distribution est donc biaisée.",
       enedis_conso:
-        "Moyenne par point de livraison résidentiel du secteur, agrégée à partir de 10 sites actifs. Ce n'est pas la consommation du logement visé.",
+        "Moyenne par point de livraison résidentiel de la commune. Ce n'est pas la consommation du logement visé, et elle ne couvre que l'électricité : un logement chauffé au gaz consomme moins de kWh et paie ailleurs. L'écart entre quartiers est modélisé, pas mesuré.",
       tarif_electricite:
         "Prix national : il ne crée aucun écart entre deux villes. Seule la consommation en crée un.",
       sispea_eau:
-        "Le tarif s'applique au périmètre du service, qui ne coïncide pas toujours avec la commune. Les écarts réels vont de 1 à 2 entre communes.",
+        "Le tarif s'applique au périmètre du service, qui ne coïncide pas toujours avec la commune, et le dernier millésime publié va de 2015 à 2019 selon la commune : votre facture d'aujourd'hui est plus élevée. La part assainissement est une médiane nationale, faute de publication locale.",
       prix_carburants:
         "Médiane des stations du département, relevée un jour donné. Une station précise peut s'en écarter de 20 centimes, et un budget annuel doit être calculé sur une moyenne, pas sur le relevé du matin.",
       bareme_kilometrique:
@@ -849,9 +854,9 @@ export const fr = {
       commuteDelta: "Écart de trajet",
       hoursPerYear: "{hours} h/an",
       perMonth: "/ mois",
-      seededTitle: "Données d'amorçage",
+      seededTitle: "Ce qui reste estimé",
       seededDesc:
-        "Loyers, carburant et distances sont désormais mesurés : loyers d'annonce 2025 de la Carte des loyers (ANIL/CEREMA), prix des carburants relevés par département, distances par itinéraire routier. L'électricité, l'eau et les tarifs de transport restent des valeurs d'amorçage. Le statut et les sources de chaque ligne indiquent lequel des deux vous regardez.",
+        "Loyers, carburant, électricité, eau et distances sont mesurés : Carte des loyers 2025 (ANIL/CEREMA), prix des carburants par département, consommation Enedis par commune, prix de l'eau SISPEA, itinéraires routiers. Restent estimés : les tarifs de transport en commun, le prix du kWh et les hypothèses de consommation (m³ par personne, L/100 km). Le statut de chaque ligne dit laquelle des deux vous regardez, et le chauffage au gaz n'est pas chiffré du tout.",
       rankingTitle: "Quartiers de {city}, du plus au moins avantageux",
       rankingDesc:
         "À salaire et foyer identiques, seul le quartier change. Le loyer descend, mais le trajet et la distance au commerce peuvent reprendre la différence.",

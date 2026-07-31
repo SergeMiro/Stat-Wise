@@ -1,11 +1,12 @@
 /**
  * Partly measured, partly seeded snapshot for the reste-à-vivre engine.
  *
- * ⚠️ Read the mapping below before trusting a figure. Rents, fuel and travel
- * distances are read from imported data. Electricity, water and transit fares are
- * still SEED VALUES, sized to the real datasets so the simulator reads correctly
- * end to end. The UI keeps labelling runs as seeded — see `SNAPSHOT_IS_SEEDED` —
- * because a withdrawn banner would imply every line is a measurement.
+ * ⚠️ Read the mapping below before trusting a figure. Rents, fuel, electricity,
+ * water and travel distances are read from imported data. Transit fares are still
+ * SEED VALUES, as are the price of a kWh and the consumption assumptions, sized to
+ * the real datasets so the simulator reads correctly end to end. The UI keeps
+ * labelling runs as partly estimated — see `SNAPSHOT_IS_SEEDED` — because a
+ * withdrawn banner would imply every line is a measurement.
  *
  * District figures are **derived**, not typed in one by one. Each city carries a
  * central reference rent and each district an archetype; the rest follows from a
@@ -19,8 +20,8 @@
  * Field → source mapping:
  *   rentPerSqm          → MEASURED: Carte des loyers 2025 (ANIL/CEREMA), commune
  *   rentPerSqmRange     → MEASURED: the source's own confidence interval
- *   electricityKwhYear  → seeded; Enedis, consommation résidentielle par IRIS
- *   waterPricePerM3     → seeded; SISPEA via Hub'Eau, périmètre du service
+ *   electricityKwhYear  → MEASURED: Enedis, moyenne par point de livraison (13/14)
+ *   waterPricePerM3     → MEASURED: SISPEA D102.0 + médiane nationale D204.0
  *   fuelPricePerLitre   → MEASURED: prix des carburants, médiane du département
  *   transitPassMonthly  → seeded; grille tarifaire du réseau, à relever
  *   transitTicketUnit   → GTFS fare_attributes, quand le réseau les publie
@@ -34,6 +35,7 @@
 
 import measured from "./distances.json" with { type: "json" };
 import market from "./market.json" with { type: "json" };
+import utilities from "./utilities.json" with { type: "json" };
 
 /** Position of a district inside its city. Drives rent, energy and distances. */
 export type DistrictArchetype = "central" | "residential" | "peripheral";
@@ -102,6 +104,11 @@ export type CitySnapshot = {
   waterPricePerM3: number;
   /** €/litre, SP95-E10. */
   fuelPricePerLitre: number;
+  /**
+   * False when Enedis does not serve the commune and the consumption is the
+   * fallback. The engine downgrades the line's status accordingly.
+   */
+  electricityMeasured: boolean;
   /** Monthly adult transit pass, full price before the employer share. */
   transitPassMonthly: number;
   /** True where the network is free for residents, so the pass costs nothing. */
@@ -121,11 +128,11 @@ export type GeoPoint = { lat: number; lon: number };
 /**
  * Still true, and deliberately so.
  *
- * Rents and travel distances are now measured — the two heaviest items. Energy,
- * water and transit fares are not: they remain seeded. The banner stays until the
- * last of them is real, because a reader who sees it withdrawn will reasonably
- * assume every figure is a measurement. `MARKET_COVERAGE` and the per-line status
- * are what say which is which.
+ * Rents, fuel, electricity, water and travel distances are measured. Transit fares
+ * are not, nor is the price of a kWh, nor the consumption assumptions. The banner
+ * stays for those, because a reader who sees it withdrawn will reasonably assume
+ * every figure is a measurement. `MARKET_COVERAGE`, `UTILITIES_COVERAGE` and the
+ * per-line status are what say which is which.
  */
 export const SNAPSHOT_IS_SEEDED = true;
 
@@ -147,6 +154,19 @@ const ARCHETYPES: Record<
   central: { rent: 1, kwh: 3150, jobKm: 1.2, groceryKm: 0.4 },
   residential: { rent: 0.88, kwh: 3700, jobKm: 2.6, groceryKm: 0.6 },
   peripheral: { rent: 0.76, kwh: 4250, jobKm: 4.6, groceryKm: 0.95 },
+};
+
+/**
+ * Consumption of each archetype relative to the commune as a whole.
+ *
+ * Derived from ARCHETYPES rather than typed in again, so editing one archetype
+ * cannot silently leave the other table behind. `residential` is the anchor because
+ * the Enedis figure is an average over every dwelling in the commune.
+ */
+const KWH_RATIO: Record<DistrictArchetype, number> = {
+  central: ARCHETYPES.central.kwh / ARCHETYPES.residential.kwh,
+  residential: 1,
+  peripheral: ARCHETYPES.peripheral.kwh / ARCHETYPES.residential.kwh,
 };
 
 /** A house costs less per m² than a flat in the same area. */
@@ -177,7 +197,8 @@ const round1 = (n: number) => Math.round(n * 10) / 10;
 const atLeastAStep = (km: number) => Math.max(0.1, round1(km));
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
-type CitySpec = Omit<CitySnapshot, "districts"> & {
+/* `electricityMeasured` is derived from the imported data, never typed in here. */
+type CitySpec = Omit<CitySnapshot, "districts" | "electricityMeasured"> & {
   /** Central reference rent, €/m²/month for a flat, charges comprises. */
   centralRentPerSqm: number;
   districts: Array<{ id: string; name: string; archetype: DistrictArchetype }>;
@@ -192,6 +213,54 @@ type MarketRow = {
 
 const marketOf = (cityId: string): MarketRow | undefined =>
   (market.cities as Record<string, MarketRow | undefined>)[cityId];
+
+type UtilityRow = {
+  waterPotablePerM3: number;
+  waterYear: number;
+  electricityKwhYear: number | null;
+  electricityYear: number | null;
+};
+const utilityOf = (cityId: string): UtilityRow | undefined =>
+  (utilities.cities as Record<string, UtilityRow | undefined>)[cityId];
+
+/**
+ * What a commune Enedis does not serve falls back to.
+ *
+ * Bas-Rhin is supplied by Électricité de Strasbourg, not Enedis, so Strasbourg is
+ * absent from the national file — a real gap, not a fetch that failed. Leaving it on
+ * the old national archetype made it read ~30 % dearer than every measured city,
+ * which is an artefact of coverage rather than anything a household there pays.
+ *
+ * Enedis' own national average (3 172 kWh, in `electricityNational`) is not the
+ * right stand-in either: it is address-weighted over the whole country, where
+ * electric heating is far more common than in a dense city. The median of the large
+ * communes actually measured is the closer comparison, and it moves on its own as
+ * cities are added.
+ */
+const MEASURED_KWH: number[] = Object.values(
+  utilities.cities as Record<string, UtilityRow>,
+)
+  .map((row) => row.electricityKwhYear)
+  .filter((kwh): kwh is number => kwh !== null)
+  .sort((a, b) => a - b);
+
+const FALLBACK_KWH: number =
+  MEASURED_KWH.length > 0 ? MEASURED_KWH[Math.floor(MEASURED_KWH.length / 2)] : 3700;
+
+/**
+ * What a household actually pays per m³: the commune's drinking-water price plus
+ * the national sewerage median.
+ *
+ * Only three of the fourteen communes publish a local sewerage price, at years as
+ * far apart as 2013 and 2019. Mixing local and national figures would show a
+ * difference between two cities that reflects which one filed a return, not what
+ * anyone pays — so the sewerage half is uniform and labelled as such.
+ */
+const waterPriceOf = (cityId: string): number | undefined => {
+  const row = utilityOf(cityId);
+  if (!row) return undefined;
+  return round2(row.waterPotablePerM3 + utilities.sewerageNational.pricePerM3);
+};
 
 function buildDistrict(
   cityId: string,
@@ -233,13 +302,23 @@ function buildDistrict(
     `${cityId}:${spec.id}`
   ];
 
+  /*
+    Electricity used to be a national constant per archetype: every city's central
+    district consumed the same 3 150 kWh whether it was in Lille or in Nice. The
+    commune average is now measured, and the archetype survives as what it always
+    really was — a relative profile around that average. A commune Enedis does not
+    serve keeps the old national figure.
+  */
+  const communeKwh = utilityOf(cityId)?.electricityKwhYear ?? FALLBACK_KWH;
+  const kwhBase = communeKwh * KWH_RATIO[spec.archetype];
+
   return {
     id: spec.id,
     name: spec.name,
     archetype: spec.archetype,
     rentPerSqm: { appartement: flat, maison: round2(flat * houseRatio) },
     rentPerSqmRange: { low: round2(flat * spread.low), high: round2(flat * spread.high) },
-    electricityKwhYear: Math.round(a.kwh * (0.92 + 0.16 * s2)),
+    electricityKwhYear: Math.round(kwhBase * (0.92 + 0.16 * s2)),
     distanceToJobKm: hit ? atLeastAStep(hit.jobKm) : round1(a.jobKm * (0.8 + 0.4 * s2)),
     distanceToGroceryKm:
       hit && hit.groceryKm !== null
@@ -641,6 +720,9 @@ export const cities: CitySnapshot[] = CITY_SPECS.map((spec) => {
       price as if it were current.
     */
     fuelPricePerLitre: row?.fuelPricePerLitre ?? city.fuelPricePerLitre,
+    waterPricePerM3: waterPriceOf(spec.id) ?? city.waterPricePerM3,
+    electricityMeasured: utilityOf(spec.id)?.electricityKwhYear !== null &&
+      utilityOf(spec.id)?.electricityKwhYear !== undefined,
     districts: districts.map((d) => buildDistrict(spec.id, centralRentPerSqm, d)),
   };
 });
@@ -650,6 +732,17 @@ export const MARKET_COVERAGE = market.coverage;
 export const MARKET_GENERATED_AT: string = market.generatedAt;
 /** Cities whose rent is a real published figure rather than a seed. */
 export const RENT_IS_MEASURED = (cityId: string): boolean => marketOf(cityId) !== undefined;
+
+/** How much of the water and electricity data is measured. */
+export const UTILITIES_COVERAGE = utilities.coverage;
+export const UTILITIES_GENERATED_AT: string = utilities.generatedAt;
+export const SEWERAGE_NATIONAL = utilities.sewerageNational;
+/** The commune's drinking-water price and its vintage, for the result line. */
+export const WATER_VINTAGE = (cityId: string): number | null =>
+  utilityOf(cityId)?.waterYear ?? null;
+/** Null for a commune Enedis does not serve — the figure is then the old model. */
+export const ELECTRICITY_VINTAGE = (cityId: string): number | null =>
+  utilityOf(cityId)?.electricityYear ?? null;
 
 /**
  * National parameters. None of these create a difference between two cities —

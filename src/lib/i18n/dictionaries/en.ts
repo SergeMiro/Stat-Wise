@@ -584,6 +584,7 @@ export const en: Dictionary = {
       impot_revenu: "Income tax",
       prestations: "Housing benefit, family allowances, activity bonus",
       assurances: "Home insurance, health top-up",
+      chauffage_autre: "Gas heating or district heating",
       charges_copro: "Building service charges not included in the rent",
       taxe_fonciere: "Property tax",
       taxe_habitation: "Residence tax",
@@ -600,7 +601,9 @@ export const en: Dictionary = {
       electricity:
         "{kwhYear} kWh/year per residential delivery point in this area × {price} €/kWh, plus the standing charge. An area average, not the consumption of the dwelling itself.",
       water:
-        "{pricePerM3} €/m³ (the service's tariff) × {m3PerPerson} m³ per person per year, an assumed consumption.",
+        "{pricePerM3} €/m³ × {m3PerPerson} m³ per person per year (an assumed consumption). The price combines the commune's drinking water and {sewerage} €/m³ of sewerage, the national median in the absence of a local figure.",
+      electricity_modelled:
+        "{kwhYear} kWh a year × {price} €/kWh, plus the standing charge. Enedis does not serve this commune: the consumption is the median of the large communes that were measured, not a local reading.",
       purpose_both:
         "{commuteKm} km commuting + {groceryKm} km shopping ({groceryOneWay} km to the nearest food store, one way)",
       purpose_commute: "{commuteKm} km commuting",
@@ -659,6 +662,8 @@ export const en: Dictionary = {
         "Housing benefit, family allowances, RSA, activity bonus. The rules engine answers — but wrongly: with no children it returns 0 €, and with a single child it jumps to 426.77 € for a household earning 2,300 €/month with 900 € of rent, on both sides at once. Income stops being counted the moment a child is declared, because the resource base is built from year N-2 and from a lone-parent status this request never establishes. A credible but wrong figure of ~400 €/month would have flattered every household with children: we prefer the gap until the resource base is built properly.",
       assurances:
         "No public dataset gives the premium per commune: those prices belong to the insurers.",
+      chauffage_autre:
+        "The Electricity line covers electricity and nothing else. A home heated by gas or connected to a district heating network pays for that elsewhere, and nothing tells us how yours is heated.",
       charges_copro:
         "The rent indicator used already includes charges; actual building charges vary from one block to the next and are not published.",
       taxe_fonciere: "Concerns owners only. This version compares two rental situations.",
@@ -723,11 +728,11 @@ export const en: Dictionary = {
       france_travail_offres:
         "Salary is filled in on only part of the postings, so the distribution is biased.",
       enedis_conso:
-        "An average per residential delivery point in the area, aggregated from 10 active sites. It is not the consumption of the dwelling itself.",
+        "An average per residential delivery point in the commune. It is not the consumption of the dwelling itself, and it covers electricity only: a home heated by gas uses fewer kWh and pays elsewhere. The spread between districts is modelled, not measured.",
       tarif_electricite:
         "A national price: it creates no gap between two cities. Only consumption does.",
       sispea_eau:
-        "The tariff applies to the service's perimeter, which does not always match the commune. Real differences run from 1 to 2 between communes.",
+        "The tariff applies to the service's perimeter, which does not always match the commune, and the last published year runs from 2015 to 2019 depending on the commune: today's bill is higher. The sewerage share is a national median, in the absence of a local figure.",
       prix_carburants:
         "The median across the département's stations, read on a single day. One particular station can be 20 cents off it, and an annual budget must be built on an average, not on this morning's reading.",
       bareme_kilometrique:
@@ -837,9 +842,9 @@ export const en: Dictionary = {
       commuteDelta: "Commute difference",
       hoursPerYear: "{hours} h/year",
       perMonth: "/ month",
-      seededTitle: "Seed data",
+      seededTitle: "What is still estimated",
       seededDesc:
-        "Rents, fuel and distances are now measured: 2025 advertised rents from the Carte des loyers (ANIL/CEREMA), fuel prices read per département, distances by road routing. Electricity, water and transit fares are still seed values. Each line's status and sources say which of the two you are looking at.",
+        "Rents, fuel, electricity, water and distances are measured: Carte des loyers 2025 (ANIL/CEREMA), fuel prices per département, Enedis consumption per commune, SISPEA water prices, road routing. Still estimated: transit fares, the price of a kWh, and the consumption assumptions (m³ per person, L/100 km). Each line's status says which of the two you are looking at, and gas heating is not quantified at all.",
       rankingTitle: "Districts of {city}, most to least advantageous",
       rankingDesc:
         "With the same salary and household, only the district changes. Rent goes down, but the commute and the distance to the shops can take the difference back.",

@@ -63,12 +63,13 @@ const SOURCES = {
     caveat: { key: "france_travail_offres" },
   },
   enedis_conso: {
-    label: "Consommation et thermosensibilité d'électricité",
+    label: "Consommation annuelle résidentielle par adresse",
     publisher: "Enedis",
     vintage: "2024",
     refresh: { key: "annual" },
-    geoLevel: "iris",
-    url: "https://data.enedis.fr/explore/dataset/consommation-electrique-par-secteur-dactivite-iris/",
+    // Published per address; we read the commune average the publisher computes.
+    geoLevel: "commune",
+    url: "https://opendata.enedis.fr/explore/dataset/consommation-annuelle-residentielle-par-adresse/",
     caveat: { key: "enedis_conso" },
   },
   tarif_electricite: {
@@ -82,7 +83,12 @@ const SOURCES = {
   sispea_eau: {
     label: "Prix de l'eau et de l'assainissement",
     publisher: "SISPEA / Hub'Eau (OFB)",
-    vintage: "2024",
+    /*
+      Not a typo and not stale bookkeeping: SISPEA's last published year through
+      Hub'Eau is 2019, and most communes last filed in 2018. Claiming 2024 here
+      would be the one lie this registry exists to prevent.
+    */
+    vintage: "2015–2019 selon la commune",
     refresh: { key: "annual" },
     geoLevel: "commune",
     url: "https://api.gouv.fr/les-api/api_hubeau_indic_EP_Asst",
