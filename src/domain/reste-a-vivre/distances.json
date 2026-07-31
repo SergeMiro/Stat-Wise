@@ -1,34 +1,24 @@
 {
   "generatedAt": "2026-07-31",
-  "method": "Ancrage des quartiers : nœuds place d'OpenStreetMap (Overpass). Distances : itinéraire routier IGN Géoplateforme, ressource bdtopo-osrm, profil voiture. Commerce alimentaire : shop=supermarket|hypermarket le plus proche dans OSM, choisi à vol d'oiseau puis mesuré par la route.",
+  "method": "Ancrage des quartiers : nœuds place d'OpenStreetMap (Overpass). Distances : itinéraire routier IGN Géoplateforme, ressource bdtopo-osrm, profil voiture. Commerce alimentaire : shop=supermarket|hypermarket le plus proche dans OSM, choisi à vol d'oiseau puis mesuré par la route. Le commerce le plus proche n'est retenu que s'il s'agit d'un hypermarché ou d'une enseigne de la liste; les entrées marquées any_supermarket viennent d'un relevé antérieur, plus large.",
   "coverage": {
     "districts": 93,
-    "measured": 67,
+    "measured": 77,
     "unmatched": [
       "marseille:cours-julien",
-      "marseille:prado-castellane",
       "lyon:presqu-ile",
-      "nice:riquier",
       "nantes:centre-ville",
       "nantes:ile-de-nantes",
-      "nantes:hauts-paves",
-      "nantes:malakoff",
-      "nantes:dervallieres",
-      "nantes:doulon",
       "nantes:nantes-nord",
       "montpellier:ecusson",
       "strasbourg:grande-ile",
       "strasbourg:neustadt",
       "strasbourg:orangerie",
       "bordeaux:saint-pierre",
-      "lille:centre",
-      "lille:moulins",
       "dijon:chevreul-parc",
       "avignon:intra-muros",
       "avignon:pont-des-deux-eaux",
       "avignon:monclar",
-      "avignon:montfavet",
-      "avignon:saint-chamand",
       "petite-commune:bourg",
       "petite-commune:les-carrieres"
     ]
@@ -43,18 +33,20 @@
         "lon": 2.36074
       },
       "anchorName": "Le Marais",
-      "groceryName": "monop’"
+      "groceryName": "monop’",
+      "shopStandard": "any_supermarket"
     },
     "paris:quartier-latin": {
       "jobKm": 1.9,
       "jobMinutes": 8,
-      "groceryKm": 0.8,
+      "groceryKm": 0.7,
       "anchor": {
         "lat": 48.8486,
         "lon": 2.34252
       },
       "anchorName": "Quartier latin",
-      "groceryName": "Le Retour à la Terre Rive Gauche"
+      "groceryName": "Monoprix",
+      "shopStandard": "large_chain"
     },
     "paris:saint-germain": {
       "jobKm": 2.3,
@@ -65,62 +57,68 @@
         "lon": 2.33371
       },
       "anchorName": "Saint-Germain-des-Prés",
-      "groceryName": "Monoprix"
+      "groceryName": "Monoprix",
+      "shopStandard": "large_chain"
     },
     "paris:montmartre": {
       "jobKm": 6.4,
       "jobMinutes": 25,
-      "groceryKm": 1.6,
+      "groceryKm": 1.3,
       "anchor": {
         "lat": 48.88671,
         "lon": 2.34157
       },
       "anchorName": "Montmartre",
-      "groceryName": "Alimentation Génerale"
+      "groceryName": "Super U",
+      "shopStandard": "large_chain"
     },
     "paris:batignolles": {
       "jobKm": 6.3,
       "jobMinutes": 22,
-      "groceryKm": 0.7,
+      "groceryKm": 0.6,
       "anchor": {
         "lat": 48.88636,
         "lon": 2.32146
       },
       "anchorName": "Batignolles",
-      "groceryName": "Biocoop"
+      "groceryName": "Monoprix",
+      "shopStandard": "large_chain"
     },
     "paris:bercy": {
       "jobKm": 4.2,
       "jobMinutes": 13,
-      "groceryKm": 1.3,
+      "groceryKm": 1,
       "anchor": {
         "lat": 48.8368,
         "lon": 2.38085
       },
       "anchorName": "Bercy",
-      "groceryName": "Le Marché d'à côté"
+      "groceryName": "Monoprix",
+      "shopStandard": "large_chain"
     },
     "paris:belleville": {
       "jobKm": 5,
       "jobMinutes": 19,
-      "groceryKm": 0.3,
+      "groceryKm": 2.8,
       "anchor": {
         "lat": 48.87173,
         "lon": 2.38509
       },
       "anchorName": "Belleville",
-      "groceryName": "Biocoop"
+      "groceryName": "Monoprix",
+      "shopStandard": "large_chain"
     },
     "paris:la-chapelle": {
       "jobKm": 5.4,
       "jobMinutes": 22,
-      "groceryKm": 0.5,
+      "groceryKm": 2.4,
       "anchor": {
         "lat": 48.89044,
         "lon": 2.36194
       },
       "anchorName": "La Chapelle",
-      "groceryName": "Paris Store"
+      "groceryName": "Monoprix",
+      "shopStandard": "large_chain"
     },
     "marseille:vieux-port": {
       "jobKm": 0.4,
@@ -131,7 +129,8 @@
         "lon": 5.37438
       },
       "anchorName": "Vieux-Port",
-      "groceryName": "Carrefour Market"
+      "groceryName": "Carrefour Market",
+      "shopStandard": "large_chain"
     },
     "marseille:le-panier": {
       "jobKm": 1.2,
@@ -142,7 +141,8 @@
         "lon": 5.36802
       },
       "anchorName": "Le Panier",
-      "groceryName": "Monoprix"
+      "groceryName": "Monoprix",
+      "shopStandard": "large_chain"
     },
     "marseille:cinq-avenues": {
       "jobKm": 2.7,
@@ -153,7 +153,8 @@
         "lon": 5.39683
       },
       "anchorName": "Les Cinq-Avenues",
-      "groceryName": "Intermarché"
+      "groceryName": "Intermarché",
+      "shopStandard": "large_chain"
     },
     "marseille:joliette": {
       "jobKm": 1.2,
@@ -164,7 +165,8 @@
         "lon": 5.36673
       },
       "anchorName": "La Joliette",
-      "groceryName": "Franprix"
+      "groceryName": "Franprix",
+      "shopStandard": "large_chain"
     },
     "marseille:saint-barnabe": {
       "jobKm": 9.6,
@@ -175,7 +177,8 @@
         "lon": 5.41623
       },
       "anchorName": "Saint-Barnabé",
-      "groceryName": "Naturalia"
+      "groceryName": "Naturalia",
+      "shopStandard": "any_supermarket"
     },
     "marseille:l-estaque": {
       "jobKm": 11.1,
@@ -186,18 +189,20 @@
         "lon": 5.31767
       },
       "anchorName": "L'Estaque",
-      "groceryName": "Carrefour City"
+      "groceryName": "Carrefour City",
+      "shopStandard": "large_chain"
     },
     "lyon:part-dieu": {
       "jobKm": 2.5,
       "jobMinutes": 12,
-      "groceryKm": 0.8,
+      "groceryKm": 0.4,
       "anchor": {
         "lat": 45.75787,
         "lon": 4.8556
       },
       "anchorName": "Part-Dieu",
-      "groceryName": "U Lyon Part Dieu"
+      "groceryName": "Carrefour",
+      "shopStandard": "large_chain"
     },
     "lyon:confluence": {
       "jobKm": 4.8,
@@ -208,7 +213,8 @@
         "lon": 4.81805
       },
       "anchorName": "Confluence",
-      "groceryName": "Carrefour"
+      "groceryName": "Carrefour",
+      "shopStandard": "large_chain"
     },
     "lyon:croix-rousse": {
       "jobKm": 3,
@@ -219,29 +225,32 @@
         "lon": 4.82874
       },
       "anchorName": "La Croix-Rousse",
-      "groceryName": "Monoprix"
+      "groceryName": "Monoprix",
+      "shopStandard": "large_chain"
     },
     "lyon:la-guillotiere": {
       "jobKm": 2.1,
       "jobMinutes": 8,
-      "groceryKm": 0.9,
+      "groceryKm": 1.3,
       "anchor": {
         "lat": 45.7527,
         "lon": 4.84605
       },
       "anchorName": "La Guillotière",
-      "groceryName": "Naturalia"
+      "groceryName": "Intermarché Express",
+      "shopStandard": "large_chain"
     },
     "lyon:monplaisir": {
       "jobKm": 4.3,
       "jobMinutes": 18,
-      "groceryKm": 0.4,
+      "groceryKm": 0.6,
       "anchor": {
         "lat": 45.74273,
         "lon": 4.86836
       },
       "anchorName": "Monplaisir",
-      "groceryName": "La Vie Claire"
+      "groceryName": "sans nom",
+      "shopStandard": "any_supermarket"
     },
     "lyon:vaise": {
       "jobKm": 4.4,
@@ -252,7 +261,8 @@
         "lon": 4.80332
       },
       "anchorName": "Vaise",
-      "groceryName": "Biocoop"
+      "groceryName": "Aldi",
+      "shopStandard": "large_chain"
     },
     "lyon:gerland": {
       "jobKm": 5.7,
@@ -263,7 +273,8 @@
         "lon": 4.83379
       },
       "anchorName": "Gerland",
-      "groceryName": "Auchan Supermarché"
+      "groceryName": "Auchan Supermarché",
+      "shopStandard": "large_chain"
     },
     "toulouse:capitole": {
       "jobKm": 2.9,
@@ -274,7 +285,8 @@
         "lon": 1.4434
       },
       "anchorName": "Capitole",
-      "groceryName": "Monoprix"
+      "groceryName": "Monoprix",
+      "shopStandard": "large_chain"
     },
     "toulouse:les-carmes": {
       "jobKm": 2.4,
@@ -285,7 +297,8 @@
         "lon": 1.44378
       },
       "anchorName": "Les Carmes",
-      "groceryName": "Monoprix"
+      "groceryName": "Monoprix",
+      "shopStandard": "large_chain"
     },
     "toulouse:saint-cyprien": {
       "jobKm": 2,
@@ -296,7 +309,8 @@
         "lon": 1.43055
       },
       "anchorName": "Saint-Cyprien",
-      "groceryName": "Intermarché Express"
+      "groceryName": "Intermarché Express",
+      "shopStandard": "large_chain"
     },
     "toulouse:compans": {
       "jobKm": 1.9,
@@ -307,7 +321,8 @@
         "lon": 1.43416
       },
       "anchorName": "Compans-Caffarelli",
-      "groceryName": "Carrefour Market"
+      "groceryName": "Carrefour Market",
+      "shopStandard": "large_chain"
     },
     "toulouse:rangueil": {
       "jobKm": 5.6,
@@ -318,7 +333,8 @@
         "lon": 1.45914
       },
       "anchorName": "Rangueil",
-      "groceryName": "Lidl"
+      "groceryName": "Lidl",
+      "shopStandard": "large_chain"
     },
     "toulouse:borderouge": {
       "jobKm": 4.5,
@@ -329,29 +345,32 @@
         "lon": 1.45271
       },
       "anchorName": "Borderouge",
-      "groceryName": "Carrefour Market"
+      "groceryName": "Carrefour Market",
+      "shopStandard": "large_chain"
     },
     "toulouse:la-reynerie": {
       "jobKm": 9.2,
       "jobMinutes": 25,
-      "groceryKm": 0.9,
+      "groceryKm": 1.3,
       "anchor": {
         "lat": 43.5714,
         "lon": 1.40051
       },
       "anchorName": "La Reynerie",
-      "groceryName": "Stokhall"
+      "groceryName": "Paris Store",
+      "shopStandard": "any_supermarket"
     },
     "nice:vieux-nice": {
       "jobKm": 3.7,
       "jobMinutes": 12,
-      "groceryKm": 1.4,
+      "groceryKm": 1,
       "anchor": {
         "lat": 43.69653,
         "lon": 7.27514
       },
       "anchorName": "Vieux Nice",
-      "groceryName": "Bio C' Bon"
+      "groceryName": "Monoprix",
+      "shopStandard": "large_chain"
     },
     "nice:carre-d-or": {
       "jobKm": 2.4,
@@ -362,18 +381,20 @@
         "lon": 7.25913
       },
       "anchorName": "Carré d'Or",
-      "groceryName": "Intermarché Express"
+      "groceryName": "Intermarché Express",
+      "shopStandard": "large_chain"
     },
     "nice:liberation": {
       "jobKm": 0,
       "jobMinutes": 0,
-      "groceryKm": 0.1,
+      "groceryKm": 0.3,
       "anchor": {
         "lat": 43.71024,
         "lon": 7.26195
       },
       "anchorName": "Libération",
-      "groceryName": "Les Comptoirs De La Bio"
+      "groceryName": "Intermarché",
+      "shopStandard": "large_chain"
     },
     "nice:cimiez": {
       "jobKm": 1.7,
@@ -384,18 +405,20 @@
         "lon": 7.27249
       },
       "anchorName": "Cimiez",
-      "groceryName": "Intermarché Express"
+      "groceryName": "Intermarché Express",
+      "shopStandard": "large_chain"
     },
     "nice:fabron": {
       "jobKm": 5.4,
       "jobMinutes": 16,
-      "groceryKm": 3.7,
+      "groceryKm": 1.3,
       "anchor": {
         "lat": 43.6887,
         "lon": 7.22867
       },
       "anchorName": "Fabron",
-      "groceryName": "Pastor Nice"
+      "groceryName": "Carrefour Market",
+      "shopStandard": "large_chain"
     },
     "nice:l-ariane": {
       "jobKm": 7.5,
@@ -406,7 +429,8 @@
         "lon": 7.3005
       },
       "anchorName": "L'Ariane",
-      "groceryName": "ALDI"
+      "groceryName": "ALDI",
+      "shopStandard": "large_chain"
     },
     "montpellier:antigone": {
       "jobKm": 4.5,
@@ -417,18 +441,20 @@
         "lon": 3.89027
       },
       "anchorName": "Antigone",
-      "groceryName": "Carrefour city"
+      "groceryName": "Carrefour city",
+      "shopStandard": "large_chain"
     },
     "montpellier:beaux-arts": {
       "jobKm": 2.9,
       "jobMinutes": 14,
-      "groceryKm": 0.8,
+      "groceryKm": 1.2,
       "anchor": {
         "lat": 43.61995,
         "lon": 3.8804
       },
       "anchorName": "Les Beaux-Arts",
-      "groceryName": "Un Monde plus Bio"
+      "groceryName": "Carrefour Market",
+      "shopStandard": "large_chain"
     },
     "montpellier:port-marianne": {
       "jobKm": 6.3,
@@ -439,7 +465,8 @@
         "lon": 3.91682
       },
       "anchorName": "Port Marianne",
-      "groceryName": "Les Comptoirs De La Bio"
+      "groceryName": "Les Comptoirs De La Bio",
+      "shopStandard": "any_supermarket"
     },
     "montpellier:boutonnet": {
       "jobKm": 1.7,
@@ -450,7 +477,8 @@
         "lon": 3.86814
       },
       "anchorName": "Boutonnet",
-      "groceryName": "Spar"
+      "groceryName": "Spar",
+      "shopStandard": "any_supermarket"
     },
     "montpellier:croix-d-argent": {
       "jobKm": 3.5,
@@ -461,7 +489,8 @@
         "lon": 3.85675
       },
       "anchorName": "Croix d'Argent",
-      "groceryName": "Carrefour Market"
+      "groceryName": "Carrefour Market",
+      "shopStandard": "large_chain"
     },
     "montpellier:la-mosson": {
       "jobKm": 6,
@@ -472,29 +501,32 @@
         "lon": 3.81912
       },
       "anchorName": "Mosson",
-      "groceryName": "Leader Price"
+      "groceryName": "Leader Price",
+      "shopStandard": "large_chain"
     },
     "strasbourg:krutenau": {
       "jobKm": 1.2,
       "jobMinutes": 5,
-      "groceryKm": 0.7,
+      "groceryKm": 0.6,
       "anchor": {
         "lat": 48.57969,
         "lon": 7.75677
       },
       "anchorName": "Krutenau",
-      "groceryName": "Naturalia"
+      "groceryName": "Auchan Supermarché",
+      "shopStandard": "large_chain"
     },
     "strasbourg:neudorf": {
       "jobKm": 1.5,
       "jobMinutes": 6,
-      "groceryKm": 0.8,
+      "groceryKm": 0.6,
       "anchor": {
         "lat": 48.56665,
         "lon": 7.76721
       },
       "anchorName": "Neudorf",
-      "groceryName": "Haci-Baba"
+      "groceryName": "Auchan Supermarché",
+      "shopStandard": "large_chain"
     },
     "strasbourg:robertsau": {
       "jobKm": 6,
@@ -505,7 +537,8 @@
         "lon": 7.78797
       },
       "anchorName": "Robertsau",
-      "groceryName": "Match"
+      "groceryName": "Match",
+      "shopStandard": "large_chain"
     },
     "strasbourg:hautepierre": {
       "jobKm": 6.2,
@@ -516,7 +549,8 @@
         "lon": 7.70098
       },
       "anchorName": "Hautepierre",
-      "groceryName": "ALDI"
+      "groceryName": "ALDI",
+      "shopStandard": "large_chain"
     },
     "bordeaux:chartrons": {
       "jobKm": 4.3,
@@ -527,18 +561,20 @@
         "lon": -0.56423
       },
       "anchorName": "Chartrons",
-      "groceryName": "Centre Commercial E.Leclerc"
+      "groceryName": "Centre Commercial E.Leclerc",
+      "shopStandard": "large_chain"
     },
     "bordeaux:saint-michel": {
       "jobKm": 1.5,
       "jobMinutes": 9,
-      "groceryKm": 0.8,
+      "groceryKm": 1.3,
       "anchor": {
         "lat": 44.83413,
         "lon": -0.56735
       },
       "anchorName": "Saint-Michel",
-      "groceryName": "Frichti"
+      "groceryName": "U Express",
+      "shopStandard": "large_chain"
     },
     "bordeaux:nansouty": {
       "jobKm": 3.4,
@@ -549,7 +585,8 @@
         "lon": -0.57222
       },
       "anchorName": "Nansouty",
-      "groceryName": "ALDI"
+      "groceryName": "ALDI",
+      "shopStandard": "large_chain"
     },
     "bordeaux:la-bastide": {
       "jobKm": 6,
@@ -560,7 +597,8 @@
         "lon": -0.55406
       },
       "anchorName": "La Bastide",
-      "groceryName": "Carrefour Market"
+      "groceryName": "Carrefour Market",
+      "shopStandard": "large_chain"
     },
     "bordeaux:cauderan": {
       "jobKm": 5.2,
@@ -571,7 +609,8 @@
         "lon": -0.61751
       },
       "anchorName": "Caudéran",
-      "groceryName": "Intermarché"
+      "groceryName": "Intermarché",
+      "shopStandard": "large_chain"
     },
     "bordeaux:bacalan": {
       "jobKm": 7.4,
@@ -582,7 +621,8 @@
         "lon": -0.54835
       },
       "anchorName": "Bacalan",
-      "groceryName": "Lidl"
+      "groceryName": "Lidl",
+      "shopStandard": "large_chain"
     },
     "lille:vieux-lille": {
       "jobKm": 3.2,
@@ -593,7 +633,8 @@
         "lon": 3.06034
       },
       "anchorName": "Vieux-Lille",
-      "groceryName": "U Express"
+      "groceryName": "U Express",
+      "shopStandard": "large_chain"
     },
     "lille:wazemmes": {
       "jobKm": 0.8,
@@ -604,7 +645,8 @@
         "lon": 3.0512
       },
       "anchorName": "Wazemmes",
-      "groceryName": "Biocoop"
+      "groceryName": "Biocoop",
+      "shopStandard": "any_supermarket"
     },
     "lille:vauban-esquermes": {
       "jobKm": 1.9,
@@ -615,7 +657,8 @@
         "lon": 3.04108
       },
       "anchorName": "Vauban-Esquermes",
-      "groceryName": "Harmonie Nature"
+      "groceryName": "Biocoop",
+      "shopStandard": "any_supermarket"
     },
     "lille:fives": {
       "jobKm": 3.1,
@@ -626,7 +669,8 @@
         "lon": 3.09004
       },
       "anchorName": "Fives",
-      "groceryName": "Superquinquin"
+      "groceryName": "Superquinquin",
+      "shopStandard": "any_supermarket"
     },
     "lille:bois-blancs": {
       "jobKm": 3.2,
@@ -637,7 +681,8 @@
         "lon": 3.02623
       },
       "anchorName": "Bois-Blancs",
-      "groceryName": "Carrefour Market"
+      "groceryName": "Carrefour Market",
+      "shopStandard": "large_chain"
     },
     "versailles:notre-dame": {
       "jobKm": 1.4,
@@ -648,40 +693,44 @@
         "lon": 2.12877
       },
       "anchorName": "Notre-Dame",
-      "groceryName": "Biocoop"
+      "groceryName": "Biocoop",
+      "shopStandard": "any_supermarket"
     },
     "versailles:saint-louis": {
       "jobKm": 0.9,
       "jobMinutes": 3,
-      "groceryKm": 0.4,
+      "groceryKm": 1.3,
       "anchor": {
         "lat": 48.79905,
         "lon": 2.12477
       },
       "anchorName": "Saint-Louis",
-      "groceryName": "Carré Bio"
+      "groceryName": "Monoprix",
+      "shopStandard": "large_chain"
     },
     "versailles:clagny-glatigny": {
       "jobKm": 4,
       "jobMinutes": 11,
-      "groceryKm": 1.4,
+      "groceryKm": 2.2,
       "anchor": {
         "lat": 48.81826,
         "lon": 2.14537
       },
       "anchorName": "Clagny Glatigny",
-      "groceryName": "Le Chaudron Coop"
+      "groceryName": "Coccinelle Express",
+      "shopStandard": "any_supermarket"
     },
     "versailles:montreuil": {
       "jobKm": 2.1,
       "jobMinutes": 8,
-      "groceryKm": 0.3,
+      "groceryKm": 1.1,
       "anchor": {
         "lat": 48.80456,
         "lon": 2.14626
       },
       "anchorName": "Montreuil",
-      "groceryName": "Epicerie Libre Service"
+      "groceryName": "Coccinelle Express",
+      "shopStandard": "any_supermarket"
     },
     "versailles:chantiers": {
       "jobKm": 1.5,
@@ -692,18 +741,20 @@
         "lon": 2.13577
       },
       "anchorName": "Chantiers",
-      "groceryName": "Lidl"
+      "groceryName": "Lidl",
+      "shopStandard": "large_chain"
     },
     "versailles:porchefontaine": {
       "jobKm": 3,
       "jobMinutes": 10,
-      "groceryKm": 0.9,
+      "groceryKm": 1.3,
       "anchor": {
         "lat": 48.79501,
         "lon": 2.15598
       },
       "anchorName": "Porchefontaine",
-      "groceryName": "Le marché d'à côté"
+      "groceryName": "Aldi",
+      "shopStandard": "large_chain"
     },
     "dijon:centre-ville": {
       "jobKm": 1,
@@ -714,7 +765,8 @@
         "lon": 5.04148
       },
       "anchorName": "Centre-Ville",
-      "groceryName": "Casino Shop"
+      "groceryName": "Casino Shop",
+      "shopStandard": "large_chain"
     },
     "dijon:universite": {
       "jobKm": 2.4,
@@ -725,7 +777,8 @@
         "lon": 5.05938
       },
       "anchorName": "Université",
-      "groceryName": "Intermarché Super"
+      "groceryName": "Intermarché Super",
+      "shopStandard": "large_chain"
     },
     "dijon:montchapet": {
       "jobKm": 2.3,
@@ -736,7 +789,8 @@
         "lon": 5.03433
       },
       "anchorName": "Montchapet",
-      "groceryName": "Intermarché Express"
+      "groceryName": "Intermarché Express",
+      "shopStandard": "large_chain"
     },
     "dijon:toison-d-or": {
       "jobKm": 4.9,
@@ -747,7 +801,8 @@
         "lon": 5.0558
       },
       "anchorName": "La Toison d'Or",
-      "groceryName": "Carrefour"
+      "groceryName": "Carrefour",
+      "shopStandard": "large_chain"
     },
     "dijon:fontaine-d-ouche": {
       "jobKm": 4.3,
@@ -758,18 +813,140 @@
         "lon": 5.00195
       },
       "anchorName": "Fontaine-d'Ouche",
-      "groceryName": "Intermarché Super"
+      "groceryName": "Intermarché Super",
+      "shopStandard": "large_chain"
     },
     "dijon:gresilles": {
       "jobKm": 3,
       "jobMinutes": 12,
-      "groceryKm": 0.3,
+      "groceryKm": 0.7,
       "anchor": {
         "lat": 47.33053,
         "lon": 5.06436
       },
       "anchorName": "Les Grésilles",
-      "groceryName": "Le Mag"
+      "groceryName": "ALDI",
+      "shopStandard": "large_chain"
+    },
+    "marseille:prado-castellane": {
+      "jobKm": 3,
+      "jobMinutes": 14,
+      "groceryKm": 0.6,
+      "anchor": {
+        "lat": 43.28585,
+        "lon": 5.38354
+      },
+      "anchorName": "Castellane",
+      "groceryName": "Naturalia",
+      "shopStandard": "any_supermarket"
+    },
+    "nice:riquier": {
+      "jobKm": 2.7,
+      "jobMinutes": 9,
+      "groceryKm": 0.1,
+      "anchor": {
+        "lat": 43.70519,
+        "lon": 7.28787
+      },
+      "anchorName": "Riquier",
+      "groceryName": "Netto",
+      "shopStandard": "large_chain"
+    },
+    "nantes:hauts-paves": {
+      "jobKm": 1.7,
+      "jobMinutes": 10,
+      "groceryKm": 1.5,
+      "anchor": {
+        "lat": 47.22469,
+        "lon": -1.56551
+      },
+      "anchorName": "Hauts-Pavés",
+      "groceryName": "Carrefour Market",
+      "shopStandard": "large_chain"
+    },
+    "nantes:malakoff": {
+      "jobKm": 3.3,
+      "jobMinutes": 14,
+      "groceryKm": 0.4,
+      "anchor": {
+        "lat": 47.21527,
+        "lon": -1.52643
+      },
+      "anchorName": "Malakoff",
+      "groceryName": "Carrefour Contact",
+      "shopStandard": "large_chain"
+    },
+    "nantes:dervallieres": {
+      "jobKm": 3.8,
+      "jobMinutes": 19,
+      "groceryKm": 0.3,
+      "anchor": {
+        "lat": 47.21421,
+        "lon": -1.58601
+      },
+      "anchorName": "Zola",
+      "groceryName": "Intermarché",
+      "shopStandard": "large_chain"
+    },
+    "nantes:doulon": {
+      "jobKm": 4.1,
+      "jobMinutes": 18,
+      "groceryKm": 0.6,
+      "anchor": {
+        "lat": 47.23926,
+        "lon": -1.51963
+      },
+      "anchorName": "La Bottière",
+      "groceryName": "Super U",
+      "shopStandard": "large_chain"
+    },
+    "lille:centre": {
+      "jobKm": 1.9,
+      "jobMinutes": 10,
+      "groceryKm": 0.7,
+      "anchor": {
+        "lat": 50.63195,
+        "lon": 3.06849
+      },
+      "anchorName": "Lille-Centre",
+      "groceryName": "Aldi",
+      "shopStandard": "large_chain"
+    },
+    "lille:moulins": {
+      "jobKm": 1.8,
+      "jobMinutes": 8,
+      "groceryKm": 0.1,
+      "anchor": {
+        "lat": 50.61962,
+        "lon": 3.06476
+      },
+      "anchorName": "Lille-Moulins",
+      "groceryName": "Match",
+      "shopStandard": "large_chain"
+    },
+    "avignon:montfavet": {
+      "jobKm": 6.6,
+      "jobMinutes": 21,
+      "groceryKm": 1.8,
+      "anchor": {
+        "lat": 43.94082,
+        "lon": 4.86728
+      },
+      "anchorName": "Quartier Montfavet",
+      "groceryName": "Auchan Supermarché",
+      "shopStandard": "large_chain"
+    },
+    "avignon:saint-chamand": {
+      "jobKm": 4.4,
+      "jobMinutes": 15,
+      "groceryKm": 1,
+      "anchor": {
+        "lat": 43.93203,
+        "lon": 4.84036
+      },
+      "anchorName": "Quartier Saint-Chamand",
+      "groceryName": "Carrefour",
+      "shopStandard": "large_chain"
     }
   }
 }
