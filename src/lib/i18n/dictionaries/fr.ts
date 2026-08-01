@@ -436,6 +436,7 @@ export const fr = {
         aide: "Aides sociales (CAF)",
         family: "Trajets vers vos proches",
         other: "Le reste de votre budget",
+        move: "Frais d'installation",
       },
       descriptions: {
         today: "Ville, quartier, loyer, salaire, trajet actuel",
@@ -447,6 +448,7 @@ export const fr = {
         aide: "APL, allocations — ce que vous touchez aujourd'hui",
         family: "Distance et nombre de visites par an",
         other: "Assurances, téléphone, loisirs, abonnements",
+        move: "Dépôt de garantie, honoraires d'agence, déménagement — décochez si vous n'emménagez pas",
       },
     },
     metric: "Reste à vivre",
@@ -489,6 +491,10 @@ export const fr = {
       other: {
         title: "Le reste de votre budget",
         desc: "Une seule somme, et le montant qui vous reste devient enfin juste.",
+      },
+      move: {
+        title: "Ce qu'il faut avancer",
+        desc: "Dépôt de garantie, honoraires d'agence et déménagement. C'est souvent ce montant, et non le reste à vivre, qui bloque un projet.",
       },
     },
     fields: {
@@ -541,6 +547,8 @@ export const fr = {
       otherMonthlyHint:
         "Assurances, mutuelle, téléphone, internet, vêtements, loisirs, restaurants, abonnements, coiffeur, sport, animaux, cadeaux, banque, crédits. Une seule somme : ces postes ne changent pas d'une ville à l'autre, donc ils ne faussent pas la comparaison — mais sans eux le montant restant est trop optimiste.",
       removalCost: "Coût du déménagement (€)",
+      removalCostHint:
+        "Mettez 0 si vous gardez votre logement actuel : le dépôt de garantie et les honoraires d'agence du nouveau logement restent comptés. Si rien de tout cela ne vous concerne, décochez plutôt la section entière.",
       dividendsMonthly: "Dividendes nets par mois",
       rentalMonthly: "Revenus fonciers nets par mois",
       declaredBenefitsMonthly: "Aides perçues aujourd'hui, par mois",

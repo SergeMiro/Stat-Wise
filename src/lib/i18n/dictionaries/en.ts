@@ -429,6 +429,7 @@ export const en: Dictionary = {
         aide: "Benefits (CAF)",
         family: "Trips to close family",
         other: "The rest of your budget",
+        move: "Moving-in costs",
       },
       descriptions: {
         today: "City, district, rent, salary, current commute",
@@ -440,6 +441,7 @@ export const en: Dictionary = {
         aide: "Housing benefit, allowances — what you get today",
         family: "Distance and visits per year",
         other: "Insurance, phone, leisure, subscriptions",
+        move: "Deposit, agency fee, removal — untick if you are not moving in",
       },
     },
     metric: "Money left over",
@@ -482,6 +484,10 @@ export const en: Dictionary = {
       other: {
         title: "The rest of your budget",
         desc: "One figure, and the amount left over finally becomes true.",
+      },
+      move: {
+        title: "What you have to put up front",
+        desc: "Deposit, agency fee and the removal itself. It is often this amount, not the money left each month, that stops a plan.",
       },
     },
     fields: {
@@ -535,6 +541,8 @@ export const en: Dictionary = {
       otherMonthlyHint:
         "Insurance, health top-up, phone, internet, clothing, leisure, restaurants, subscriptions, haircuts, sport, pets, gifts, bank charges, loans. One figure: these do not change from one city to another, so they do not distort the comparison — but without them the amount left over looks far too good.",
       removalCost: "Cost of the removal (€)",
+      removalCostHint:
+        "Put 0 if you are keeping your current home: the deposit and agency fee on the new one are still counted. If none of this applies to you, untick the whole section instead.",
       dividendsMonthly: "Net dividends per month",
       rentalMonthly: "Net rental income per month",
       declaredBenefitsMonthly: "Benefits received today, per month",

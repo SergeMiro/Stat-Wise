@@ -274,7 +274,15 @@ export type Comparison = {
    * amount. Null when no salary in a sane range achieves it.
    */
   requiredTargetSalary: number | null;
-  moveCost: MoveCost;
+  /**
+   * Null when the household said it has no move to pay for.
+   *
+   * Someone who keeps their current home — renting it out, say — and takes a job in
+   * another city may face none of this. Null rather than a total of 0 €: the block
+   * disappears instead of claiming a move that costs nothing, which is the same
+   * distinction the lines make between `unavailable` and zero.
+   */
+  moveCost: MoveCost | null;
   /** Every other district of the target city, best reste à vivre first. */
   alternatives: SideResult[];
   /** Lines we refuse to invent — the honest health warning. */

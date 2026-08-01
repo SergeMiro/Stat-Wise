@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { listCities } from "@/lib/mock/cities";
+import { ALL_SECTION_IDS, REQUIRED_SECTION_IDS } from "@/lib/job-sections";
 import { fr } from "@/lib/i18n/dictionaries/fr";
 import { en } from "@/lib/i18n/dictionaries/en";
 import { compare, crecheMonthlyCost, foodMonthlyCost, type CompareInput } from "./engine";
@@ -60,6 +61,7 @@ const baseInput: CompareInput = {
   familyTravel: { currentKm: 30, targetKm: 200, tripsPerYear: 6 },
   otherMonthly: 420,
   removalCost: 1200,
+  includeMoveCost: true,
   otherIncome: { dividendsMonthly: 0, rentalMonthly: 0, declaredBenefitsMonthly: 0 },
 };
 
@@ -508,7 +510,7 @@ describe("how the difference is explained", () => {
   });
 
   it("states the cash needed up front without spreading it over months", () => {
-    const { lines, total } = result.moveCost;
+    const { lines, total } = result.moveCost!;
     expect(total).toBeGreaterThan(0);
     // The deposit is one month excluding charges, so below the rent itself.
     const deposit = lines.find((l) => l.key === "depot_garantie")!.amount!;
@@ -523,7 +525,7 @@ describe("how the difference is explained", () => {
   it("caps the letting fee harder in a very tight zone", () => {
     const toParis = compare({ ...baseInput, target: { ...baseInput.target, cityId: "paris" } })!;
     const feeOf = (c: typeof result) =>
-      c.moveCost.lines.find((l) => l.key === "honoraires_agence")!.amount!;
+      c.moveCost!.lines.find((l) => l.key === "honoraires_agence")!.amount!;
     expect(feeOf(toParis)).toBeGreaterThan(feeOf(result));
   });
 });
@@ -617,7 +619,7 @@ describe("translation coverage", () => {
                       ...result.target.revenus,
                       ...result.target.depenses,
                       result.current.autres,
-                      ...result.moveCost.lines,
+                      ...(result.moveCost?.lines ?? []),
                     ];
                     for (const line of all) {
                       walk(labels, line.label);
@@ -1015,5 +1017,45 @@ describe("eau et électricité mesurées", () => {
       expect(heating!.amount).toBeNull();
       expect(heating!.status).toBe("unavailable");
     }
+  });
+});
+
+describe("frais d'installation en section optionnelle", () => {
+  /*
+    Changing job is not always moving house: someone who keeps their current home —
+    letting it out, say — and rents in the new city pays no removal, and someone
+    housed by their employer pays none of this block at all. So it is a section like
+    the others, and switching it off has to make the block absent rather than zero.
+  */
+  it("is the last section, and can be switched off", () => {
+    expect(ALL_SECTION_IDS[ALL_SECTION_IDS.length - 1]).toBe("move");
+    expect(REQUIRED_SECTION_IDS).not.toContain("move");
+  });
+
+  it("drops the up-front block entirely rather than totalling it at zero", () => {
+    const without = compare({ ...baseInput, includeMoveCost: false })!;
+    expect(without.moveCost).toBeNull();
+
+    const with_ = compare({ ...baseInput, includeMoveCost: true })!;
+    expect(with_.moveCost).not.toBeNull();
+    expect(with_.moveCost!.total).toBeGreaterThan(0);
+  });
+
+  it("leaves the monthly verdict untouched — this is cash up front, not a bill", () => {
+    const without = compare({ ...baseInput, includeMoveCost: false })!;
+    const with_ = compare({ ...baseInput, includeMoveCost: true })!;
+    expect(without.deltaResteAVivre).toBe(with_.deltaResteAVivre);
+    expect(without.current.resteAVivre).toBe(with_.current.resteAVivre);
+    expect(without.requiredTargetSalary).toBe(with_.requiredTargetSalary);
+  });
+
+  it("still counts the deposit and the agency fee when only the removal is free", () => {
+    // The scenario that prompted this: keeping the Dijon home, renting in Lyon.
+    const kept = compare({ ...baseInput, removalCost: 0 })!;
+    const keys = kept.moveCost!.lines.map((l) => l.key);
+    expect(keys).toContain("depot_garantie");
+    expect(keys).toContain("honoraires_agence");
+    expect(kept.moveCost!.lines.find((l) => l.key === "demenagement")!.amount).toBe(0);
+    expect(kept.moveCost!.total).toBeGreaterThan(0);
   });
 });

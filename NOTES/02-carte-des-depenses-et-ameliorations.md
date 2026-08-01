@@ -284,3 +284,33 @@ mesure». Часы показывать часами.
 **Правило приоритета:** сначала сделать честным то, что уже показывается, потом
 добавлять новое. Незакрытая §1 обесценивает любую новую переменную, потому что
 итоговое число всё равно останется завышенным.
+
+## Frais d'installation : une section, pas un passage obligé (2026-08-01)
+
+Le bloc « Ce qu'il faut avancer » — dépôt de garantie, honoraires d'agence,
+déménagement — était calculé pour tout le monde. Il est désormais une **section
+optionnelle, la dernière de la liste**, au même titre qu'Aides sociales ou
+Dividendes.
+
+Le cas qui l'a motivé : quelqu'un qui possède son logement à Dijon, se voit proposer
+un poste à Lyon, **garde son bien et le met en location** au lieu de le vendre, puis
+loue sur place. Changer de travail n'est pas toujours déménager.
+
+Trois précisions qui comptent :
+
+- Décocher la section fait **disparaître le bloc**, pas afficher un total de 0 €.
+  `Comparison.moveCost` vaut `null` — la même distinction qu'entre `unavailable` et
+  zéro sur les lignes. Le tableur et le PDF omettent la section au lieu d'imprimer
+  un libellé suivi d'une case vide, qui se lit « zéro » ou « inconnu » selon le
+  lecteur.
+- Le montant n'entre **pas** dans le reste à vivre mensuel : c'est de la trésorerie
+  d'entrée, et un test vérifie que le verdict est identique section cochée ou non.
+- **Décocher n'est pas la bonne réponse pour tout le monde.** Qui garde son logement
+  actuel mais loue dans la nouvelle ville paie quand même le dépôt (678 €) et les
+  honoraires d'agence (650 €). Pour ce cas il faut laisser la section cochée et
+  mettre le déménagement à 0 € — c'est ce que dit l'aide sous le champ, et le nom de
+  la section énumère les trois postes pour que le décochage soit un choix informé.
+
+La clé de stockage passe en v5 : un brouillon v4 porte une liste de sections
+antérieure à `move`, qui serait donc lue comme volontairement désactivée, et le bloc
+disparaîtrait sans explication chez un utilisateur qui revient.

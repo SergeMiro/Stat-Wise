@@ -245,7 +245,8 @@ export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }
         </section>
       ) : null}
 
-      {/* One-off cost of the move */}
+      {/* One-off cost of the move — absent when the household said it has none */}
+      {result.moveCost === null ? null : (
       <section className="bg-muted/30 mb-5 rounded-2xl border p-5">
         <h2 className="font-heading text-base font-semibold">{r.moveCostTitle}</h2>
         <p className="text-muted-foreground mt-1 text-sm">{r.moveCostDesc}</p>
@@ -271,6 +272,7 @@ export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }
           <span className="tabular">{formatCurrency(locale, result.moveCost.total)}</span>
         </p>
       </section>
+      )}
 
       {/* District ranking */}
       <section className="mb-5">

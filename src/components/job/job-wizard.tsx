@@ -192,6 +192,7 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
   function markReviewed(id: SectionId) {
     if (id === "household" && !draft.householdReviewed) update({ householdReviewed: true });
     if (id === "travel" && !draft.travelReviewed) update({ travelReviewed: true });
+    if (id === "move" && !draft.moveReviewed) update({ moveReviewed: true });
   }
 
   function goNext() {
@@ -715,27 +716,30 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
 
           {/* ---- The rest of the budget ---- */}
           {stepKey === "other" && (
-            <div className="space-y-5">
-              <NumberField
-                id="other-monthly"
-                label={f.otherMonthly}
-                hint={f.otherMonthlyHint}
-                suffix="€"
-                value={draft.otherMonthly}
-                min={0}
-                step={20}
-                onChange={(otherMonthly) => update({ otherMonthly })}
-              />
-              <NumberField
-                id="removal-cost"
-                label={f.removalCost}
-                suffix="€"
-                value={draft.removalCost}
-                min={0}
-                step={100}
-                onChange={(removalCost) => update({ removalCost })}
-              />
-            </div>
+            <NumberField
+              id="other-monthly"
+              label={f.otherMonthly}
+              hint={f.otherMonthlyHint}
+              suffix="€"
+              value={draft.otherMonthly}
+              min={0}
+              step={20}
+              onChange={(otherMonthly) => update({ otherMonthly })}
+            />
+          )}
+
+          {/* ---- Up-front cost of the move ---- */}
+          {stepKey === "move" && (
+            <NumberField
+              id="removal-cost"
+              label={f.removalCost}
+              hint={f.removalCostHint}
+              suffix="€"
+              value={draft.removalCost}
+              min={0}
+              step={100}
+              onChange={(removalCost) => update({ removalCost })}
+            />
           )}
         </CardContent>
       </Card>

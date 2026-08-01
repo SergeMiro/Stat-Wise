@@ -15,7 +15,16 @@ import type { JobDraft } from "@/lib/job-storage";
  */
 
 export type SectionId =
-  "today" | "offer" | "household" | "travel" | "dividends" | "rental" | "aide" | "family" | "other";
+  | "today"
+  | "offer"
+  | "household"
+  | "travel"
+  | "dividends"
+  | "rental"
+  | "aide"
+  | "family"
+  | "other"
+  | "move";
 
 export type Section = {
   id: SectionId;
@@ -53,6 +62,13 @@ export const SECTIONS: Section[] = [
   { id: "aide", required: false, isFilled: (d) => d.declaredBenefitsMonthly > 0 },
   { id: "family", required: false, isFilled: (d) => d.familyTripsPerYear > 0 },
   { id: "other", required: false, isFilled: (d) => d.otherMonthly > 0 },
+  /*
+    Last, and switchable off, because changing job is not always moving house.
+    Someone who keeps their current home and rents in the new city pays no removal;
+    someone housed by their employer pays none of this block at all. Its default is
+    a removal cost, so "filled" has to mean reviewed rather than non-zero.
+  */
+  { id: "move", required: false, isFilled: (d) => d.moveReviewed },
 ];
 
 export const ALL_SECTION_IDS: SectionId[] = SECTIONS.map((s) => s.id);

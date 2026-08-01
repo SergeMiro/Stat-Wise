@@ -11,12 +11,16 @@ import {
 } from "@/domain/reste-a-vivre";
 
 /*
-  v2 because the vehicle moved out of the commute and gained an energy type. The
-  version is bumped rather than migrated: a stale payload would silently produce
+  The version is bumped rather than migrated: a stale payload would silently produce
   NaN totals, and there is nothing in a wizard draft worth a migration path.
+
+  v5 because "move" joined the section list. A v4 draft carries an `enabledSections`
+  that predates it, so the section would read as deliberately switched off and the
+  up-front block would vanish from a returning user's result with no explanation.
+  Discarding the draft costs a re-entry; keeping it costs a wrong answer.
 */
-export const JOB_DRAFT_KEY = "statwise:job:draft:v4";
-export const JOB_INPUT_KEY = "statwise:job:input:v4";
+export const JOB_DRAFT_KEY = "statwise:job:draft:v5";
+export const JOB_INPUT_KEY = "statwise:job:input:v5";
 
 /**
  * Editable wizard state for "Trouver mon job".
@@ -72,6 +76,8 @@ export type JobDraft = {
   otherMonthly: number;
   /** €, cost of the removal itself. Part of the up-front block. */
   removalCost: number;
+  /** Set once the move section has been walked, so the list can colour it. */
+  moveReviewed: boolean;
 
   /** Net monthly dividends. Does not change with the city, so it applies to both sides. */
   dividendsMonthly: number;
@@ -138,6 +144,7 @@ export const defaultJobDraft: JobDraft = {
 
   otherMonthly: 420,
   removalCost: moveCostRules.defaultRemovalCost,
+  moveReviewed: false,
 
   dividendsMonthly: 0,
   rentalMonthly: 0,
@@ -215,6 +222,7 @@ export function draftToInput(draft: JobDraft): CompareInput | null {
     },
     otherMonthly: Math.max(0, draft.otherMonthly),
     removalCost: Math.max(0, draft.removalCost),
+    includeMoveCost: draft.enabledSections.includes("move"),
     otherIncome: {
       dividendsMonthly: Math.max(0, draft.dividendsMonthly),
       rentalMonthly: Math.max(0, draft.rentalMonthly),

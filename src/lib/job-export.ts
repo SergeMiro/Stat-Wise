@@ -337,7 +337,7 @@ function tableRows(context: ExportContext): Row[] {
     });
   }
 
-  push(r.moveCostTitle, r.moveCostTitle, result.moveCost.lines);
+  if (result.moveCost) push(r.moveCostTitle, r.moveCostTitle, result.moveCost.lines);
   push(r.omittedTitle, r.omittedTitle, result.omitted);
 
   return rows;
@@ -366,7 +366,13 @@ export async function downloadSpreadsheet(context: ExportContext): Promise<void>
       verdict.signOnly ? r.verdictSignOnly : "",
     ],
     [r.requiredSalaryTitle, result.requiredTargetSalary ?? ""],
-    [r.moveCostTotal, result.moveCost.total],
+    /*
+      Row dropped entirely when there is no move to pay for, matching the page.
+      A label with a blank beside it reads as zero, unknown or not-applicable
+      depending on who is looking, and a spreadsheet outlives the session that
+      could have explained which.
+    */
+    ...(result.moveCost ? [[r.moveCostTotal, result.moveCost.total]] : []),
     [],
     [noteOf(r, result)],
     [fill(r.snapshotDate, { date: SNAPSHOT_DATE })],

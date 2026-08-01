@@ -851,6 +851,14 @@ export type CompareInput = {
   otherMonthly: number;
   /** €, what the removal itself will cost. Part of the up-front block. */
   removalCost: number;
+  /**
+   * Whether the up-front block applies at all — deposit, agency fee and removal.
+   *
+   * It is a section the household can switch off, because not every job change is
+   * a move: keeping the current home and renting in the new city, or being housed
+   * by the employer, means none of these are paid.
+   */
+  includeMoveCost: boolean;
   otherIncome: OtherIncomeInput;
   /**
    * Tax and benefits per side, when the rules engine answered. Absent means those
@@ -1094,7 +1102,9 @@ export const compare = (input: CompareInput): Comparison | null => {
     deltaCommuteHours: round(best.commuteHoursPerYear - current.commuteHoursPerYear),
     waterfall: buildWaterfall(current, best),
     requiredTargetSalary,
-    moveCost: buildMoveCost(targetCity, rentOf(best), surface, input.removalCost),
+    moveCost: input.includeMoveCost
+      ? buildMoveCost(targetCity, rentOf(best), surface, input.removalCost)
+      : null,
     alternatives,
     omitted,
     fiscalComputed: input.fiscal !== undefined,
