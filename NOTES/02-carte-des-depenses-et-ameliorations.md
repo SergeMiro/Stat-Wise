@@ -305,12 +305,36 @@ Trois précisions qui comptent :
   lecteur.
 - Le montant n'entre **pas** dans le reste à vivre mensuel : c'est de la trésorerie
   d'entrée, et un test vérifie que le verdict est identique section cochée ou non.
-- **Décocher n'est pas la bonne réponse pour tout le monde.** Qui garde son logement
-  actuel mais loue dans la nouvelle ville paie quand même le dépôt (678 €) et les
-  honoraires d'agence (650 €). Pour ce cas il faut laisser la section cochée et
-  mettre le déménagement à 0 € — c'est ce que dit l'aide sous le champ, et le nom de
-  la section énumère les trois postes pour que le décochage soit un choix informé.
+- **Chaque poste a sa propre case et son propre montant** — dépôt de garantie,
+  honoraires d'agence, déménagement, chevauchement de loyers. Une seule case pour
+  les quatre ne pouvait être juste que pour un cas sur deux : qui garde son logement
+  et loue ailleurs paie le dépôt et les honoraires mais pas le camion, tandis que
+  qui est logé par l'employeur ne paie rien du tout. Une phrase d'avertissement sous
+  un champ unique demandait au lecteur de faire l'arbitrage à notre place.
 
-La clé de stockage passe en v5 : un brouillon v4 porte une liste de sections
+Comment chaque poste se comporte :
+
+| Geste | Effet | Statut de la ligne |
+| --- | --- | --- |
+| Rien | Le champ montre le chiffre de nos règles | `CALCULÉ` |
+| Un montant saisi | Il remplace le nôtre | `SAISI` |
+| Case décochée | La ligne **disparaît** du bloc et du total | absente |
+
+Trois détails qui découlent de ce choix :
+
+- Le champ affiche d'emblée **le montant que le résultat utilisera** (678 € de dépôt,
+  650 € d'honoraires), pas un placeholder vide. Il vient de `moveCostEstimates()`,
+  exporté par le moteur précisément pour que le chiffre proposé et le chiffre calculé
+  soient le même — le recopier dans le composant aurait créé deux vérités.
+- **Vider un champ le remet à l'estimation, pas à zéro.** Zéro affirme que le poste
+  est gratuit ; la case à cocher est la façon de dire qu'il ne s'applique pas.
+- Le **chevauchement de loyers** était `NON CHIFFRÉ` par principe : il dépend du
+  préavis, que nous ignorons. Il reste ainsi tant que personne ne le remplit, mais le
+  foyer peut désormais le chiffrer lui-même — c'est souvent le plus gros des quatre.
+- Le déménagement par défaut annonçait `SAISI` et « montant que vous avez saisi »
+  pour 1 200 € que personne n'avait tapés. Non touché, il est maintenant `CALCULÉ`
+  avec sa propre justification, et ne devient `SAISI` qu'une fois modifié.
+
+La clé de stockage passe en v6 : un brouillon v4 porte une liste de sections
 antérieure à `move`, qui serait donc lue comme volontairement désactivée, et le bloc
 disparaîtrait sans explication chez un utilisateur qui revient.

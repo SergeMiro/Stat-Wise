@@ -546,9 +546,26 @@ export const fr = {
       otherMonthly: "Tout le reste de votre budget mensuel",
       otherMonthlyHint:
         "Assurances, mutuelle, téléphone, internet, vêtements, loisirs, restaurants, abonnements, coiffeur, sport, animaux, cadeaux, banque, crédits. Une seule somme : ces postes ne changent pas d'une ville à l'autre, donc ils ne faussent pas la comparaison — mais sans eux le montant restant est trop optimiste.",
-      removalCost: "Coût du déménagement (€)",
-      removalCostHint:
-        "Mettez 0 si vous gardez votre logement actuel : le dépôt de garantie et les honoraires d'agence du nouveau logement restent comptés. Si rien de tout cela ne vous concerne, décochez plutôt la section entière.",
+      moveItems: {
+        estimated: "Estimé par nos règles — modifiez si vous connaissez le montant.",
+        unknown: "Non chiffré : indiquez un montant si vous en connaissez un.",
+        deposit: {
+          label: "Dépôt de garantie",
+          hint: "Un mois de loyer hors charges, rendu à la sortie. Décochez si vous n'entrez pas dans un logement loué.",
+        },
+        agencyFee: {
+          label: "Honoraires d'agence",
+          hint: "Plafond légal par m² selon la zone. Décochez pour une location entre particuliers ou une agence sans frais.",
+        },
+        removal: {
+          label: "Déménagement",
+          hint: "Camion, cartons, entreprise. Décochez si vous gardez votre logement actuel ou si l'employeur le prend en charge.",
+        },
+        rentOverlap: {
+          label: "Chevauchement de loyers",
+          hint: "Deux loyers le même mois, selon votre préavis. Nous ne pouvons pas le deviner ; vous seul le savez.",
+        },
+      },
       dividendsMonthly: "Dividendes nets par mois",
       rentalMonthly: "Revenus fonciers nets par mois",
       declaredBenefitsMonthly: "Aides perçues aujourd'hui, par mois",
@@ -615,6 +632,8 @@ export const fr = {
         "{perSqm} €/m² × {surface} m² — indicateur de loyer d'annonce de la commune, pas du quartier.",
       electricity:
         "{kwhYear} kWh/an par point de livraison résidentiel du secteur × {price} €/kWh, plus l'abonnement. Moyenne du secteur, pas la consommation du logement visé.",
+      removal_default:
+        "Ordre de grandeur pour un déménagement entre deux villes. Remplacez-le par votre devis dès que vous en avez un.",
       water:
         "{pricePerM3} €/m³ × {m3PerPerson} m³/personne/an (hypothèse de consommation). Le prix réunit l'eau potable de la commune et {sewerage} €/m³ d'assainissement, médiane nationale faute de publication locale.",
       electricity_modelled:

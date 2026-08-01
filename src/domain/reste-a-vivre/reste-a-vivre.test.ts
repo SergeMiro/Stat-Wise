@@ -3,9 +3,16 @@ import { listCities } from "@/lib/mock/cities";
 import { ALL_SECTION_IDS, REQUIRED_SECTION_IDS } from "@/lib/job-sections";
 import { fr } from "@/lib/i18n/dictionaries/fr";
 import { en } from "@/lib/i18n/dictionaries/en";
-import { compare, crecheMonthlyCost, foodMonthlyCost, type CompareInput } from "./engine";
+import {
+  compare,
+  crecheMonthlyCost,
+  foodMonthlyCost,
+  moveCostEstimates,
+  type CompareInput,
+} from "./engine";
 import {
   cities,
+  cities as jobCities,
   crecheScale,
   ELECTRICITY_VINTAGE,
   MARKET_COVERAGE,
@@ -60,8 +67,12 @@ const baseInput: CompareInput = {
   targetErrands: { mode: "transports", tripsPerMonth: 5, bikeAmortizationPerYear: 150 },
   familyTravel: { currentKm: 30, targetKm: 200, tripsPerYear: 6 },
   otherMonthly: 420,
-  removalCost: 1200,
-  includeMoveCost: true,
+  moveCost: {
+    deposit: { included: true, amount: null },
+    agencyFee: { included: true, amount: null },
+    removal: { included: true, amount: null },
+    rentOverlap: { included: true, amount: null },
+  },
   otherIncome: { dividendsMonthly: 0, rentalMonthly: 0, declaredBenefitsMonthly: 0 },
 };
 
@@ -516,7 +527,8 @@ describe("how the difference is explained", () => {
     const deposit = lines.find((l) => l.key === "depot_garantie")!.amount!;
     const rent = lineOf(result.target, "loyer")!.amount!;
     expect(deposit).toBeLessThan(rent);
-    // Overlapping rent depends on the notice date, so it stays unquantified.
+    // Overlapping rent depends on the notice date, so it stays unquantified until
+    // the household prices it.
     const overlap = lines.find((l) => l.key === "double_loyer")!;
     expect(overlap.amount).toBeNull();
     expect(overlap.reason).toBeDefined();
@@ -1033,17 +1045,17 @@ describe("frais d'installation en section optionnelle", () => {
   });
 
   it("drops the up-front block entirely rather than totalling it at zero", () => {
-    const without = compare({ ...baseInput, includeMoveCost: false })!;
+    const without = compare({ ...baseInput, moveCost: null })!;
     expect(without.moveCost).toBeNull();
 
-    const with_ = compare({ ...baseInput, includeMoveCost: true })!;
+    const with_ = compare(baseInput)!;
     expect(with_.moveCost).not.toBeNull();
     expect(with_.moveCost!.total).toBeGreaterThan(0);
   });
 
   it("leaves the monthly verdict untouched — this is cash up front, not a bill", () => {
-    const without = compare({ ...baseInput, includeMoveCost: false })!;
-    const with_ = compare({ ...baseInput, includeMoveCost: true })!;
+    const without = compare({ ...baseInput, moveCost: null })!;
+    const with_ = compare(baseInput)!;
     expect(without.deltaResteAVivre).toBe(with_.deltaResteAVivre);
     expect(without.current.resteAVivre).toBe(with_.current.resteAVivre);
     expect(without.requiredTargetSalary).toBe(with_.requiredTargetSalary);
@@ -1051,11 +1063,91 @@ describe("frais d'installation en section optionnelle", () => {
 
   it("still counts the deposit and the agency fee when only the removal is free", () => {
     // The scenario that prompted this: keeping the Dijon home, renting in Lyon.
-    const kept = compare({ ...baseInput, removalCost: 0 })!;
+    // The removal is switched off; the deposit and the fee are still owed.
+    const kept = compare({
+      ...baseInput,
+      moveCost: {
+        ...baseInput.moveCost!,
+        removal: { included: false, amount: null },
+      },
+    })!;
     const keys = kept.moveCost!.lines.map((l) => l.key);
     expect(keys).toContain("depot_garantie");
     expect(keys).toContain("honoraires_agence");
-    expect(kept.moveCost!.lines.find((l) => l.key === "demenagement")!.amount).toBe(0);
+    expect(keys).not.toContain("demenagement");
     expect(kept.moveCost!.total).toBeGreaterThan(0);
+  });
+});
+
+describe("chaque poste d'installation, coché et chiffré à part", () => {
+  const items = baseInput.moveCost!;
+  const linesOf = (over: Partial<typeof items>) =>
+    compare({ ...baseInput, moveCost: { ...items, ...over } })!.moveCost!;
+
+  it("removes a line the household switched off, rather than zeroing it", () => {
+    const noFee = linesOf({ agencyFee: { included: false, amount: null } });
+    expect(noFee.lines.map((l) => l.key)).not.toContain("honoraires_agence");
+    // Absent, not 0 € — the total drops by the fee instead of counting a free one.
+    const full = linesOf({});
+    const fee = full.lines.find((l) => l.key === "honoraires_agence")!.amount!;
+    expect(noFee.total).toBe(full.total - fee);
+  });
+
+  it("marks a figure the household typed as theirs, not as ours", () => {
+    const own = linesOf({ deposit: { included: true, amount: 950 } });
+    const deposit = own.lines.find((l) => l.key === "depot_garantie")!;
+    expect(deposit.amount).toBe(950);
+    expect(deposit.status).toBe("user");
+
+    const ours = linesOf({}).lines.find((l) => l.key === "depot_garantie")!;
+    expect(ours.status).toBe("computed");
+    expect(ours.amount).not.toBe(950);
+  });
+
+  it("does not claim the removal default was entered by the user", () => {
+    /*
+      It used to read "the amount you entered" beside a 1 200 € nobody had typed.
+      Untouched it is our convention and has to say so.
+    */
+    const untouched = linesOf({}).lines.find((l) => l.key === "demenagement")!;
+    expect(untouched.status).toBe("computed");
+    expect(untouched.basis).toEqual({ key: "removal_default" });
+
+    const typed = linesOf({ removal: { included: true, amount: 400 } }).lines.find(
+      (l) => l.key === "demenagement",
+    )!;
+    expect(typed.status).toBe("user");
+  });
+
+  it("lets the household quantify the rent overlap it alone knows", () => {
+    const guessed = linesOf({}).lines.find((l) => l.key === "double_loyer")!;
+    expect(guessed.amount).toBeNull();
+    expect(guessed.status).toBe("unavailable");
+
+    const known = linesOf({ rentOverlap: { included: true, amount: 780 } });
+    const line = known.lines.find((l) => l.key === "double_loyer")!;
+    expect(line.amount).toBe(780);
+    expect(line.status).toBe("user");
+    // An unquantified line adds nothing, so declaring it must raise the total.
+    expect(known.total).toBe(linesOf({}).total + 780);
+  });
+
+  it("offers the same estimates the result will use", () => {
+    const city = jobCities.find((c) => c.id === "lyon")!;
+    const estimates = moveCostEstimates(city, 800, 65);
+    const result = compare({
+      ...baseInput,
+      target: { ...baseInput.target, cityId: "lyon", surfaceM2: 65 },
+    })!;
+    const rent = result.target.depenses.find((l) => l.key === "loyer")!.amount!;
+    const shown = moveCostEstimates(city, rent, 65);
+    expect(result.moveCost!.lines.find((l) => l.key === "depot_garantie")!.amount).toBe(
+      shown.deposit,
+    );
+    expect(result.moveCost!.lines.find((l) => l.key === "honoraires_agence")!.amount).toBe(
+      shown.agencyFee,
+    );
+    // The helper is a pure function of rent and surface, nothing hidden.
+    expect(estimates.agencyFee).toBe(shown.agencyFee);
   });
 });

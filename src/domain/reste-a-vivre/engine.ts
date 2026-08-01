@@ -827,6 +827,27 @@ const buildSide = (context: SideContext): SideResult => {
   };
 };
 
+/**
+ * One line of the up-front block.
+ *
+ * `included: false` removes the line rather than zeroing it — the household said it
+ * does not apply, which is not the same as it costing nothing. `amount: null` keeps
+ * our own figure, and the line stays `computed`; a number replaces it and the line
+ * becomes `user`, because whoever typed it knows better than the rule does.
+ */
+export type MoveCostItem = {
+  included: boolean;
+  amount: number | null;
+};
+
+export type MoveCostInput = {
+  deposit: MoveCostItem;
+  agencyFee: MoveCostItem;
+  removal: MoveCostItem;
+  /** Two rents for one month. No rule can guess it; only the household knows. */
+  rentOverlap: MoveCostItem;
+};
+
 export type CompareInput = {
   current: CurrentSide;
   target: TargetSide;
@@ -849,16 +870,15 @@ export type CompareInput = {
    * for categories no open dataset covers geographically.
    */
   otherMonthly: number;
-  /** €, what the removal itself will cost. Part of the up-front block. */
-  removalCost: number;
   /**
-   * Whether the up-front block applies at all — deposit, agency fee and removal.
+   * The up-front block, item by item, or null when it does not apply at all.
    *
-   * It is a section the household can switch off, because not every job change is
-   * a move: keeping the current home and renting in the new city, or being housed
-   * by the employer, means none of these are paid.
+   * Not every job change is a move. Keeping the current home and renting in the
+   * new city means paying a deposit and a letting fee but no removal; being housed
+   * by the employer means paying none of it. One switch for the whole block could
+   * only ever be wrong for one of those two, so each item carries its own.
    */
-  includeMoveCost: boolean;
+  moveCost: MoveCostInput | null;
   otherIncome: OtherIncomeInput;
   /**
    * Tax and benefits per side, when the rules engine answered. Absent means those
@@ -915,65 +935,127 @@ const buildWaterfall = (current: SideResult, target: SideResult): WaterfallStep[
     .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));
 };
 
+/**
+ * What the rules say each up-front item costs, before the household edits it.
+ *
+ * Exported because the wizard shows these figures in the fields it offers for
+ * editing. Computing them there instead would put the same arithmetic in two
+ * places, and the two would drift.
+ */
+export const moveCostEstimates = (
+  targetCity: CitySnapshot,
+  targetRent: number,
+  surfaceM2: number,
+): { deposit: number; agencyFee: number; removal: number; rentOverlap: null } => ({
+  /*
+    Whole euros, not centimes. These are amounts a household types into a field and
+    hands over at a counter; showing 678,30 € in the box and 678 € in the result
+    would be two figures for one thing.
+  */
+  deposit: Math.round(
+    targetRent * (1 - moveCostRules.chargesShareOfRent) * moveCostRules.depositMonths,
+  ),
+  agencyFee: Math.round(moveCostRules.agencyFeeCapPerSqm[targetCity.alurZone] * surfaceM2),
+  removal: moveCostRules.defaultRemovalCost,
+  // Depends on a notice date we do not have. Only the household can fill it.
+  rentOverlap: null,
+});
+
 /** Cash needed before moving in. Rules only — no geographic data required. */
 const buildMoveCost = (
   targetCity: CitySnapshot,
   targetRent: number,
   surfaceM2: number,
-  removalCost: number,
+  input: MoveCostInput,
 ): MoveCost => {
-  const rentExcludingCharges = round(targetRent * (1 - moveCostRules.chargesShareOfRent));
-  const deposit = round(rentExcludingCharges * moveCostRules.depositMonths);
+  const estimates = moveCostEstimates(targetCity, targetRent, surfaceM2);
   const feeCap = moveCostRules.agencyFeeCapPerSqm[targetCity.alurZone];
-  const agencyFee = round(feeCap * surfaceM2);
+  const lines: Line[] = [];
 
-  const lines: Line[] = [
-    {
-      key: "depot_garantie",
-      label: { key: "depot_garantie" },
-      kind: "contrainte",
-      amount: deposit,
-      status: "computed",
-      basis: {
-        key: "deposit",
-        params: {
-          rent: { n: targetRent, d: 0 },
-          chargesShare: { n: moveCostRules.chargesShareOfRent * 100, d: 0 },
+  /** A line the household priced itself, or ours when it left the field alone. */
+  const priced = (item: MoveCostItem, estimate: number, mine: Omit<Line, "amount" | "status">) =>
+    item.amount === null
+      ? { ...mine, amount: estimate, status: "computed" as const }
+      : {
+          ...mine,
+          amount: round(item.amount),
+          status: "user" as const,
+          basis: { key: "user_input" as const },
+          sources: ["saisie_utilisateur" as const],
+        };
+
+  if (input.deposit.included) {
+    lines.push(
+      priced(input.deposit, estimates.deposit, {
+        key: "depot_garantie",
+        label: { key: "depot_garantie" },
+        kind: "contrainte",
+        basis: {
+          key: "deposit",
+          params: {
+            rent: { n: targetRent, d: 0 },
+            chargesShare: { n: moveCostRules.chargesShareOfRent * 100, d: 0 },
+          },
         },
-      },
-      sources: ["convention_statwise"],
-    },
-    {
-      key: "honoraires_agence",
-      label: { key: "honoraires_agence" },
-      kind: "contrainte",
-      amount: agencyFee,
-      status: "computed",
-      basis: {
-        key: "agency_fee",
-        params: { cap: { n: feeCap, d: 0 }, surface: { n: surfaceM2, d: 0 } },
-      },
-      sources: ["carte_loyers"],
-    },
-    {
-      key: "demenagement",
-      label: { key: "demenagement" },
-      kind: "contrainte",
-      amount: removalCost,
-      status: "user",
-      basis: { key: "user_input" },
-      sources: ["saisie_utilisateur"],
-    },
-    {
-      key: "double_loyer",
-      label: { key: "double_loyer" },
-      kind: "contrainte",
-      amount: null,
-      status: "unavailable",
-      reason: { key: "double_loyer" },
-      sources: [],
-    },
-  ];
+        sources: ["convention_statwise"],
+      }),
+    );
+  }
+
+  if (input.agencyFee.included) {
+    lines.push(
+      priced(input.agencyFee, estimates.agencyFee, {
+        key: "honoraires_agence",
+        label: { key: "honoraires_agence" },
+        kind: "contrainte",
+        basis: {
+          key: "agency_fee",
+          params: { cap: { n: feeCap, d: 0 }, surface: { n: surfaceM2, d: 0 } },
+        },
+        sources: ["carte_loyers"],
+      }),
+    );
+  }
+
+  if (input.removal.included) {
+    lines.push(
+      priced(input.removal, estimates.removal, {
+        key: "demenagement",
+        label: { key: "demenagement" },
+        kind: "contrainte",
+        /*
+          Untouched, this is our convention and says so. It used to claim `user`
+          and "the amount you entered" while showing a default nobody had typed.
+        */
+        basis: { key: "removal_default" },
+        sources: ["convention_statwise"],
+      }),
+    );
+  }
+
+  if (input.rentOverlap.included) {
+    lines.push(
+      input.rentOverlap.amount === null
+        ? {
+            key: "double_loyer",
+            label: { key: "double_loyer" },
+            kind: "contrainte",
+            amount: null,
+            status: "unavailable",
+            reason: { key: "double_loyer" },
+            sources: [],
+          }
+        : {
+            key: "double_loyer",
+            label: { key: "double_loyer" },
+            kind: "contrainte",
+            amount: round(input.rentOverlap.amount),
+            status: "user",
+            basis: { key: "user_input" },
+            sources: ["saisie_utilisateur"],
+          },
+    );
+  }
 
   return { lines, total: total(lines) };
 };
@@ -1102,8 +1184,8 @@ export const compare = (input: CompareInput): Comparison | null => {
     deltaCommuteHours: round(best.commuteHoursPerYear - current.commuteHoursPerYear),
     waterfall: buildWaterfall(current, best),
     requiredTargetSalary,
-    moveCost: input.includeMoveCost
-      ? buildMoveCost(targetCity, rentOf(best), surface, input.removalCost)
+    moveCost: input.moveCost
+      ? buildMoveCost(targetCity, rentOf(best), surface, input.moveCost)
       : null,
     alternatives,
     omitted,

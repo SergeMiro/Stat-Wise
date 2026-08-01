@@ -540,9 +540,26 @@ export const en: Dictionary = {
       otherMonthly: "Everything else in your monthly budget",
       otherMonthlyHint:
         "Insurance, health top-up, phone, internet, clothing, leisure, restaurants, subscriptions, haircuts, sport, pets, gifts, bank charges, loans. One figure: these do not change from one city to another, so they do not distort the comparison — but without them the amount left over looks far too good.",
-      removalCost: "Cost of the removal (€)",
-      removalCostHint:
-        "Put 0 if you are keeping your current home: the deposit and agency fee on the new one are still counted. If none of this applies to you, untick the whole section instead.",
+      moveItems: {
+        estimated: "Estimated by our rules — change it if you know the amount.",
+        unknown: "Not quantified: enter an amount if you know one.",
+        deposit: {
+          label: "Deposit",
+          hint: "One month's rent excluding charges, returned when you leave. Untick if you are not moving into a rented home.",
+        },
+        agencyFee: {
+          label: "Letting agency fee",
+          hint: "The legal cap per m² for the zone. Untick for a private let or an agency that charges nothing.",
+        },
+        removal: {
+          label: "Removal",
+          hint: "Van, boxes, a firm. Untick if you are keeping your current home or the employer pays for it.",
+        },
+        rentOverlap: {
+          label: "Overlapping rents",
+          hint: "Two rents in the same month, depending on your notice period. We cannot guess it; only you know.",
+        },
+      },
       dividendsMonthly: "Net dividends per month",
       rentalMonthly: "Net rental income per month",
       declaredBenefitsMonthly: "Benefits received today, per month",
@@ -608,6 +625,8 @@ export const en: Dictionary = {
         "{perSqm} €/m² × {surface} m² — advertised-rent indicator for the commune, not for the district.",
       electricity:
         "{kwhYear} kWh/year per residential delivery point in this area × {price} €/kWh, plus the standing charge. An area average, not the consumption of the dwelling itself.",
+      removal_default:
+        "A ballpark for a removal between two cities. Replace it with your quote as soon as you have one.",
       water:
         "{pricePerM3} €/m³ × {m3PerPerson} m³ per person per year (an assumed consumption). The price combines the commune's drinking water and {sewerage} €/m³ of sewerage, the national median in the absence of a local figure.",
       electricity_modelled:

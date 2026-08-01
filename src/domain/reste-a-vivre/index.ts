@@ -16,7 +16,10 @@ export {
   findDistrict,
   foodMonthlyCost,
   listJobCities,
+  moveCostEstimates,
   type CompareInput,
+  type MoveCostInput,
+  type MoveCostItem,
 } from "./engine";
 
 export {

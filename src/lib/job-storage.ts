@@ -2,9 +2,10 @@ import { ALL_SECTION_IDS, type SectionId } from "@/lib/job-sections";
 import {
   findCity,
   findDistrict,
-  moveCostRules,
   nationalParams,
   type CompareInput,
+  type MoveCostInput,
+  type MoveCostItem,
   type HousingType,
   type TravelMode,
   type VehicleEnergy,
@@ -14,13 +15,14 @@ import {
   The version is bumped rather than migrated: a stale payload would silently produce
   NaN totals, and there is nothing in a wizard draft worth a migration path.
 
-  v5 because "move" joined the section list. A v4 draft carries an `enabledSections`
-  that predates it, so the section would read as deliberately switched off and the
-  up-front block would vanish from a returning user's result with no explanation.
-  Discarding the draft costs a re-entry; keeping it costs a wrong answer.
+  v6 because the up-front block became four items with their own checkboxes, so a
+  single `removalCost` no longer describes it — and because a draft that predates
+  the `move` section would read as having switched it off deliberately, making the
+  block vanish from a returning user's result with no explanation. Discarding the
+  draft costs a re-entry; keeping it costs a wrong answer.
 */
-export const JOB_DRAFT_KEY = "statwise:job:draft:v5";
-export const JOB_INPUT_KEY = "statwise:job:input:v5";
+export const JOB_DRAFT_KEY = "statwise:job:draft:v6";
+export const JOB_INPUT_KEY = "statwise:job:input:v6";
 
 /**
  * Editable wizard state for "Trouver mon job".
@@ -74,8 +76,20 @@ export type JobDraft = {
    * being overstated without pretending to model categories no dataset covers.
    */
   otherMonthly: number;
-  /** €, cost of the removal itself. Part of the up-front block. */
-  removalCost: number;
+  /**
+   * The up-front block, item by item.
+   *
+   * Each item is a checkbox and an amount. `amount: null` means "use the figure the
+   * rules give"; a number is the household's own. Four items rather than one number
+   * because the four are independent: a household can face a deposit and no removal,
+   * or a removal and no letting fee.
+   */
+  moveItems: {
+    deposit: MoveItemDraft;
+    agencyFee: MoveItemDraft;
+    removal: MoveItemDraft;
+    rentOverlap: MoveItemDraft;
+  };
   /** Set once the move section has been walked, so the list can colour it. */
   moveReviewed: boolean;
 
@@ -143,7 +157,16 @@ export const defaultJobDraft: JobDraft = {
   familyTripsPerYear: 6,
 
   otherMonthly: 420,
-  removalCost: moveCostRules.defaultRemovalCost,
+  /*
+    Everything on and priced by the rules to begin with: the common case is a real
+    move, and a household that faces less than that will say so.
+  */
+  moveItems: {
+    deposit: { included: true, amount: null },
+    agencyFee: { included: true, amount: null },
+    removal: { included: true, amount: null },
+    rentOverlap: { included: true, amount: null },
+  },
   moveReviewed: false,
 
   dividendsMonthly: 0,
@@ -155,6 +178,23 @@ export const defaultJobDraft: JobDraft = {
   householdReviewed: false,
   travelReviewed: false,
 };
+
+/** One up-front item as the wizard stores it. */
+export type MoveItemDraft = { included: boolean; amount: number | null };
+
+/** Clamps the amounts a user can type, keeping null as "use the rules". */
+function cleanMoveItems(items: JobDraft["moveItems"]): MoveCostInput {
+  const clean = (item: MoveItemDraft): MoveCostItem => ({
+    included: item.included,
+    amount: item.amount === null ? null : Math.max(0, item.amount),
+  });
+  return {
+    deposit: clean(items.deposit),
+    agencyFee: clean(items.agencyFee),
+    removal: clean(items.removal),
+    rentOverlap: clean(items.rentOverlap),
+  };
+}
 
 /** Maps the editable draft to the engine input, or null if the places are unknown. */
 export function draftToInput(draft: JobDraft): CompareInput | null {
@@ -221,8 +261,7 @@ export function draftToInput(draft: JobDraft): CompareInput | null {
       tripsPerYear: Math.max(0, draft.familyTripsPerYear),
     },
     otherMonthly: Math.max(0, draft.otherMonthly),
-    removalCost: Math.max(0, draft.removalCost),
-    includeMoveCost: draft.enabledSections.includes("move"),
+    moveCost: draft.enabledSections.includes("move") ? cleanMoveItems(draft.moveItems) : null,
     otherIncome: {
       dividendsMonthly: Math.max(0, draft.dividendsMonthly),
       rentalMonthly: Math.max(0, draft.rentalMonthly),

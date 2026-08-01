@@ -22,6 +22,7 @@ import {
   findCity,
   type CompareInput,
   listJobCities,
+  moveCostEstimates,
   type HousingType,
   type TravelMode,
   type VehicleEnergy,
@@ -34,10 +35,12 @@ import {
   saveJobDraft,
   saveJobInput,
   type JobDraft,
+  type MoveItemDraft,
 } from "@/lib/job-storage";
 import { useHydratedState } from "@/lib/use-hydrated-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -78,6 +81,14 @@ const FISCAL_YEAR = 2026;
  * a benefit for a flat nobody is moving into. The engine is pure and cheap, so it
  * is run once without tax to find the winner, and its rent is what gets sent.
  */
+/** The up-front items, in the order the result block lists them. */
+const MOVE_ITEMS = [
+  { id: "deposit" as const },
+  { id: "agencyFee" as const },
+  { id: "removal" as const },
+  { id: "rentOverlap" as const },
+];
+
 function targetRentOfWinner(input: CompareInput): number {
   const first = compare(input);
   const rent = first?.target.depenses.find((line) => line.key === "loyer")?.amount;
@@ -135,6 +146,19 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
       currentDistrictId: city?.districts[0]?.id ?? "",
     });
   }
+
+  /*
+    The figures the rules would use, shown in the fields the household can edit.
+    Computed from the engine's own helper so the number offered here is the number
+    the result will use if nobody touches it.
+  */
+  const moveEstimates = (() => {
+    if (currentSection !== "move") return null;
+    const input = draftToInput(draft);
+    const city = findCity(draft.targetCityId);
+    if (!input || !city) return null;
+    return moveCostEstimates(city, targetRentOfWinner(input), input.target.surfaceM2);
+  })();
 
   const usesCar =
     draft.currentCommuteMode === "voiture" ||
@@ -728,18 +752,25 @@ export function JobWizard({ locale, dict }: { locale: Locale; dict: Dictionary }
             />
           )}
 
-          {/* ---- Up-front cost of the move ---- */}
+          {/* ---- Up-front cost of the move, item by item ---- */}
           {stepKey === "move" && (
-            <NumberField
-              id="removal-cost"
-              label={f.removalCost}
-              hint={f.removalCostHint}
-              suffix="€"
-              value={draft.removalCost}
-              min={0}
-              step={100}
-              onChange={(removalCost) => update({ removalCost })}
-            />
+            <div className="space-y-1">
+              {MOVE_ITEMS.map((item) => (
+                <MoveItemField
+                  key={item.id}
+                  id={item.id}
+                  label={f.moveItems[item.id].label}
+                  hint={f.moveItems[item.id].hint}
+                  estimate={moveEstimates?.[item.id] ?? null}
+                  estimateLabel={f.moveItems.estimated}
+                  unknownLabel={f.moveItems.unknown}
+                  value={draft.moveItems[item.id]}
+                  onChange={(next) =>
+                    update({ moveItems: { ...draft.moveItems, [item.id]: next } })
+                  }
+                />
+              ))}
+            </div>
           )}
         </CardContent>
       </Card>
@@ -782,6 +813,95 @@ function Field({
       <Label htmlFor={id}>{label}</Label>
       {children}
       {hint ? <p className="text-muted-foreground text-xs">{hint}</p> : null}
+    </div>
+  );
+}
+
+/**
+ * One up-front item: a checkbox that removes it, and an amount that overrides ours.
+ *
+ * The amount shown while untouched is the rules' own figure, so the household edits
+ * a real number rather than guessing what "leave empty" would produce. Clearing the
+ * field puts it back to the estimate rather than to zero — zero is a claim that the
+ * item is free, and the checkbox is how you say it does not apply.
+ */
+function MoveItemField({
+  id,
+  label,
+  hint,
+  estimate,
+  estimateLabel,
+  unknownLabel,
+  value,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  hint: string;
+  estimate: number | null;
+  estimateLabel: string;
+  unknownLabel: string;
+  value: MoveItemDraft;
+  onChange: (next: MoveItemDraft) => void;
+}) {
+  const shown = value.amount ?? estimate;
+  return (
+    <div className="border-b py-3.5 last:border-b-0">
+      <div className="flex items-start gap-3">
+        {/*
+          Base UI puts the `id` on a hidden input and renders the visible control as
+          a span with role="checkbox", so a plain `htmlFor` label names something a
+          screen reader never sees. `aria-labelledby` names the visible control; the
+          label keeps the text clickable for everyone else.
+        */}
+        <Checkbox
+          id={`${id}-on`}
+          aria-labelledby={`${id}-label`}
+          className="mt-1"
+          checked={value.included}
+          onCheckedChange={(included) => onChange({ ...value, included: Boolean(included) })}
+        />
+        <div className="min-w-0 flex-1">
+          <label
+            id={`${id}-label`}
+            htmlFor={`${id}-on`}
+            className="cursor-pointer text-sm font-medium"
+          >
+            {label}
+          </label>
+          <p className="text-muted-foreground mt-0.5 text-[11px]">{hint}</p>
+        </div>
+        <div className="relative w-32 shrink-0">
+          <Input
+            id={id}
+            type="number"
+            inputMode="decimal"
+            min={0}
+            step={50}
+            className="h-9 pr-6 text-right"
+            disabled={!value.included}
+            placeholder={estimate === null ? "—" : String(estimate)}
+            value={shown === null ? "" : shown}
+            onChange={(e) =>
+              onChange({
+                ...value,
+                amount: e.target.value === "" ? null : Math.max(0, Number(e.target.value) || 0),
+              })
+            }
+          />
+          <span
+            className="text-muted-foreground pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-sm"
+            aria-hidden
+          >
+            €
+          </span>
+        </div>
+      </div>
+      {value.included ? (
+        <p className="text-muted-foreground mt-1.5 pl-7 text-[11px]">
+          {value.amount === null ? (estimate === null ? unknownLabel : estimateLabel) : null}
+        </p>
+      ) : null}
     </div>
   );
 }
