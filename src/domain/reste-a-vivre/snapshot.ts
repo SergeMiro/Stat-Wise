@@ -546,7 +546,12 @@ const CITY_SPECS: CitySpec[] = [
     parisRegion: false,
     waterPricePerM3: 3.95,
     fuelPricePerLitre: 1.77,
-    transitPassMonthly: 52.5,
+    /*
+      Relevé le 01/08/2026 dans le GTFS-Fares v2 de la CTS, produit
+      "Abonnement tarif plein de 26 à 64 ans" : 56,00 €. La valeur saisie
+      auparavant, 52,50 €, était 6,7 % trop basse.
+    */
+    transitPassMonthly: 56,
     transitFreeForResidents: false,
     transitTicketUnit: 1.9,
     transitNetwork: "CTS",
@@ -571,9 +576,16 @@ const CITY_SPECS: CitySpec[] = [
     parisRegion: false,
     waterPricePerM3: 3.65,
     fuelPricePerLitre: 1.77,
-    transitPassMonthly: 45.5,
+    /*
+      Relevé le 01/08/2026 dans le GTFS-Fares v2 de TBM, produit
+      "LE PASS - MENSUEL" en catégorie adulte : 55,00 €, contre 45,50 € saisis —
+      21 % trop bas. Le ticket passe de 1,80 à 1,90 € ("BSC - 1 VOYAGE").
+      À ne pas confondre avec "LE PASS MENSUEL SOLIDAIRE 2" à 27,50 €, qui est
+      soumis à conditions de ressources.
+    */
+    transitPassMonthly: 55,
     transitFreeForResidents: false,
-    transitTicketUnit: 1.8,
+    transitTicketUnit: 1.9,
     transitNetwork: "TBM",
     alurZone: "tendue",
     centralRentPerSqm: 17,
