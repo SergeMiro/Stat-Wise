@@ -188,6 +188,11 @@ password_requirements = ""
 
 [auth.rate_limit]
 # Number of emails that can be sent per hour. Requires auth.email.smtp to be enabled.
+#
+# Two an hour is the ceiling Supabase's built-in sender imposes, and it is easy to
+# wire up a real SMTP server and still be throttled here, because this line does
+# not move on its own. Raise it in the same change that enables `auth.email.smtp`
+# — 30 is a reasonable start for a site with no traffic yet.
 email_sent = 2
 # Number of SMS messages that can be sent per hour. Requires auth.sms to be enabled.
 sms_sent = 30
@@ -239,10 +244,16 @@ otp_expiry = 3600
 # The credentials are read from the environment, never committed: `env(NAME)` is
 # resolved by the CLI at push time.
 #
-# Uncomment once SMTP_HOST / SMTP_USER / SMTP_PASS / SMTP_SENDER exist.
+# Brevo is the suggested sender: it is French, so the mail leaves from the same
+# jurisdiction the privacy policy claims for everything else, and the free tier is
+# 300 messages a day rather than two an hour. Host and port below are Brevo's;
+# `SMTP_USER` is the SMTP login it issues and `SMTP_PASS` its SMTP key — not the
+# account password and not an API key.
+#
+# Uncomment once SMTP_USER / SMTP_PASS / SMTP_SENDER exist in the environment.
 # [auth.email.smtp]
 # enabled = true
-# host = "env(SMTP_HOST)"
+# host = "smtp-relay.brevo.com"
 # port = 587
 # user = "env(SMTP_USER)"
 # pass = "env(SMTP_PASS)"
