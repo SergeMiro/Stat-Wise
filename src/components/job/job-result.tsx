@@ -45,6 +45,7 @@ import {
 import { EmptyState } from "@/components/states";
 import { JobVerdictBanner } from "./job-verdict-banner";
 import { JobDownloads } from "./job-downloads";
+import { JobSaveCta } from "./job-save-cta";
 
 export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const [input, , ready] = useHydratedState<CompareInput | null>(null, () => loadJobInput());
@@ -481,6 +482,9 @@ export function JobResult({ locale, dict }: { locale: Locale; dict: Dictionary }
       </Accordion>
 
       <JobDownloads locale={locale} dict={dict} result={result} verdict={graded} />
+
+      {/* Keep this run — offered where the numbers are, not on a marketing page */}
+      <JobSaveCta locale={locale} dict={dict} input={input} result={result} />
 
       {/* Actions */}
       <div className="grid gap-2 sm:grid-cols-2">

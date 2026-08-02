@@ -20,6 +20,15 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Skip Next internals, the API, and any file with an extension (static assets).
-  matcher: ["/((?!_next|api|.*\\..*).*)"],
+  /*
+    Skip Next internals, the API, the auth callback, and any file with an
+    extension (static assets).
+
+    `/auth/callback` has to be excluded explicitly: it is the URL inside the
+    confirmation email, and it carries a single-use code. Prefixing it with a
+    locale redirects the browser, and Supabase's code is consumed by — or lost
+    on — that hop, so every confirmation link would fail. It is not a page and
+    has nothing to translate.
+  */
+  matcher: ["/((?!_next|api|auth|.*\\..*).*)"],
 };
