@@ -122,17 +122,17 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <div>
             <h2 className="font-heading text-base font-semibold">{dict.home.dataTitle}</h2>
             <p className="text-muted-foreground mt-1 text-sm">{dict.home.dataDesc}</p>
-            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm touch:mt-1 touch:gap-y-0">
               <Link
                 href={localePath(locale, "/methodology")}
-                className="text-primary inline-flex items-center gap-1 hover:underline"
+                className="text-primary inline-flex items-center gap-1 hover:underline touch:min-h-11"
               >
                 {dict.home.seeMethodology}
                 <ArrowRight className="size-3.5" />
               </Link>
               <Link
                 href={localePath(locale, "/sources")}
-                className="text-primary inline-flex items-center gap-1 hover:underline"
+                className="text-primary inline-flex items-center gap-1 hover:underline touch:min-h-11"
               >
                 {dict.home.seeSources}
                 <ArrowRight className="size-3.5" />

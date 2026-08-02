@@ -338,3 +338,32 @@ Trois détails qui découlent de ce choix :
 La clé de stockage passe en v6 : un brouillon v4 porte une liste de sections
 antérieure à `move`, qui serait donc lue comme volontairement désactivée, et le bloc
 disparaîtrait sans explication chez un utilisateur qui revient.
+
+## Cibles tactiles à 44 px (2026-08-02)
+
+WCAG 2.2 demande 24×24 px au niveau AA (2.5.8) et 44×44 au niveau AAA (2.5.5).
+C'est le niveau AAA qui est appliqué, mais **seulement là où un pouce est probable** :
+la variante `touch` définie dans `globals.css` se déclenche sur un pointeur grossier
+**ou** un viewport sous 1024 px.
+
+```css
+@custom-variant touch {
+  @media (pointer: coarse) { @slot; }
+  @media (max-width: 1023px) { @slot; }
+}
+```
+
+Trois raisons à cette double condition :
+
+1. Le design compact est juste pour une souris. L'imposer à 44 px partout aurait
+   changé l'écran de bureau, que personne n'a demandé de changer.
+2. La deuxième condition rend la règle **vérifiable** : aucune automatisation de
+   navigateur disponible ici ne sait émuler `pointer: coarse` (essayé via CDP
+   `Emulation.setEmulatedMedia`, sans effet). Redimensionner, si.
+3. C'est la hauteur réelle qui grandit, pas une zone invisible. Une zone de clic
+   étendue qui chevauche sa voisine est pire qu'une petite cible : le doigt atteint
+   le mauvais lien et rien à l'écran ne l'explique. C'est aussi pourquoi les deux
+   moitiés du sélecteur de langue grandissent ensemble.
+
+Mesuré : **164 cibles à 360/375/414 px et 154 à 768/1023 px, toutes ≥ 44×44**.
+À 1440 px les hauteurs restent 20–36 px, c'est-à-dire le dessin d'origine.

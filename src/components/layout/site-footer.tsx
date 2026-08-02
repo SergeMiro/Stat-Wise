@@ -17,9 +17,9 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
           <span className="font-heading text-base font-semibold">{dict.brand.name}</span>
           <span className="text-muted-foreground">{dict.footer.tagline}</span>
         </div>
-        <nav className="flex flex-wrap gap-x-5 gap-y-2">
+        <nav className="flex flex-wrap gap-x-5 gap-y-2 touch:gap-y-0">
           {links.map((l) => (
-            <Link key={l.href} href={l.href} className="text-muted-foreground hover:text-foreground">
+            <Link key={l.href} href={l.href} className="inline-flex items-center text-muted-foreground hover:text-foreground touch:min-h-11 touch:min-w-11">
               {l.label}
             </Link>
           ))}

@@ -5,6 +5,28 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
+  Touch targets.
+
+  WCAG 2.2 asks for 24×24 CSS px at AA (2.5.8) and 44×44 at AAA (2.5.5). The
+  compact controls this design is built on are right for a mouse and too small for
+  a thumb, so the larger size is applied where a thumb is likely: a coarse pointer,
+  or a viewport narrow enough to be a phone or tablet. The second condition is what
+  makes it testable — no browser automation can emulate `pointer: coarse`.
+
+  Real height is used rather than an invisible overlay. An expanded hit area that
+  overlaps its neighbour is worse than a small one: the tap lands on the wrong link
+  and nothing on screen explains why.
+*/
+@custom-variant touch {
+  @media (pointer: coarse) {
+    @slot;
+  }
+  @media (max-width: 1023px) {
+    @slot;
+  }
+}
+
+/*
   StatWise design tokens.
   Calm, trustworthy teal accent on a crisp neutral surface — built for reading
   numbers without strain. Mobile-first: spacing and radii stay generous so tap

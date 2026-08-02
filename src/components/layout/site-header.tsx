@@ -21,7 +21,7 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4">
         <Link
           href={localePath(locale, "/")}
-          className="flex items-center gap-2 font-heading text-base font-semibold tracking-tight"
+          className="flex items-center gap-2 font-heading text-base font-semibold tracking-tight touch:min-h-11"
         >
           <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Compass className="size-4" />
@@ -37,7 +37,7 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "rounded-md px-3 py-1.5 text-sm transition-colors",
+                  "inline-flex items-center rounded-md px-3 py-1.5 text-sm transition-colors touch:min-h-11",
                   active
                     ? "bg-muted font-medium text-foreground"
                     : "text-muted-foreground hover:text-foreground",

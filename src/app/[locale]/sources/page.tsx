@@ -19,7 +19,7 @@ export default async function SourcesPage({ params }: { params: Promise<{ locale
               href={s.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 font-medium hover:text-primary"
+              className="inline-flex items-center gap-1.5 font-medium hover:text-primary touch:min-h-11"
             >
               {s.label}
               <ExternalLink className="size-3.5 shrink-0" />
