@@ -321,23 +321,165 @@ export const en: Dictionary = {
       limitedDesc: "Results at commune level only.",
     },
     privacy: {
-      title: "Privacy",
-      intro: "StatWise applies data minimisation.",
-      collectedTitle: "Data we use",
-      collected: [
-        "chosen city",
-        "selected areas",
-        "approximate budget",
-        "child age group",
-        "household type and priorities",
+      title: "Privacy policy",
+      intro:
+        "What StatWise does with your data, in plain words. Nothing is kept until you ask for it.",
+      updated: "Last updated: 2 August 2026",
+      summaryTitle: "In two lines",
+      summary: [
+        "A simulation run without an account does not leave your browser, with one exception: the income tax and benefits calculation.",
+        "No trackers, no advertising, no resale. There is no cookie banner because there is nothing to accept.",
+        "An account keeps only what you explicitly saved, on servers located in France.",
       ],
-      notCollectedTitle: "Data never collected in V1",
-      notCollected: [
-        "precise home address",
-        "a child's name or date of birth",
-        "medical or banking data",
-        "geolocation history",
+      sections: [
+        {
+          title: "1. Who is responsible for your data",
+          body: "The data controller is {publisher}, a natural person and the publisher of StatWise. The project has no commercial activity and is not required to appoint a data protection officer; requests are handled by the publisher directly.",
+        },
+        {
+          title: "2. What we process, why, and on what basis",
+          body: "The GDPR requires each use to state the data involved and the legal basis that allows it. The table below takes them one at a time.",
+          rows: [
+            {
+              what: "Running a simulation without an account",
+              data: "City, district, rent, salary, household, travel",
+              why: "Producing the result you asked for",
+              basis: "Legitimate interest: without these answers there is nothing to compute. They stay in your browser.",
+            },
+            {
+              what: "Computing tax and benefits",
+              data: "Salary, rent, number of children, commune code",
+              why: "Querying OpenFisca, the public tax and benefits rules engine",
+              basis: "Legitimate interest. No identifier is sent: no name, no email, no address.",
+            },
+            {
+              what: "Creating an account",
+              data: "Email address, first name, last name, home city",
+              why: "Identifying you and letting you come back",
+              basis: "Performance of the service you ask for by creating the account.",
+            },
+            {
+              what: "Saving a simulation",
+              data: "The contents of the simulation, including salary and rent",
+              why: "Finding it again later",
+              basis: "Performance of the service, at your express request. Nothing is saved without a click from you.",
+            },
+            {
+              what: "Security and operation",
+              data: "The host's technical logs, including the IP address",
+              why: "Detecting outages and abuse",
+              basis: "Legitimate interest in keeping the service running.",
+            },
+          ],
+        },
+        {
+          title: "3. What we do not do",
+          body: "This list matters as much as the previous one, and it can be checked: the site is written without any of these pieces.",
+          items: [
+            "No advertising trackers, no analytics, no social network pixels.",
+            "No resale, rental or sharing of your data for commercial purposes.",
+            "No profiling and no automated decision with legal effect: our results are indicative.",
+            "No special-category data under Article 9: no health, origin, opinion or banking data.",
+            "No precise postal address: the calculation stops at the district.",
+          ],
+        },
+        {
+          title: "4. Who else sees this data",
+          body: "Three providers are involved, and none receives more than its role requires.",
+          rows: [
+            {
+              what: "Supabase",
+              data: "Accounts and saved simulations",
+              why: "Database and authentication",
+              basis: "Servers in Paris (eu-west-3). Processor within the meaning of Article 28.",
+            },
+            {
+              what: "Vercel",
+              data: "Site requests, technical logs",
+              why: "Hosting the site and the server functions",
+              basis: "Server functions run in Paris (cdg1). The delivery network is global; any transfers are covered by standard contractual clauses.",
+            },
+            {
+              what: "OpenFisca France",
+              data: "Salary, rent, number of children, commune code — with no identifier",
+              why: "Computing income tax and benefits",
+              basis: "Public rules engine. What is sent cannot identify you.",
+            },
+          ],
+        },
+        {
+          title: "5. How long we keep it",
+          body: "Data kept without a reason is data you eventually lose. The periods are therefore short and tied to a use.",
+          rows: [
+            {
+              what: "Simulation run without an account",
+              data: "Until you clear your browser storage",
+              why: "It never leaves your device",
+              basis: "You can erase it at any time from your browser settings.",
+            },
+            {
+              what: "Account and profile",
+              data: "For as long as the account exists",
+              why: "Letting you come back",
+              basis: "Deleted on request, together with everything attached to it.",
+            },
+            {
+              what: "Saved simulations",
+              data: "For as long as you keep them",
+              why: "Rereading and comparing them",
+              basis: "Deletable one by one from your account, immediately and for good.",
+            },
+            {
+              what: "Technical logs",
+              data: "A few weeks at the host",
+              why: "Security and diagnosis",
+              basis: "Periods set by the host, not used by us for anything else.",
+            },
+          ],
+        },
+        {
+          title: "6. Cookies and local storage",
+          body: "There is no consent banner on this site, and that is not an oversight: only strictly necessary items are stored, which exempts them under Article 82 of the French Data Protection Act.",
+          rows: [
+            {
+              what: "Session cookie",
+              data: "Set only if you sign in",
+              why: "Keeping you signed in from page to page",
+              basis: "Strictly necessary. Gone when you sign out.",
+            },
+            {
+              what: "Browser local storage",
+              data: "Simulation draft, chosen language",
+              why: "Not making you type your answers again",
+              basis: "Stays on your device, never sent to a server unless you save.",
+            },
+          ],
+        },
+        {
+          title: "7. Your rights",
+          body: "You have rights of access, rectification, erasure, restriction, objection and portability over your data. Two of them are exercised directly in the interface, without writing to us: your account shows everything it holds, and each saved simulation is deleted with one click. For the others, write to us: we answer within a month.",
+        },
+        {
+          title: "8. Complaints",
+          body: "If an answer does not satisfy you, you may refer the matter to the French data protection authority: CNIL, 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07, or online at cnil.fr.",
+        },
+        {
+          title: "9. Security",
+          body: "Traffic is encrypted in transit. Access to the data is partitioned in the database by policies that check, on every read and every write, that the row belongs to the signed-in person — the account id is never read from the request, only from the session cookie. No password is stored: signing in uses a single-use link sent by email.",
+        },
+        {
+          title: "10. Changes",
+          body: "This policy may change with the service. The date at the top shows the current version; substantial changes will be announced on the site.",
+        },
       ],
+      contactTitle: "Writing to us",
+      contactBody: "For any question or request about your data:",
+      contactMissing:
+        "The contact address will be published here shortly. In the meantime your rights can be exercised directly from your account, and you may refer the matter to the CNIL.",
+      tableWhat: "Processing",
+      tableData: "Data",
+      tableWhy: "Purpose",
+      tableBasis: "Details",
     },
     terms: {
       title: "Terms of use",

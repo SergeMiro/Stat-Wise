@@ -109,6 +109,27 @@ que la personne a explicitement enregistrées — lesquelles contiennent un sala
 un loyer et un nombre d'enfants. Rien n'est écrit sans un geste volontaire.
 Serveurs en France. La suppression du compte efface tout par cascade.
 
-**À faire** : la page `/privacy` ne parle pas encore des comptes. Le texte affiché
-sous le formulaire et sur la page compte dit déjà ce qui est conservé, mais la
-politique de confidentialité doit le reprendre.
+La page `/privacy` a été réécrite en politique complète, sur la liste de mentions
+qu'exige la CNIL : responsable, finalités, bases légales, destinataires, durées,
+droits, réclamation. Elle est en tableaux plutôt qu'en paragraphes, parce que
+l'obligation est d'être « concise, transparente et aisément accessible ».
+
+**Reste une valeur à renseigner** : `SITE_PUBLISHER.contactEmail` dans
+`src/lib/site-publisher.ts`. Tant qu'elle est vide, la page n'affiche aucune adresse
+plutôt qu'une adresse qui rebondirait — un contact injoignable pour une demande RGPD
+est pire que pas de contact du tout.
+
+## Les fonctions serveur tournaient aux États-Unis
+
+Vercel exécute les fonctions à Washington (`iad1`) par défaut, pour **tout nouveau
+projet**. `/api/fiscal` reçoit un salaire et un loyer, `/api/simulations` les écrit
+en base : les deux traitaient donc des données financières hors de l'UE, vers une
+base située à Paris. Corrigé par un `vercel.json` :
+
+```json
+{ "regions": ["cdg1"] }
+```
+
+C'est le genre de réglage qu'on ne voit pas : rien ne casse, rien n'avertit, et la
+politique de confidentialité aurait annoncé un hébergement français en toute bonne
+foi.

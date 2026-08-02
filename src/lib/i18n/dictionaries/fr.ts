@@ -326,23 +326,165 @@ export const fr = {
       limitedDesc: "Résultats au niveau communal uniquement.",
     },
     privacy: {
-      title: "Confidentialité",
-      intro: "StatWise applique la minimisation des données.",
-      collectedTitle: "Données utilisées",
-      collected: [
-        "ville choisie",
-        "zones sélectionnées",
-        "budget approximatif",
-        "tranche d'âge de l'enfant",
-        "type de foyer et priorités",
+      title: "Politique de confidentialité",
+      intro:
+        "Ce que StatWise fait de vos données, en clair. Rien n'est conservé tant que vous ne le demandez pas.",
+      updated: "Dernière mise à jour : 2 août 2026",
+      summaryTitle: "En deux lignes",
+      summary: [
+        "Une simulation lancée sans compte ne quitte pas votre navigateur, à une exception près : le calcul de l'impôt et des prestations.",
+        "Aucun traceur, aucune publicité, aucune revente. Il n'y a pas de bandeau cookies parce qu'il n'y a rien à accepter.",
+        "Un compte ne conserve que ce que vous avez explicitement enregistré, sur des serveurs situés en France.",
       ],
-      notCollectedTitle: "Données jamais collectées en V1",
-      notCollected: [
-        "adresse précise du domicile",
-        "nom ou date de naissance d'un enfant",
-        "données médicales ou bancaires",
-        "historique de géolocalisation",
+      sections: [
+        {
+          title: "1. Qui est responsable de vos données",
+          body: "Le responsable du traitement est {publisher}, personne physique, éditeur du site StatWise. Le projet n'a pas d'activité commerciale et n'est pas tenu de désigner un délégué à la protection des données ; les demandes sont traitées directement par l'éditeur.",
+        },
+        {
+          title: "2. Ce que nous traitons, pourquoi, et sur quel fondement",
+          body: "Le RGPD impose d'indiquer, pour chaque usage, la donnée concernée et la base légale qui l'autorise. Le tableau ci-dessous les reprend une par une.",
+          rows: [
+            {
+              what: "Lancer une simulation sans compte",
+              data: "Ville, quartier, loyer, salaire, composition du foyer, déplacements",
+              why: "Produire le résultat que vous demandez",
+              basis: "Intérêt légitime : sans ces réponses il n'y a rien à calculer. Elles restent dans votre navigateur.",
+            },
+            {
+              what: "Calculer l'impôt et les prestations",
+              data: "Salaire, loyer, nombre d'enfants, code commune",
+              why: "Interroger OpenFisca, le moteur de règles socio-fiscales public",
+              basis: "Intérêt légitime. Aucun identifiant n'est transmis : ni nom, ni e-mail, ni adresse.",
+            },
+            {
+              what: "Créer un compte",
+              data: "Adresse e-mail, prénom, nom, ville de résidence",
+              why: "Vous identifier et vous permettre de revenir",
+              basis: "Exécution du service que vous demandez en créant le compte.",
+            },
+            {
+              what: "Enregistrer une simulation",
+              data: "Le contenu de la simulation, y compris salaire et loyer",
+              why: "La retrouver plus tard",
+              basis: "Exécution du service, sur votre demande expresse. Rien n'est enregistré sans un clic de votre part.",
+            },
+            {
+              what: "Sécurité et bon fonctionnement",
+              data: "Journaux techniques de l'hébergeur, dont l'adresse IP",
+              why: "Détecter les pannes et les abus",
+              basis: "Intérêt légitime à faire fonctionner le service.",
+            },
+          ],
+        },
+        {
+          title: "3. Ce que nous ne faisons pas",
+          body: "Cette liste est aussi importante que la précédente, et elle est vérifiable : le code du site est écrit sans aucune de ces briques.",
+          items: [
+            "Aucun traceur publicitaire, aucun outil de mesure d'audience, aucun pixel de réseau social.",
+            "Aucune revente, location ou partage de vos données à des fins commerciales.",
+            "Aucun profilage et aucune décision automatisée produisant des effets juridiques : nos résultats sont indicatifs.",
+            "Aucune donnée sensible au sens de l'article 9 du RGPD : ni santé, ni origine, ni opinion, ni donnée bancaire.",
+            "Aucune adresse postale précise : le calcul s'arrête au quartier.",
+          ],
+        },
+        {
+          title: "4. Qui d'autre voit ces données",
+          body: "Trois prestataires interviennent, et aucun ne reçoit plus que ce qui est nécessaire à son rôle.",
+          rows: [
+            {
+              what: "Supabase",
+              data: "Comptes et simulations enregistrées",
+              why: "Base de données et authentification",
+              basis: "Serveurs à Paris (eu-west-3). Sous-traitant au sens de l'article 28.",
+            },
+            {
+              what: "Vercel",
+              data: "Requêtes du site, journaux techniques",
+              why: "Hébergement du site et des fonctions serveur",
+              basis: "Fonctions serveur exécutées à Paris (cdg1). Le réseau de diffusion est mondial ; les transferts éventuels sont encadrés par les clauses contractuelles types.",
+            },
+            {
+              what: "OpenFisca France",
+              data: "Salaire, loyer, nombre d'enfants, code commune — sans aucun identifiant",
+              why: "Calculer l'impôt sur le revenu et les prestations",
+              basis: "Moteur de règles public. Les données envoyées ne permettent pas de vous identifier.",
+            },
+          ],
+        },
+        {
+          title: "5. Combien de temps nous les gardons",
+          body: "Une donnée que l'on garde sans raison est une donnée que l'on finit par perdre. Les durées sont donc courtes et liées à un usage.",
+          rows: [
+            {
+              what: "Simulation lancée sans compte",
+              data: "Jusqu'à ce que vous vidiez le stockage de votre navigateur",
+              why: "Elle ne quitte jamais votre appareil",
+              basis: "Vous pouvez l'effacer à tout moment depuis les réglages de votre navigateur.",
+            },
+            {
+              what: "Compte et profil",
+              data: "Tant que le compte existe",
+              why: "Vous permettre de revenir",
+              basis: "Supprimé sur demande, avec tout ce qui s'y rattache.",
+            },
+            {
+              what: "Simulations enregistrées",
+              data: "Tant que vous les conservez",
+              why: "Les relire et les comparer",
+              basis: "Supprimables une par une depuis votre compte, immédiatement et définitivement.",
+            },
+            {
+              what: "Journaux techniques",
+              data: "Quelques semaines chez l'hébergeur",
+              why: "Sécurité et diagnostic",
+              basis: "Durées fixées par l'hébergeur, non exploitées par nous à d'autres fins.",
+            },
+          ],
+        },
+        {
+          title: "6. Cookies et stockage local",
+          body: "Il n'y a pas de bandeau de consentement sur ce site, et ce n'est pas un oubli : seuls des éléments strictement nécessaires sont déposés, ce qui en dispense au titre de l'article 82 de la loi Informatique et Libertés.",
+          rows: [
+            {
+              what: "Cookie de session",
+              data: "Déposé uniquement si vous vous connectez",
+              why: "Vous garder connecté d'une page à l'autre",
+              basis: "Strictement nécessaire. Disparaît à la déconnexion.",
+            },
+            {
+              what: "Stockage local du navigateur",
+              data: "Brouillon de simulation, langue choisie",
+              why: "Ne pas vous faire ressaisir vos réponses",
+              basis: "Reste sur votre appareil, jamais envoyé à un serveur tant que vous n'enregistrez pas.",
+            },
+          ],
+        },
+        {
+          title: "7. Vos droits",
+          body: "Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité sur vos données. Deux de ces droits s'exercent directement dans l'interface, sans nous écrire : votre compte affiche tout ce qu'il contient, et chaque simulation enregistrée se supprime d'un clic. Pour les autres, écrivez-nous : nous répondons sous un mois.",
+        },
+        {
+          title: "8. Réclamation",
+          body: "Si une réponse ne vous satisfait pas, vous pouvez saisir la Commission nationale de l'informatique et des libertés : CNIL, 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07, ou en ligne sur cnil.fr.",
+        },
+        {
+          title: "9. Sécurité",
+          body: "Les échanges sont chiffrés en transit. L'accès aux données est cloisonné en base par des politiques qui vérifient, à chaque lecture et à chaque écriture, que la ligne appartient bien à la personne connectée — l'identifiant du compte n'est jamais lu depuis la requête, mais du cookie de session. Aucun mot de passe n'est stocké : la connexion se fait par un lien à usage unique envoyé par e-mail.",
+        },
+        {
+          title: "10. Modifications",
+          body: "Cette politique peut évoluer avec le service. La date en tête de page indique la dernière version ; les changements substantiels seront signalés sur le site.",
+        },
       ],
+      contactTitle: "Nous écrire",
+      contactBody: "Pour toute question ou demande relative à vos données :",
+      contactMissing:
+        "L'adresse de contact sera publiée ici prochainement. En attendant, vos droits s'exercent directement depuis votre compte, et vous pouvez saisir la CNIL.",
+      tableWhat: "Traitement",
+      tableData: "Données",
+      tableWhy: "Finalité",
+      tableBasis: "Précisions",
     },
     terms: {
       title: "Conditions d'utilisation",
