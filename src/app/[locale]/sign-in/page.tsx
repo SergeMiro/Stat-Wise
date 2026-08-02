@@ -31,8 +31,10 @@ export default async function SignInPage({
   if (user) redirect(localePath(locale, "/app/account"));
 
   return (
-    <div className="mx-auto w-full max-w-md px-4 py-10">
-      <h1 className="font-heading text-2xl font-semibold tracking-tight text-balance">{t.title}</h1>
+    <div className="mx-auto w-full max-w-xl px-4 py-8 sm:py-10">
+      <h1 className="font-heading text-2xl font-semibold tracking-tight text-balance">
+        {t.title}
+      </h1>
       <p className="text-muted-foreground mt-2 text-sm">{t.subtitle}</p>
 
       <ul className="text-muted-foreground mt-4 space-y-1.5 text-sm">

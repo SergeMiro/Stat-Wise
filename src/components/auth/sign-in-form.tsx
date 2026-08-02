@@ -93,7 +93,7 @@ export function SignInForm({
 
   if (state === "sent") {
     return (
-      <div className="bg-card rounded-2xl border p-6 text-center">
+      <div className="bg-card rounded-2xl border p-5 text-center">
         <CheckCircle2 className="text-confidence-high mx-auto size-10" aria-hidden />
         <h2 className="font-heading mt-3 text-lg font-semibold">{t.sentTitle}</h2>
         <p className="text-muted-foreground mt-2 text-sm">{t.sentBody.replace("{email}", email)}</p>
@@ -103,7 +103,7 @@ export function SignInForm({
   }
 
   return (
-    <div className="bg-card rounded-2xl border p-6">
+    <div className="bg-card rounded-2xl border p-5">
       {googleEnabled ? (
         <>
           <Button variant="outline" className="w-full" onClick={withGoogle} type="button">
@@ -118,7 +118,7 @@ export function SignInForm({
       ) : null}
 
       <form onSubmit={sendLink} className="space-y-4">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-4 sm:grid-cols-2 sm:gap-3">
           <div className="space-y-1.5">
             <Label htmlFor="first-name">{t.firstName}</Label>
             <Input

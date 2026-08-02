@@ -131,7 +131,7 @@ export function JobSaveCta({
       )}
 
       <Button
-        className="mt-4"
+        className="mt-4 w-full sm:w-auto"
         size="lg"
         onClick={signedIn ? saveNow : createAccount}
         disabled={state === "saving"}

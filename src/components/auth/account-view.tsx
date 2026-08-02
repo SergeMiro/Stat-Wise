@@ -92,13 +92,13 @@ export function AccountView({
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-4 py-10">
-      <div className="flex items-start justify-between gap-4">
+    <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-10">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="font-heading text-2xl font-semibold tracking-tight">
             {firstName ? fill(t.helloNamed, { name: firstName }) : t.hello}
           </h1>
-          <p className="text-muted-foreground mt-1 text-sm">{email}</p>
+          <p className="text-muted-foreground mt-1 text-sm break-all">{email}</p>
         </div>
         <Button variant="ghost" onClick={signOut}>
           <LogOut />
@@ -111,10 +111,10 @@ export function AccountView({
       {flushing ? <p className="text-muted-foreground mt-2 text-sm">{t.flushing}</p> : null}
 
       {saved.length === 0 && !flushing ? (
-        <div className="bg-card mt-3 rounded-2xl border p-6 text-center">
+        <div className="bg-card mt-3 rounded-2xl border p-5 text-center">
           <p className="text-muted-foreground text-sm">{t.empty}</p>
           <Button
-            className="mt-4"
+            className="mt-4 w-full sm:w-auto"
             onClick={() => router.push(localePath(locale, "/app/job/new"))}
           >
             {t.runOne}
@@ -123,7 +123,7 @@ export function AccountView({
       ) : (
         <ul className="mt-3 space-y-3">
           {saved.map((simulation) => (
-            <li key={simulation.id} className="bg-card rounded-2xl border p-4">
+            <li key={simulation.id} className="bg-card rounded-2xl border p-4 sm:p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-sm font-medium">

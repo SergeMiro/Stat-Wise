@@ -845,9 +845,16 @@ function MoveItemField({
   onChange: (next: MoveItemDraft) => void;
 }) {
   const shown = value.amount ?? estimate;
+
   return (
-    <div className="border-b py-3.5 last:border-b-0">
-      <div className="flex items-start gap-3">
+    <div className="border-b py-4 last:border-b-0">
+      {/*
+        One row that wraps rather than two copies of the field. The amount is
+        `w-full` below `sm`, which forces it onto its own line under the text; from
+        `sm` it is `w-32` and sits beside it. Rendering the input twice and hiding
+        one would put the same id in the document twice.
+      */}
+      <div className="flex flex-wrap items-start gap-x-3 gap-y-3">
         {/*
           Base UI puts the `id` on a hidden input and renders the visible control as
           a span with role="checkbox", so a plain `htmlFor` label names something a
@@ -857,7 +864,7 @@ function MoveItemField({
         <Checkbox
           id={`${id}-on`}
           aria-labelledby={`${id}-label`}
-          className="mt-1"
+          className="mt-0.5"
           checked={value.included}
           onCheckedChange={(included) => onChange({ ...value, included: Boolean(included) })}
         />
@@ -869,16 +876,17 @@ function MoveItemField({
           >
             {label}
           </label>
-          <p className="text-muted-foreground mt-0.5 text-[11px]">{hint}</p>
+          <p className="text-muted-foreground mt-1 text-xs">{hint}</p>
         </div>
-        <div className="relative w-32 shrink-0">
+
+        <div className="relative w-full pl-7 sm:w-32 sm:pl-0">
           <Input
             id={id}
             type="number"
             inputMode="decimal"
             min={0}
             step={50}
-            className="h-9 pr-6 text-right"
+            className="h-9 pr-7 text-right"
             disabled={!value.included}
             placeholder={estimate === null ? "—" : String(estimate)}
             value={shown === null ? "" : shown}
@@ -890,16 +898,17 @@ function MoveItemField({
             }
           />
           <span
-            className="text-muted-foreground pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-sm"
+            className="text-muted-foreground pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-sm"
             aria-hidden
           >
             €
           </span>
         </div>
       </div>
-      {value.included ? (
-        <p className="text-muted-foreground mt-1.5 pl-7 text-[11px]">
-          {value.amount === null ? (estimate === null ? unknownLabel : estimateLabel) : null}
+
+      {value.included && value.amount === null ? (
+        <p className="text-muted-foreground mt-2 pl-7 text-xs">
+          {estimate === null ? unknownLabel : estimateLabel}
         </p>
       ) : null}
     </div>
