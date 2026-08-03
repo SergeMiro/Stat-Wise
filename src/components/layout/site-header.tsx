@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass } from "lucide-react";
 import { localePath, type Dictionary, type Locale } from "@/lib/i18n";
 import { LanguageSwitcher } from "./language-switcher";
 import { Button } from "@/components/ui/button";
+import { Wordmark } from "./wordmark";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary }) {
@@ -21,12 +21,9 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4">
         <Link
           href={localePath(locale, "/")}
-          className="flex items-center gap-2 font-heading text-base font-semibold tracking-tight touch:min-h-11"
+          className="flex items-center touch:min-h-11"
         >
-          <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Compass className="size-4" />
-          </span>
-          {dict.brand.name}
+          <Wordmark name={dict.brand.name} />
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">

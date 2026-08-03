@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import "../globals.css";
 
@@ -10,7 +10,30 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { MobileBottomNavigation } from "@/components/layout/mobile-bottom-navigation";
 
-const geistSans = Geist({ variable: "--font-sans", subsets: ["latin"] });
+/*
+  Two faces, each for what it is good at.
+
+  Headings use Bricolage Grotesque — a contemporary grotesque with enough character
+  to look like a brand rather than a default, and a variable weight axis so a title
+  can be heavy without a second file.
+
+  Body text stays on Geist. This product is mostly numbers: rents, euros, kWh,
+  distances, all in columns that have to line up. Geist's figures are even-width,
+  and swapping it for a display face would cost legibility in the one place the
+  reader is actually working.
+
+  `latin-ext` on both, or French accents fall back to a different font mid-word.
+*/
+const heading = Bricolage_Grotesque({
+  variable: "--font-heading-family",
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+});
+const geistSans = Geist({
+  variable: "--font-sans",
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+});
 const geistMono = Geist_Mono({ variable: "--font-mono", subsets: ["latin"] });
 
 export function generateStaticParams() {
@@ -42,7 +65,7 @@ export default async function LocaleLayout({
   const dict = getDictionary(locale);
 
   return (
-    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} ${heading.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <TooltipProvider>
           <SiteHeader locale={locale} dict={dict} />

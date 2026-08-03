@@ -38,7 +38,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-heading-family), var(--font-sans);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -56,6 +56,11 @@
   --color-chart-5: var(--chart-5);
   --color-chart-6: var(--chart-6);
   --color-chart-7: var(--chart-7);
+
+  /* The two colours taken from the logo, for the mark and the wordmark. */
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-cyan: var(--brand-cyan);
+  --color-brand-cyan-ink: var(--brand-cyan-ink);
 
   /* Data-confidence semantic colors (single source of truth for badges) */
   --color-confidence-high: var(--confidence-high);
@@ -98,28 +103,41 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.21 0.02 230);
 
-  /* Teal primary */
-  --primary: oklch(0.55 0.1 192);
-  --primary-foreground: oklch(0.99 0.01 196);
+  /*
+    Brand colours, sampled from the logo rather than guessed: the pin's deep blue
+    and the stroke's cyan.
 
-  --secondary: oklch(0.96 0.01 200);
-  --secondary-foreground: oklch(0.32 0.03 215);
+    `--brand-cyan` reaches only 2.15:1 against white, so it can carry the mark and
+    decoration but never text on a light surface. `--brand-cyan-ink` is the same
+    hue darkened until it reads — 3.9:1, enough for the large type of the wordmark.
+    Two tokens rather than one because a single "cyan" would end up used for both.
+  */
+  --brand-blue: oklch(0.409 0.174 262);
+  --brand-cyan: oklch(0.746 0.127 201);
+  --brand-cyan-ink: oklch(0.594 0.1 205);
+
+  /* Primary is the logo blue: 9.2:1 on white, so buttons and links are legible. */
+  --primary: oklch(0.409 0.174 262);
+  --primary-foreground: oklch(0.99 0.01 250);
+
+  --secondary: oklch(0.96 0.012 250);
+  --secondary-foreground: oklch(0.32 0.04 258);
 
   --muted: oklch(0.97 0.006 210);
   --muted-foreground: oklch(0.52 0.02 225);
 
-  --accent: oklch(0.95 0.03 192);
-  --accent-foreground: oklch(0.38 0.06 198);
+  --accent: oklch(0.95 0.032 250);
+  --accent-foreground: oklch(0.38 0.08 260);
 
   --destructive: oklch(0.58 0.22 25);
 
   --border: oklch(0.92 0.008 220);
   --input: oklch(0.92 0.008 220);
-  --ring: oklch(0.55 0.1 192);
+  --ring: oklch(0.409 0.174 262);
 
   /* Category palette — distinct but harmonious */
-  --chart-1: oklch(0.58 0.11 192); /* housing — teal */
-  --chart-2: oklch(0.6 0.12 250); /* mobility — blue */
+  --chart-1: oklch(0.6 0.12 201); /* housing — cyan, the brand's second colour */
+  --chart-2: oklch(0.55 0.15 262); /* mobility — the brand blue */
   --chart-3: oklch(0.62 0.13 300); /* services — violet */
   --chart-4: oklch(0.63 0.16 15); /* health — rose */
   --chart-5: oklch(0.66 0.12 150); /* tranquillity — green */
@@ -134,12 +152,12 @@
 
   --sidebar: oklch(0.99 0.003 196);
   --sidebar-foreground: oklch(0.21 0.02 230);
-  --sidebar-primary: oklch(0.55 0.1 192);
-  --sidebar-primary-foreground: oklch(0.99 0.01 196);
-  --sidebar-accent: oklch(0.95 0.03 192);
-  --sidebar-accent-foreground: oklch(0.38 0.06 198);
+  --sidebar-primary: oklch(0.409 0.174 262);
+  --sidebar-primary-foreground: oklch(0.99 0.01 250);
+  --sidebar-accent: oklch(0.95 0.032 250);
+  --sidebar-accent-foreground: oklch(0.38 0.08 260);
   --sidebar-border: oklch(0.92 0.008 220);
-  --sidebar-ring: oklch(0.55 0.1 192);
+  --sidebar-ring: oklch(0.409 0.174 262);
 }
 
 .dark {
@@ -151,8 +169,18 @@
   --popover: oklch(0.23 0.02 235);
   --popover-foreground: oklch(0.96 0.005 210);
 
-  --primary: oklch(0.7 0.11 190);
-  --primary-foreground: oklch(0.19 0.03 220);
+  /*
+    Inverted on a dark surface: the deep logo blue would be nearly invisible, so
+    primary lifts to a brighter blue of the same hue. Here the true logo cyan is
+    the legible one, so the wordmark uses it directly and `--brand-cyan-ink`
+    collapses onto it.
+  */
+  --brand-blue: oklch(0.66 0.15 262);
+  --brand-cyan: oklch(0.8 0.13 201);
+  --brand-cyan-ink: oklch(0.8 0.13 201);
+
+  --primary: oklch(0.68 0.15 258);
+  --primary-foreground: oklch(0.17 0.03 258);
 
   --secondary: oklch(0.29 0.02 235);
   --secondary-foreground: oklch(0.96 0.005 210);
@@ -160,17 +188,17 @@
   --muted: oklch(0.29 0.02 235);
   --muted-foreground: oklch(0.72 0.02 220);
 
-  --accent: oklch(0.32 0.04 200);
+  --accent: oklch(0.32 0.05 255);
   --accent-foreground: oklch(0.96 0.005 210);
 
   --destructive: oklch(0.7 0.19 22);
 
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.7 0.11 190);
+  --ring: oklch(0.68 0.15 258);
 
-  --chart-1: oklch(0.68 0.11 192);
-  --chart-2: oklch(0.68 0.12 250);
+  --chart-1: oklch(0.72 0.12 201);
+  --chart-2: oklch(0.68 0.15 258);
   --chart-3: oklch(0.7 0.13 300);
   --chart-4: oklch(0.7 0.16 15);
   --chart-5: oklch(0.72 0.12 150);

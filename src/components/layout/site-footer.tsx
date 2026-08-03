@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { localePath, type Dictionary, type Locale } from "@/lib/i18n";
+import { Wordmark } from "./wordmark";
 
 export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const links = [
@@ -14,7 +15,7 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
     <footer className="border-t border-border/70 bg-muted/30">
       <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-8 text-sm">
         <div className="flex flex-col gap-1">
-          <span className="font-heading text-base font-semibold">{dict.brand.name}</span>
+          <Wordmark name={dict.brand.name} markSize={24} />
           <span className="text-muted-foreground">{dict.footer.tagline}</span>
         </div>
         <nav className="flex flex-wrap gap-x-5 gap-y-2 touch:gap-y-0">
