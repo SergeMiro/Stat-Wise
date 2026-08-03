@@ -15,7 +15,7 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
     <footer className="border-t border-border/70 bg-muted/30">
       <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-8 text-sm">
         <div className="flex flex-col gap-1">
-          <Wordmark name={dict.brand.name} markSize={24} />
+          <Wordmark name={dict.brand.name} markSize={27} />
           <span className="text-muted-foreground">{dict.footer.tagline}</span>
         </div>
         <nav className="flex flex-wrap gap-x-5 gap-y-2 touch:gap-y-0">

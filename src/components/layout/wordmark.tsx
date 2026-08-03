@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 export function Wordmark({
   name,
   className,
-  markSize = 28,
+  markSize = 32,
   showName = true,
 }: {
   /** `dict.brand.name` — the accessible name for the whole lockup. */
