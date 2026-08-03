@@ -83,10 +83,22 @@ changé, le bouton de l'e-mail envoie les gens sur une adresse locale.
 
 ### 2. SMTP — **obligatoire avant le moindre trafic**
 
-Le serveur d'envoi intégré est limité à **quelques e-mails par heure** et n'est pas
-prévu pour la production. Constaté pendant les essais : le deuxième envoi a répondu
-`over_email_send_rate_limit`. Brancher un SMTP (Resend, Brevo, Postmark) dans
-Authentication → Emails.
+Le serveur d'envoi intégré **ne peut pas servir de vrais visiteurs**. Deux limites,
+pas une :
+
+1. **Deux messages par heure.** Constaté pendant les essais : le deuxième envoi a
+   répondu `over_email_send_rate_limit`.
+2. **Livraison uniquement aux adresses des membres de l'organisation Supabase** —
+   c'est la limite décisive, et elle ne se voit pas : l'API répond « envoyé ».
+
+Supabase le documente comme « not meant for production », sans engagement de
+livraison. Tant qu'un vrai serveur n'est pas branché, **personne en dehors de
+l'équipe ne peut créer de compte**, et le formulaire continuera d'annoncer un lien
+qui n'est jamais parti.
+
+Brancher un SMTP (Brevo, Resend, Postmark, Scaleway) dans Authentication → Emails.
+Attention : avec un SMTP personnalisé, Supabase impose par défaut **30 messages par
+heure**, à relever dans `auth.rate_limit.email_sent`.
 
 ### 3. Google — optionnel
 

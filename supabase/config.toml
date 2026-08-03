@@ -236,10 +236,15 @@ otp_expiry = 3600
 
 # Production mail.
 #
-# Supabase's built-in sender is capped at two messages an hour and is documented
-# as being for development only — the second test signup on this project came back
-# `over_email_send_rate_limit`. Until a real sender is wired in, sign-up works for
-# one person an hour and silently fails for the next.
+# Supabase's built-in sender cannot serve real visitors at all. Two limits, not
+# one: two messages an hour — the second test signup here came back
+# `over_email_send_rate_limit` — and, more decisive, delivery only to addresses
+# belonging to members of the Supabase organisation. Supabase documents it as "not
+# meant for production" with no delivery SLA.
+#
+# So this is not a nicety for later. Until a real sender is configured, nobody
+# outside the team can create an account, and the sign-in form will keep saying it
+# has sent a link that was never delivered.
 #
 # The credentials are read from the environment, never committed: `env(NAME)` is
 # resolved by the CLI at push time.
