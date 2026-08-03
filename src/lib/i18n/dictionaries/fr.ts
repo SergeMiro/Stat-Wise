@@ -331,6 +331,12 @@ export const fr = {
       richDesc: "Couverture par zone (IRIS) pour la V1.",
       limitedTitle: "Couverture limitée",
       limitedDesc: "Résultats au niveau communal uniquement.",
+      citySearchPlaceholder: "Rechercher une ville ou une zone…",
+      areaSearchPlaceholder: "Rechercher une zone…",
+      showMoreCities: "Voir les autres villes",
+      showFewerCities: "Réduire la liste",
+      noCities: "Aucune ville ou zone trouvée.",
+      noAreas: "Aucune zone trouvée.",
     },
     privacy: {
       title: "Politique de confidentialité",

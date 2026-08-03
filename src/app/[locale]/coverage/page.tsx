@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getDictionary, isLocale } from "@/lib/i18n";
 import { getCityAreas, listCities } from "@/lib/mock/cities";
 import { PageShell } from "@/components/layout/page-shell";
-import { Badge } from "@/components/ui/badge";
+import { CoverageCityList, type CoverageCity } from "@/components/coverage/coverage-city-list";
 import { WhereWiseIllustration } from "@/components/visuals/wherewise-illustration";
 
 export default async function CoveragePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -14,6 +14,10 @@ export default async function CoveragePage({ params }: { params: Promise<{ local
   const cities = listCities();
   const rich = cities.filter((x) => x.coverageLevel === "rich");
   const limited = cities.filter((x) => x.coverageLevel === "limited");
+  const richCoverage: CoverageCity[] = rich.map((city) => ({
+    ...city,
+    areas: getCityAreas(city.id).map(({ areaId, areaName }) => ({ areaId, areaName })),
+  }));
 
   return (
     <PageShell title={c.title} intro={c.intro}>
@@ -28,47 +32,24 @@ export default async function CoveragePage({ params }: { params: Promise<{ local
           />
         </div>
         <div>
-          <section className="mb-6">
-            <h2 className="font-heading text-base font-semibold">{c.richTitle}</h2>
-            <p className="text-muted-foreground mb-3 text-sm">{c.richDesc}</p>
-            <ul className="space-y-2">
-              {rich.map((city) => (
-                <li
-                  key={city.id}
-                  className="flex items-center justify-between rounded-lg border p-3"
-                >
-                  <span>
-                    <span className="font-medium">{city.name}</span>
-                    <span className="text-muted-foreground ml-2 text-xs">{city.department}</span>
-                  </span>
-                  <Badge variant="secondary" className="tabular">
-                    {getCityAreas(city.id).length} {dict.result.analysedArea}
-                  </Badge>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="font-heading text-base font-semibold">{c.limitedTitle}</h2>
-            <p className="text-muted-foreground mb-3 text-sm">{c.limitedDesc}</p>
-            <ul className="space-y-2">
-              {limited.map((city) => (
-                <li
-                  key={city.id}
-                  className="flex items-center justify-between rounded-lg border border-dashed p-3"
-                >
-                  <span>
-                    <span className="font-medium">{city.name}</span>
-                    <span className="text-muted-foreground ml-2 text-xs">{city.department}</span>
-                  </span>
-                  <Badge variant="outline" className="text-confidence-low">
-                    {dict.confidence.low.label}
-                  </Badge>
-                </li>
-              ))}
-            </ul>
-          </section>
+          <CoverageCityList
+            richCities={richCoverage}
+            limitedCities={limited}
+            labels={{
+              richTitle: c.richTitle,
+              richDesc: c.richDesc,
+              limitedTitle: c.limitedTitle,
+              limitedDesc: c.limitedDesc,
+              citySearchPlaceholder: c.citySearchPlaceholder,
+              areaSearchPlaceholder: c.areaSearchPlaceholder,
+              showMoreCities: c.showMoreCities,
+              showFewerCities: c.showFewerCities,
+              noCities: c.noCities,
+              noAreas: c.noAreas,
+              analysedArea: dict.result.analysedArea,
+              limitedConfidence: dict.confidence.low.label,
+            }}
+          />
         </div>
       </div>
     </PageShell>

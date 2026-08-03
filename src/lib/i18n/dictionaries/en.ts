@@ -326,6 +326,12 @@ export const en: Dictionary = {
       richDesc: "Per-area (IRIS) coverage for V1.",
       limitedTitle: "Limited coverage",
       limitedDesc: "Results at commune level only.",
+      citySearchPlaceholder: "Search for a city or area…",
+      areaSearchPlaceholder: "Search for an area…",
+      showMoreCities: "Show more cities",
+      showFewerCities: "Show fewer cities",
+      noCities: "No city or area found.",
+      noAreas: "No area found.",
     },
     privacy: {
       title: "Privacy policy",
