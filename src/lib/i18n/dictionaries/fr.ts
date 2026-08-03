@@ -322,6 +322,28 @@ export const fr = {
       title: "Sources",
       intro: "Les jeux de données officiels utilisés, leur niveau géographique et leurs limites.",
       columns: { source: "Source", publisher: "Éditeur", level: "Niveau", purpose: "Usage" },
+      vintage: "Millésime",
+      limitTitle: "Ce que cette source ne dit pas",
+      openInNewTab: "Ouvre le site de l'éditeur dans un nouvel onglet",
+      /*
+        The page's own intro promises "leurs limites" and the data carried none, so
+        it promised something it did not deliver. One line per dataset, keyed by the
+        source code rather than by position in the list.
+      */
+      limits: {
+        insee_bpe:
+          "Recense la présence d'un équipement, pas sa qualité, sa capacité ni ses horaires. Une école comptée peut être pleine.",
+        dvf:
+          "Ce qui s'est vendu, pas ce qui est en vente. Les zones à trop peu de transactions sont masquées pour préserver le secret statistique.",
+        carte_loyers:
+          "Loyers d'annonce, pas des loyers réellement payés, et à l'échelle de la commune : l'indicateur ne descend pas au quartier.",
+        education_nationale:
+          "Liste les établissements et leur adresse. Ne dit rien de la sectorisation ni de vos chances d'y obtenir une place.",
+        apl:
+          "Mesure une offre de médecins face à une demande, à l'échelle communale. Ce n'est pas une garantie de rendez-vous.",
+        delinquance:
+          "Faits enregistrés par la police et la gendarmerie : dépend autant du dépôt de plainte et de l'activité des services que de ce qui s'est réellement produit.",
+      },
     },
     coverage: {
       title: "Couverture",

@@ -317,7 +317,24 @@ export const en: Dictionary = {
     sources: {
       title: "Sources",
       intro: "The official datasets used, their geographic level and their limits.",
-      columns: { source: "Source", publisher: "Publisher", level: "Level", purpose: "Use" },
+      columns: { source: "Source", publisher: "Publisher", level: "Level", purpose: "Purpose" },
+      vintage: "Vintage",
+      limitTitle: "What this source does not tell you",
+      openInNewTab: "Opens the publisher's site in a new tab",
+      limits: {
+        insee_bpe:
+          "Records that a facility exists, not its quality, its capacity or its opening hours. A school that is counted may be full.",
+        dvf:
+          "What was sold, not what is for sale. Areas with too few transactions are withheld to protect statistical confidentiality.",
+        carte_loyers:
+          "Advertised rents, not rents actually paid, and at commune level: the indicator does not reach the district.",
+        education_nationale:
+          "Lists establishments and their addresses. Says nothing about catchment areas or your chances of getting a place.",
+        apl:
+          "Measures a supply of doctors against a demand, at commune level. It is not a guarantee of an appointment.",
+        delinquance:
+          "Offences recorded by the police and gendarmerie: depends as much on whether people report them and on police activity as on what actually happened.",
+      },
     },
     coverage: {
       title: "Coverage",
