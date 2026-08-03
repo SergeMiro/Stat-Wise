@@ -47,7 +47,7 @@ function fileStem({ result }: ExportContext): string {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
-  return `statwise-${slug(result.current.cityName)}-${slug(result.target.cityName)}`;
+  return `wherewise-${slug(result.current.cityName)}-${slug(result.target.cityName)}`;
 }
 
 function download(blob: Blob, filename: string): void {

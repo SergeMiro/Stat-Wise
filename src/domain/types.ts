@@ -1,5 +1,5 @@
 /**
- * StatWise domain contracts.
+ * WhereWise domain contracts.
  *
  * This module is pure: it must not import React, Next.js, Supabase, or perform
  * any IO. Everything here is plain data the scoring engine consumes or produces.

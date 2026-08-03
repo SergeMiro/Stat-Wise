@@ -181,8 +181,8 @@ const SOURCES = {
     caveat: { key: "openfisca" },
   },
   convention_statwise: {
-    label: "Convention de calcul StatWise",
-    publisher: "StatWise",
+    label: "Convention de calcul WhereWise",
+    publisher: "WhereWise",
     vintage: { key: "documented_in_docs" },
     refresh: { key: "on_method_revision" },
     geoLevel: "national",
@@ -190,7 +190,7 @@ const SOURCES = {
   },
   saisie_utilisateur: {
     label: "Valeur saisie par vous",
-    publisher: "StatWise",
+    publisher: "WhereWise",
     vintage: { key: "your_situation" },
     refresh: { key: "on_input" },
     geoLevel: "user",

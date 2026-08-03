@@ -263,7 +263,7 @@ otp_expiry = 3600
 # user = "env(SMTP_USER)"
 # pass = "env(SMTP_PASS)"
 # admin_email = "env(SMTP_SENDER)"
-# sender_name = "StatWise"
+# sender_name = "WhereWise"
 
 # --- ancien exemple, conservé pour la forme ---
 # [auth.email.smtp]

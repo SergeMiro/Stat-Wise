@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 
-type StatWiseIllustrationProps = {
+type WhereWiseIllustrationProps = {
   src: string;
   alt?: string;
   width: number;
@@ -11,14 +11,14 @@ type StatWiseIllustrationProps = {
   priority?: boolean;
 };
 
-export function StatWiseIllustration({
+export function WhereWiseIllustration({
   src,
   alt = "",
   width,
   height,
   className,
   priority = false,
-}: StatWiseIllustrationProps) {
+}: WhereWiseIllustrationProps) {
   return (
     <Image
       src={src}

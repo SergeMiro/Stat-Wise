@@ -3,8 +3,8 @@ import type { Dictionary } from "../types";
 export const en: Dictionary = {
   localeName: "English",
   brand: {
-    name: "StatWise",
-    slogan: "Make better life decisions with data.",
+    name: "WhereWise",
+    slogan: "Find the place that fits your life.",
   },
   nav: {
     home: "Home",
@@ -40,7 +40,7 @@ export const en: Dictionary = {
   home: {
     heroTitle: "Find the right neighbourhood for your life and family.",
     heroSubtitle:
-      "StatWise turns official French public data into clear decisions about where to live.",
+      "WhereWise turns official French public data into clear decisions about where to live.",
     startJob: "Find my job",
     startQuartier: "Find my neighbourhood",
     startFamily: "Raising a child here",
@@ -274,7 +274,7 @@ export const en: Dictionary = {
   pages: {
     methodology: {
       title: "Methodology",
-      intro: "How StatWise builds a ranking, what it measures and what it does not.",
+      intro: "How WhereWise builds a ranking, what it measures and what it does not.",
       sections: [
         {
           title: "What we calculate",
@@ -314,7 +314,7 @@ export const en: Dictionary = {
     },
     coverage: {
       title: "Coverage",
-      intro: "Where StatWise has enough data, and where results stay at commune level.",
+      intro: "Where WhereWise has enough data, and where results stay at commune level.",
       richTitle: "Pilot cities",
       richDesc: "Per-area (IRIS) coverage for V1.",
       limitedTitle: "Limited coverage",
@@ -323,7 +323,7 @@ export const en: Dictionary = {
     privacy: {
       title: "Privacy policy",
       intro:
-        "What StatWise does with your data, in plain words. Nothing is kept until you ask for it.",
+        "What WhereWise does with your data, in plain words. Nothing is kept until you ask for it.",
       updated: "Last updated: 2 August 2026",
       summaryTitle: "In two lines",
       summary: [
@@ -334,7 +334,7 @@ export const en: Dictionary = {
       sections: [
         {
           title: "1. Who is responsible for your data",
-          body: "The data controller is {publisher}, a natural person and the publisher of StatWise. The project has no commercial activity and is not required to appoint a data protection officer; requests are handled by the publisher directly.",
+          body: "The data controller is {publisher}, a natural person and the publisher of WhereWise. The project has no commercial activity and is not required to appoint a data protection officer; requests are handled by the publisher directly.",
         },
         {
           title: "2. What we process, why, and on what basis",
@@ -484,7 +484,7 @@ export const en: Dictionary = {
     terms: {
       title: "Terms of use",
       intro: "Indicative summary for V1.",
-      body: "StatWise provides decision support based on public data. Results are indicative and do not engage the publisher's liability. Always verify key information before any decision.",
+      body: "WhereWise provides decision support based on public data. Results are indicative and do not engage the publisher's liability. Always verify key information before any decision.",
     },
   },
   footer: {
@@ -565,7 +565,7 @@ export const en: Dictionary = {
         cta: "Start “Growing up here”",
       },
       disclaimer:
-        "Indicative comparison based on official data. StatWise guarantees no nursery/school place, no catchment area, and no safety outcome.",
+        "Indicative comparison based on official data. WhereWise guarantees no nursery/school place, no catchment area, and no safety outcome.",
     },
     strengths: {
       strong_earlyChildhood: "Well equipped for toddlers",

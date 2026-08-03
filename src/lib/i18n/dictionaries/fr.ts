@@ -1,8 +1,8 @@
 export const fr = {
   localeName: "Français",
   brand: {
-    name: "StatWise",
-    slogan: "Prenez de meilleures décisions pour votre vie grâce aux données.",
+    name: "WhereWise",
+    slogan: "Trouvez le lieu qui vous correspond.",
   },
   nav: {
     home: "Accueil",
@@ -38,7 +38,7 @@ export const fr = {
   home: {
     heroTitle: "Trouvez le quartier adapté à votre vie et à votre famille.",
     heroSubtitle:
-      "StatWise transforme les données publiques officielles françaises en décisions claires sur où habiter.",
+      "WhereWise transforme les données publiques officielles françaises en décisions claires sur où habiter.",
     startJob: "Trouver mon job",
     startQuartier: "Trouver mon quartier",
     startFamily: "Grandir ici",
@@ -278,7 +278,7 @@ export const fr = {
   pages: {
     methodology: {
       title: "Méthodologie",
-      intro: "Comment StatWise calcule un classement, ce qu'il mesure et ce qu'il ne mesure pas.",
+      intro: "Comment WhereWise calcule un classement, ce qu'il mesure et ce qu'il ne mesure pas.",
       sections: [
         {
           title: "Ce que nous calculons",
@@ -319,7 +319,7 @@ export const fr = {
     coverage: {
       title: "Couverture",
       intro:
-        "Où StatWise dispose de données suffisantes, et où les résultats restent au niveau communal.",
+        "Où WhereWise dispose de données suffisantes, et où les résultats restent au niveau communal.",
       richTitle: "Villes pilotes",
       richDesc: "Couverture par zone (IRIS) pour la V1.",
       limitedTitle: "Couverture limitée",
@@ -328,7 +328,7 @@ export const fr = {
     privacy: {
       title: "Politique de confidentialité",
       intro:
-        "Ce que StatWise fait de vos données, en clair. Rien n'est conservé tant que vous ne le demandez pas.",
+        "Ce que WhereWise fait de vos données, en clair. Rien n'est conservé tant que vous ne le demandez pas.",
       updated: "Dernière mise à jour : 2 août 2026",
       summaryTitle: "En deux lignes",
       summary: [
@@ -339,7 +339,7 @@ export const fr = {
       sections: [
         {
           title: "1. Qui est responsable de vos données",
-          body: "Le responsable du traitement est {publisher}, personne physique, éditeur du site StatWise. Le projet n'a pas d'activité commerciale et n'est pas tenu de désigner un délégué à la protection des données ; les demandes sont traitées directement par l'éditeur.",
+          body: "Le responsable du traitement est {publisher}, personne physique, éditeur du site WhereWise. Le projet n'a pas d'activité commerciale et n'est pas tenu de désigner un délégué à la protection des données ; les demandes sont traitées directement par l'éditeur.",
         },
         {
           title: "2. Ce que nous traitons, pourquoi, et sur quel fondement",
@@ -489,7 +489,7 @@ export const fr = {
     terms: {
       title: "Conditions d'utilisation",
       intro: "Résumé indicatif pour la V1.",
-      body: "StatWise fournit une aide à la décision fondée sur des données publiques. Les résultats sont indicatifs et n'engagent pas la responsabilité de l'éditeur. Vérifiez toujours les informations clés avant toute décision.",
+      body: "WhereWise fournit une aide à la décision fondée sur des données publiques. Les résultats sont indicatifs et n'engagent pas la responsabilité de l'éditeur. Vérifiez toujours les informations clés avant toute décision.",
     },
   },
   footer: {
@@ -571,7 +571,7 @@ export const fr = {
         cta: "Lancer « Grandir ici »",
       },
       disclaimer:
-        "Comparaison indicative fondée sur des données officielles. StatWise ne garantit ni une place en crèche ou en école, ni la sectorisation, ni la sécurité.",
+        "Comparaison indicative fondée sur des données officielles. WhereWise ne garantit ni une place en crèche ou en école, ni la sectorisation, ni la sécurité.",
     },
     strengths: {
       strong_earlyChildhood: "Bien équipé pour les tout-petits",

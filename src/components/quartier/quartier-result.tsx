@@ -19,7 +19,7 @@ import { runNeighbourhoodSimulation } from "@/domain/scoring";
 import { DATASET_VERSION, findCity, getCityAreas } from "@/lib/mock/cities";
 import { fill, localePath, type Dictionary, type Locale } from "@/lib/i18n";
 import { loadInput, saveInput } from "@/lib/quartier-storage";
-import { StatWiseIllustration } from "@/components/visuals/statwise-illustration";
+import { WhereWiseIllustration } from "@/components/visuals/wherewise-illustration";
 import { useHydratedState } from "@/lib/use-hydrated-state";
 import { Button } from "@/components/ui/button";
 import {
@@ -165,7 +165,7 @@ export function QuartierResult({ locale, dict }: { locale: Locale; dict: Diction
             </p>
             <p className="text-muted-foreground pt-1 text-xs">{dict.result.summaryNote}</p>
           </div>
-          <StatWiseIllustration
+          <WhereWiseIllustration
             src="/illustrations/hero/result-preview.svg"
             alt=""
             width={720}
@@ -221,7 +221,7 @@ export function QuartierResult({ locale, dict }: { locale: Locale; dict: Diction
       {/* Repeat-run scenarios */}
       <section className="bg-muted/30 mt-8 rounded-2xl border p-5 md:p-6">
         <div className="grid items-center gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <StatWiseIllustration
+          <WhereWiseIllustration
             src="/illustrations/rerun/scenario-cards.svg"
             alt=""
             width={640}

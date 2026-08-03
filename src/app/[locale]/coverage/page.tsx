@@ -3,7 +3,7 @@ import { getDictionary, isLocale } from "@/lib/i18n";
 import { getCityAreas, listCities } from "@/lib/mock/cities";
 import { PageShell } from "@/components/layout/page-shell";
 import { Badge } from "@/components/ui/badge";
-import { StatWiseIllustration } from "@/components/visuals/statwise-illustration";
+import { WhereWiseIllustration } from "@/components/visuals/wherewise-illustration";
 
 export default async function CoveragePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -19,7 +19,7 @@ export default async function CoveragePage({ params }: { params: Promise<{ local
     <PageShell title={c.title} intro={c.intro}>
       <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
         <div className="lg:sticky lg:top-24 lg:self-start">
-          <StatWiseIllustration
+          <WhereWiseIllustration
             src="/illustrations/coverage/france.svg"
             alt=""
             width={480}

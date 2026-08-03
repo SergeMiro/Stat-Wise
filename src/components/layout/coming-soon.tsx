@@ -3,7 +3,7 @@ import { Construction } from "lucide-react";
 import { localePath, type Dictionary, type Locale } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/states";
-import { StatWiseIllustration } from "@/components/visuals/statwise-illustration";
+import { WhereWiseIllustration } from "@/components/visuals/wherewise-illustration";
 
 export function ComingSoon({
   title,
@@ -34,7 +34,7 @@ export function ComingSoon({
         icon={
           illustration ? (
             <div className="mx-auto w-full max-w-[260px]">
-              <StatWiseIllustration src={illustration} alt="" width={480} height={360} />
+              <WhereWiseIllustration src={illustration} alt="" width={480} height={360} />
             </div>
           ) : (
             <Construction />

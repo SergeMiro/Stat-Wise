@@ -27,7 +27,7 @@ import { cities } from "../../src/domain/reste-a-vivre/snapshot.ts";
 
 const OVERPASS = "https://overpass-api.de/api/interpreter";
 const IGN = "https://data.geopf.fr/navigation/itineraire";
-const UA = "StatWise/0.1 (ETL for statwise; github.com/SergeMiro/Stat-Wise)";
+const UA = "WhereWise/0.1 (ETL for wherewise; github.com/SergeMiro/Stat-Wise)";
 
 /** Overpass asks for no more than a couple of requests at a time. Be a guest. */
 const OVERPASS_DELAY_MS = 2500;

@@ -4,7 +4,7 @@ import { ArrowRight, Baby, Briefcase, Compass } from "lucide-react";
 import { getDictionary, isLocale, localePath } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatWiseIllustration } from "@/components/visuals/statwise-illustration";
+import { WhereWiseIllustration } from "@/components/visuals/wherewise-illustration";
 
 export default async function AppHubPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -46,7 +46,7 @@ export default async function AppHubPage({ params }: { params: Promise<{ locale:
         {simulators.map((sim) => (
           <Card key={sim.href} className="group overflow-hidden transition-shadow hover:shadow-md">
             <div className="bg-muted/40 px-5 pt-5">
-              <StatWiseIllustration
+              <WhereWiseIllustration
                 src={sim.image}
                 alt=""
                 width={640}

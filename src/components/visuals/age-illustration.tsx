@@ -1,6 +1,6 @@
 import type { ChildAgeGroup } from "@/domain/types";
 
-import { StatWiseIllustration } from "./statwise-illustration";
+import { WhereWiseIllustration } from "./wherewise-illustration";
 
 const AGE_IMAGES: Record<ChildAgeGroup, string> = {
   "0_2": "/illustrations/family/age-0-2.svg",
@@ -12,7 +12,7 @@ const AGE_IMAGES: Record<ChildAgeGroup, string> = {
 
 export function AgeIllustration({ age }: { age: ChildAgeGroup }) {
   return (
-    <StatWiseIllustration
+    <WhereWiseIllustration
       src={AGE_IMAGES[age]}
       alt=""
       width={400}

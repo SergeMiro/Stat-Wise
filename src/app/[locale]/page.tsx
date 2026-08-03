@@ -4,7 +4,7 @@ import { ArrowRight, Baby, Briefcase, Compass, Database, ShieldCheck } from "luc
 import { getDictionary, isLocale, localePath } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatWiseIllustration } from "@/components/visuals/statwise-illustration";
+import { WhereWiseIllustration } from "@/components/visuals/wherewise-illustration";
 
 const stepImages = [
   "/illustrations/steps/01-profile.svg",
@@ -49,7 +49,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
 
         <div className="mx-auto w-full max-w-[560px]">
-          <StatWiseIllustration
+          <WhereWiseIllustration
             src="/illustrations/hero/result-preview.svg"
             alt=""
             width={720}
@@ -96,7 +96,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <ol className="grid gap-6 md:grid-cols-3">
           {dict.home.steps.map((step, i) => (
             <li key={i} className="space-y-2">
-              <StatWiseIllustration
+              <WhereWiseIllustration
                 src={stepImages[i]}
                 alt=""
                 width={400}
@@ -165,7 +165,7 @@ function SimulatorCard({
   return (
     <Card className="group overflow-hidden transition-shadow hover:shadow-md">
       <div className="bg-muted/40 px-5 pt-5">
-        <StatWiseIllustration
+        <WhereWiseIllustration
           src={image}
           alt=""
           width={640}
