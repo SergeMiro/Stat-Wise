@@ -12,7 +12,7 @@ sur la page d'accueil, mais « gardez ce résultat » sous le résultat.
 
 | Élément | Où |
 | --- | --- |
-| Projet Supabase `statwise` | `eiwbtcrwvkylppmykfqq`, région **eu-west-3 (Paris)**, gratuit |
+| Projet Supabase `statwise` (à renommer à la main) | `eiwbtcrwvkylppmykfqq`, région **eu-west-3 (Paris)**, gratuit |
 | Tables `profiles` et `simulations` | RLS active, chacun ne voit que ses lignes |
 | Connexion | lien par e-mail, **sans mot de passe** |
 | Bouton Google | prêt, masqué tant que `NEXT_PUBLIC_GOOGLE_SIGN_IN=1` n'est pas posé |
@@ -74,8 +74,9 @@ rien, perdre en silence coûte la promesse qu'on vient de faire.
 
 Supabase → Authentication → URL Configuration :
 
-- **Site URL** : `https://statwise-lime.vercel.app`
-- **Redirect URLs** : `https://statwise-lime.vercel.app/auth/callback`
+- **Site URL** : `https://wherewise-fr.vercel.app`
+- **Redirect URLs** : `https://wherewise-fr.vercel.app/auth/callback`,
+  `https://statwise-lime.vercel.app/auth/callback` (l'ancien domaine répond encore)
   et `http://localhost:3111/auth/callback` pour le développement
 
 Par défaut un projet neuf pointe sur `http://localhost:3000`. Tant que ce n'est pas

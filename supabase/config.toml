@@ -154,12 +154,15 @@ enabled = true
 # Production. This is what the button in a confirmation email points at when no
 # explicit redirect is supplied, so leaving it on localhost sends real users to
 # their own machine.
-site_url = "https://statwise-lime.vercel.app"
+site_url = "https://wherewise-fr.vercel.app"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
 # The callback is the only URL the app ever asks Supabase to redirect to. Anything
 # not on this list is refused and the visitor lands on `site_url` instead — which
 # is why the local port is here too, and why it is the port this project uses.
 additional_redirect_urls = [
+  "https://wherewise-fr.vercel.app/auth/callback",
+  # The project was renamed but Vercel kept its first domain, and it still serves
+  # the site. A link already sent to someone points at it, so it stays allowed.
   "https://statwise-lime.vercel.app/auth/callback",
   "http://localhost:3111/auth/callback",
 ]
