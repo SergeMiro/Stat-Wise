@@ -488,8 +488,14 @@ export const en: Dictionary = {
     },
   },
   footer: {
-    tagline: "Decide better where to live, with data.",
     legal: "Official French data. Indicative results.",
+    blurb:
+      "WhereWise turns official French public data into figures about where to live: rents, journeys, bills, income tax and benefits. Every line shows its source and its date.",
+    simulators: "Simulators",
+    data: "Data",
+    legalTitle: "Legal",
+    account: "Your account",
+    rights: "All rights reserved.",
     product: "Product",
     about: "About",
   },

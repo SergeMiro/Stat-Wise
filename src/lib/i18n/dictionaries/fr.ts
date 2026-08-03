@@ -493,8 +493,14 @@ export const fr = {
     },
   },
   footer: {
-    tagline: "Mieux décider où vivre, grâce aux données.",
     legal: "Données officielles françaises. Résultats indicatifs.",
+    blurb:
+      "WhereWise transforme les données publiques officielles françaises en réponses chiffrées sur où habiter : loyers, trajets, factures, impôt et prestations. Chaque ligne indique sa source et sa date.",
+    simulators: "Simulateurs",
+    data: "Données",
+    legalTitle: "Légal",
+    account: "Votre compte",
+    rights: "Tous droits réservés.",
     product: "Produit",
     about: "À propos",
   },
