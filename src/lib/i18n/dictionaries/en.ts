@@ -277,30 +277,37 @@ export const en: Dictionary = {
       intro: "How WhereWise builds a ranking, what it measures and what it does not.",
       sections: [
         {
+          key: "computed",
           title: "What we calculate",
           body: "A ranking of a city's areas by your priorities, from official indicators normalised within the chosen city.",
         },
         {
+          key: "not_computed",
           title: "What we do not calculate",
           body: "No absolute 'best neighbourhood', no guarantee of safety, of a crèche place, or of the exact price of a specific home.",
         },
         {
+          key: "geo_levels",
           title: "Geographic levels",
           body: "IRIS where possible, otherwise commune. The real level is always shown. An IRIS zone is called an 'analysed area'.",
         },
         {
+          key: "reliability",
           title: "Data confidence",
           body: "Each area gets a confidence level (strong, partial, limited, unavailable) based on the coverage of the indicators you marked important.",
         },
         {
+          key: "weighting",
           title: "Weighting",
           body: "Your priorities (from 'not important' to 'critical') become weights. Only the themes that matter to you count toward the score.",
         },
         {
+          key: "missing",
           title: "Missing data",
           body: "A missing value is never replaced with zero: it lowers confidence and is flagged.",
         },
         {
+          key: "no_mixing",
           title: "Don't mix indicators",
           body: "Salary, median income, rent and purchase price are distinct measures with different methods and precision.",
         },

@@ -281,30 +281,37 @@ export const fr = {
       intro: "Comment WhereWise calcule un classement, ce qu'il mesure et ce qu'il ne mesure pas.",
       sections: [
         {
+          key: "computed",
           title: "Ce que nous calculons",
           body: "Un classement des zones d'une ville selon vos priorités, à partir d'indicateurs officiels normalisés à l'intérieur de la ville choisie.",
         },
         {
+          key: "not_computed",
           title: "Ce que nous ne calculons pas",
           body: "Aucun « meilleur quartier » absolu, aucune garantie de sécurité, de place en crèche ou de prix exact d'un logement précis.",
         },
         {
+          key: "geo_levels",
           title: "Niveaux géographiques",
           body: "IRIS quand c'est possible, sinon commune. Le niveau réel est toujours affiché. Une zone IRIS est appelée « zone analysée ».",
         },
         {
+          key: "reliability",
           title: "Fiabilité des données",
           body: "Chaque zone reçoit un niveau de fiabilité (solides, partielles, limitées, indisponibles) selon la couverture des indicateurs que vous avez jugés importants.",
         },
         {
+          key: "weighting",
           title: "Pondération",
           body: "Vos priorités (de « pas important » à « essentiel ») deviennent des poids. Seuls les thèmes qui comptent pour vous pèsent dans le score.",
         },
         {
+          key: "missing",
           title: "Données manquantes",
           body: "Une donnée absente n'est jamais remplacée par zéro : elle réduit la fiabilité et est signalée.",
         },
         {
+          key: "no_mixing",
           title: "Ne pas mélanger les indicateurs",
           body: "Salaire, revenu médian, loyer et prix d'achat sont des mesures distinctes, avec des méthodes et des précisions différentes.",
         },
