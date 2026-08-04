@@ -67,6 +67,7 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
+  const panel = await visibleSkills();
 
   return (
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} ${heading.variable} h-full antialiased`}>
@@ -82,13 +83,8 @@ export default async function LocaleLayout({
             <main className="flex-1 pb-20 md:pb-0">{children}</main>
             <SiteFooter locale={locale} dict={dict} />
             <MobileBottomNavigation locale={locale} labels={dict.nav} />
-            <AiPanel
-              locale={locale}
-              dict={dict}
-              configured={isAiConfigured()}
-              /* Resolved on the server: the client is not the authority on its role. */
-              skills={await visibleSkills()}
-            />
+            {/* Resolved on the server: the client is not the authority on its role. */}
+            <AiPanel locale={locale} dict={dict} configured={isAiConfigured()} {...panel} />
           </AiPanelProvider>
         </TooltipProvider>
         <Toaster position="top-center" />

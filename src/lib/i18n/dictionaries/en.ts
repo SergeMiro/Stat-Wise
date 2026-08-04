@@ -210,6 +210,37 @@ export const en: Dictionary = {
       "The assistant is not wired to a model in this environment yet. One AI Gateway key switches it on.",
     error: "The assistant could not answer. Try again.",
   },
+  admin: {
+    title: "Assistant console",
+    intro:
+      "What the assistant is configured to do. Read-only: skills, tools and MCP servers are declared in code and in the environment, so they stay versioned and reviewable.",
+    state: "State",
+    model: "Default model",
+    gateway: "AI Gateway",
+    indexed: "Indexed chunks",
+    mcp: "MCP servers",
+    on: "on",
+    off: "off",
+    none: "none",
+    reindexTitle: "Re-index the pages",
+    reindexBody:
+      "Rebuilds the index from the pages' own copy. Run it after changing the methodology, the sources or the privacy policy.",
+    reindexRun: "Re-index",
+    reindexRunning: "Indexing…",
+    reindexDone: "Indexed",
+    reindexFailed: "Indexing failed.",
+    skills: "Skills",
+    skillsBody:
+      "Each skill contributes an instruction fragment and its tools. A skill whose capability the role lacks is refused server-side.",
+    colSkill: "Skill",
+    colRequires: "Required capability",
+    colDefault: "Default",
+    colTools: "Tools",
+    tools: "Tools",
+    roles: "Roles and capabilities",
+    rolesNote:
+      "The role comes from a profile column an account cannot change itself: a database trigger restores the old value.",
+  },
   categories: {
     housing: "Housing",
     mobility: "Mobility",

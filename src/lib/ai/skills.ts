@@ -83,6 +83,28 @@ vintage is years old — SISPEA water prices stop at 2019 — say so rather than
 the reader assume it is current.`.trim(),
   },
   {
+    id: "docs",
+    label: { fr: "Chercher dans nos pages", en: "Search our pages" },
+    /*
+      `readPublicData`, not `useRetrieval`: the index holds only text already
+      published on the site, so refusing it to a visitor would withhold what they
+      can read by clicking. `useRetrieval` is reserved for an index that one day
+      holds something not already public.
+    */
+    requires: "readPublicData",
+    defaultOn: true,
+    tools: ["searchDocs"],
+    instructions: `
+You can search WhereWise's own published pages with searchDocs: the methodology, the
+sources and their limits, the privacy policy, the coverage.
+
+Use it for any question about how the product works, what a figure means, where it
+comes from or what happens to someone's data — instead of answering from memory.
+
+Quote the passage and give its link. If nothing matches, say nothing matched; do not
+fill the gap from what you happen to know about French open data.`.trim(),
+  },
+  {
     id: "account",
     label: { fr: "Vos simulations enregistrées", en: "Your saved simulations" },
     requires: "readOwnData",

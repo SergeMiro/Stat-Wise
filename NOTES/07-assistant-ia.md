@@ -109,19 +109,97 @@ Le modèle par défaut est `mistral/mistral-small-latest` : la plupart des quest
 sont « résoudre une ville, appeler un outil, relire le nombre », et payer un modèle
 frontière pour ça serait payer pour rien.
 
-### Non fait, par honnêteté sur l'état
+## RAG : recherche plein texte, pas de vecteurs — et pourquoi
 
-- **RAG.** L'interface n'est pas encore écrite. Le socle existe pourtant : Supabase
-  avec pgvector, et des documents à indexer (les NOTES, la méthodologie, les sources).
-  À faire : extension `vector`, table `ai_documents`, un ETL d'indexation, et un outil
-  `searchDocs` gardé par `useRetrieval`.
-- **Wiki links.** Dépend du RAG : résoudre `[[méthodologie#pondération]]` vers une
-  ancre réelle demande d'abord un index des documents.
-- **Historique des conversations.** Rien n'est persisté : fermer le panneau perd le
-  fil. Tables `ai_conversations` / `ai_messages` avec RLS, comme `simulations`.
-- **Interface d'administration** pour les compétences, les serveurs MCP et les rôles.
-  Aujourd'hui tout se déclare dans le code ou l'environnement, ce qui est le bon
-  premier état : versionné et relisible.
+Le corpus fait une vingtaine de sections : la méthodologie, les sources et leurs
+limites, la politique de confidentialité, la couverture. À cette taille, ce qui décide
+de la qualité d'une réponse est **que le texte soit indexé**, pas que l'index soit
+sémantique. Postgres apporte un vrai dictionnaire français — désuffixation et mots
+vides — sans modèle, sans GPU et sans second entrepôt de données. Et il est exact :
+une question sur « SISPEA » trouve SISPEA, là où un plongement d'un nom propre rare
+échoue souvent.
+
+**Quand passer à pgvector** (l'extension est disponible sur ce projet) — et pas avant :
+
+1. le corpus dépasse quelques centaines de fragments, où le rappel par mots-clés
+   s'effrite ;
+2. des questions formulées avec des mots que les documents n'emploient pas manquent
+   leur réponse. C'est l'échec propre aux mots-clés, que les vecteurs n'ont pas.
+
+L'interface `Retriever` dans `src/lib/ai/retrieval.ts` fait de ce basculement une
+nouvelle implémentation, pas une réécriture.
+
+### Un piège trouvé en testant, pas en réfléchissant
+
+La première version utilisait `websearch_to_tsquery`, qui joint les termes par **ET**.
+Interrogée avec « prix de l'eau millésime », elle exigeait les trois — or le passage
+sur l'eau dit « tarif » et « millésime », jamais « prix ». La bonne réponse marquait
+zéro et le lecteur lisait « rien ne correspond ».
+
+Les lexèmes de la question sont maintenant joints par **OU** et `ts_rank` fait le
+classement : un passage qui touche trois termes devance celui qui n'en touche qu'un.
+La précision vient du classement, pas du refus de chercher. Vérifié en base :
+
+| Question | Résultat |
+| --- | --- |
+| « prix de l'eau millésime » | trouve la limite SISPEA (avant : rien) |
+| « une donnée manquante compte-t-elle pour zéro ? » | trouve « Données manquantes » |
+| « combien coûte un vélo à Tokyo » | **ne trouve rien**, ce qui rend crédible la consigne « dis que tu n'as pas trouvé » |
+
+### Ce qui n'est pas indexé, délibérément
+
+Le dossier `NOTES`. Ce sont des notes d'ingénierie : décisions, pièges, failles
+refermées, travail encore dû. `ai_documents` est lisible par tout le monde, donc les
+indexer serait les publier. N'entre que le texte déjà affiché sur une page — construit
+depuis le dictionnaire, qui *est* la source de ce texte, donc l'index ne peut pas
+diverger de ce que voit un lecteur.
+
+### Indexation sans clé secrète
+
+L'écriture était réservée à la clé service-role, ce qui obligeait à faire circuler un
+secret pour réindexer. Une politique autorise désormais un **administrateur** à écrire,
+et `/api/ai/reindex` tourne sous sa session : réindexer est un bouton dans la console,
+pas une variable d'environnement dans un terminal. Le rôle n'étant pas auto-attribuable,
+cela n'accorde rien qu'un compte puisse s'accorder seul.
+
+## Historique des conversations
+
+Tables `ai_conversations` / `ai_messages`, RLS par propriétaire, les messages atteints
+**au travers** de leur conversation plutôt que par un `user_id` recopié sur chaque
+ligne : une seule source de vérité sur qui possède un fil.
+
+Le panneau restaure le fil à l'ouverture et l'enregistre à la fin de chaque flux.
+Trois choix à retenir :
+
+- **Remplacer, pas ajouter.** Le client détient déjà le fil complet et il est seul à
+  connaître la forme finale d'un message diffusé en flux. Faire réconcilier des ajouts
+  partiels au serveur inventerait un problème de synchronisation qui n'existe pas.
+- **Écriture sans attente.** Perdre un fil est un petit dommage ; bloquer le panneau
+  derrière une écriture qui échoue en est un plus grand.
+- **Rien pour un invité.** Nous n'avons aucun endroit qui lui appartienne. Son fil vit
+  et meurt avec l'onglet — et le panneau ne demande même pas l'historique, sinon chaque
+  visiteur récolterait un 401 dans sa console. Une console pleine d'erreurs attendues
+  est la façon dont une vraie erreur passe inaperçue.
+
+## Console d'administration
+
+`/{locale}/app/admin`, réservée au rôle `admin`, qui répond **404** et non 403 : une
+page qui dit « interdit » confirme son existence.
+
+Elle est en **lecture seule**, sauf la réindexation. Compétences, outils et serveurs MCP
+sont déclarés dans le code et l'environnement, donc versionnés et relisibles ; les
+déplacer dans des lignes de base éditables par un formulaire échangerait cela contre du
+confort, et ce qui est configuré ici, c'est ce qu'une IA peut faire au nom d'autrui.
+
+## Ce qui reste
+
+- **Wiki links.** L'index porte déjà l'ancre de chaque fragment
+  (`/fr/methodology#donnees-manquantes`), donc le socle est là ; il manque le rendu des
+  citations en liens cliquables dans le panneau.
+- **Choix du modèle dans l'interface** pour un administrateur : la capacité
+  `chooseModel` existe, le sélecteur non.
+- **Plusieurs fils** : un seul est restauré, le plus récent. Les tables en acceptent
+  autant qu'on veut.
 
 ## Dette de dépendances constatée au passage
 

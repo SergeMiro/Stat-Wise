@@ -10,6 +10,7 @@ import {
 import { DATA_SOURCES } from "@/domain/reste-a-vivre/sources";
 import type { Line, SideResult } from "@/domain/reste-a-vivre/types";
 import { can, type Capability, type Role } from "../roles";
+import { searchDocsTool } from "../retrieval";
 
 /**
  * The tools the assistant may call, and what each one costs to add.
@@ -27,9 +28,9 @@ import { can, type Capability, type Role } from "../roles";
 export type RegisteredTool = {
   /** What the caller must be allowed to do before this is offered. */
   capability: Capability;
-  /** Built lazily: some tools will need a request-scoped client. */
+  /** Built per request: some tools depend on who is asking and in what language. */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- AI SDK tool types are structural
-  build: () => any;
+  build: (ctx: ToolContext) => any;
 };
 
 const listCitiesTool: RegisteredTool = {
@@ -156,20 +157,33 @@ const sourcesTool: RegisteredTool = {
     }),
 };
 
+/**
+ * What a tool may need to know about the request it is serving.
+ *
+ * Only the locale so far. It is a parameter rather than a module-level value because
+ * a tool built once per process would answer the second visitor in the first one's
+ * language.
+ */
+export type ToolContext = { locale: "fr" | "en" };
+
 /** The registry. Adding a tool means adding one entry here and nothing else. */
 export const TOOL_REGISTRY: Record<string, RegisteredTool> = {
   listCities: listCitiesTool,
   citySnapshot: citySnapshotTool,
   compareSituations: compareTool,
   dataSources: sourcesTool,
+  searchDocs: {
+    capability: "readPublicData",
+    build: (ctx) => searchDocsTool(ctx.locale),
+  },
 };
 
 /** Only the tools this role is allowed to call. */
-export function toolsFor(role: Role, only?: readonly string[]) {
+export function toolsFor(role: Role, ctx: ToolContext, only?: readonly string[]) {
   const entries = Object.entries(TOOL_REGISTRY).filter(
     ([name, t]) => can(role, t.capability) && (!only || only.includes(name)),
   );
-  return Object.fromEntries(entries.map(([name, t]) => [name, t.build()]));
+  return Object.fromEntries(entries.map(([name, t]) => [name, t.build(ctx)]));
 }
 
 /* -------------------------------------------------------------- helpers ---- */

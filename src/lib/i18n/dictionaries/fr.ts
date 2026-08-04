@@ -211,6 +211,37 @@ export const fr = {
       "L'assistant n'est pas encore branché sur un modèle dans cet environnement. Une clé AI Gateway suffit à l'activer.",
     error: "L'assistant n'a pas pu répondre. Réessayez.",
   },
+  admin: {
+    title: "Console de l'assistant",
+    intro:
+      "Ce que l'assistant est configuré pour faire. Lecture seule : compétences, outils et serveurs MCP sont déclarés dans le code et l'environnement, donc versionnés et relisibles.",
+    state: "État",
+    model: "Modèle par défaut",
+    gateway: "AI Gateway",
+    indexed: "Fragments indexés",
+    mcp: "Serveurs MCP",
+    on: "actif",
+    off: "inactif",
+    none: "aucun",
+    reindexTitle: "Réindexer les pages",
+    reindexBody:
+      "Reconstruit l'index à partir du texte des pages. À lancer après avoir modifié la méthodologie, les sources ou la politique de confidentialité.",
+    reindexRun: "Réindexer",
+    reindexRunning: "Indexation…",
+    reindexDone: "Indexé",
+    reindexFailed: "Échec de l'indexation.",
+    skills: "Compétences",
+    skillsBody:
+      "Chaque compétence apporte un fragment d'instructions et ses outils. Une compétence dont le rôle n'a pas la capacité est refusée côté serveur.",
+    colSkill: "Compétence",
+    colRequires: "Capacité requise",
+    colDefault: "Par défaut",
+    colTools: "Outils",
+    tools: "Outils",
+    roles: "Rôles et capacités",
+    rolesNote:
+      "Le rôle vient d'une colonne du profil, qu'un compte ne peut pas modifier lui-même : un déclencheur en base remet l'ancienne valeur.",
+  },
   categories: {
     housing: "Logement",
     mobility: "Mobilité",

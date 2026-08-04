@@ -24,6 +24,7 @@ export function AiPanel({
   dict,
   configured,
   skills,
+  canPersist,
 }: {
   locale: Locale;
   dict: Dictionary;
@@ -31,6 +32,8 @@ export function AiPanel({
   configured: boolean;
   /** Skills this visitor's role may use, resolved on the server. */
   skills: { id: string; label: string; defaultOn: boolean }[];
+  /** Signed in, so the thread has somewhere to live. */
+  canPersist: boolean;
 }) {
   const t = dict.ai;
   const { open, width, close, setWidth } = useAiPanel();
@@ -40,13 +43,52 @@ export function AiPanel({
   const [input, setInput] = useState("");
   const [showSkills, setShowSkills] = useState(false);
 
-  const { messages, sendMessage, status, error } = useChat({
+  const { messages, setMessages, sendMessage, status, error } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/ai/chat",
       // Skills and locale ride along with every message; the server filters them.
       body: () => ({ skills: active, locale }),
     }),
   });
+
+  /*
+    Restore the thread the first time the panel opens, and save it whenever a stream
+    finishes. Only for a signed-in person: for a guest there is nowhere to put a
+    conversation that is theirs, so it lives and dies with the tab.
+
+    The save is fire-and-forget on purpose. Losing a thread is a small harm; blocking
+    the panel behind a failing write, or showing an error about bookkeeping the person
+    never asked for, is a larger one.
+  */
+  const restored = useRef(false);
+  useEffect(() => {
+    if (!open || restored.current || !canPersist) return;
+    restored.current = true;
+    fetch("/api/ai/thread")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((body: { messages?: { role: string; parts: unknown[] }[] } | null) => {
+        if (!body?.messages?.length) return;
+        setMessages(
+          body.messages.map((m, i) => ({
+            id: `restored-${i}`,
+            role: m.role as "user" | "assistant",
+            parts: m.parts,
+          })) as never,
+        );
+      })
+      .catch(() => undefined);
+  }, [open, canPersist, setMessages]);
+
+  useEffect(() => {
+    if (!canPersist || status !== "ready" || messages.length === 0) return;
+    fetch("/api/ai/thread", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: messages.map((m) => ({ role: m.role, parts: m.parts })),
+      }),
+    }).catch(() => undefined);
+  }, [canPersist, status, messages]);
 
   const scroller = useRef<HTMLDivElement>(null);
   useEffect(() => {

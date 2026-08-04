@@ -12,17 +12,27 @@ import type { Role } from "./roles";
  * would be worse. The route repeats the check regardless — this decides what is
  * *offered*, not what is *permitted*.
  */
-export async function visibleSkills(): Promise<
-  { id: string; label: string; defaultOn: boolean }[]
-> {
+export async function visibleSkills(): Promise<{
+  skills: { id: string; label: string; defaultOn: boolean }[];
+  /** Whether this visitor has somewhere to keep a conversation. */
+  canPersist: boolean;
+}> {
   const role = await currentRole();
   // French labels for now; the panel is rendered per locale and the dictionary
   // carries the visible strings, so this only needs the id and the default.
-  return skillsFor(role).map((s) => ({
-    id: s.id,
-    label: s.label.fr,
-    defaultOn: s.defaultOn,
-  }));
+  return {
+    skills: skillsFor(role).map((s) => ({
+      id: s.id,
+      label: s.label.fr,
+      defaultOn: s.defaultOn,
+    })),
+    /*
+      A guest has no thread to restore, and asking for one puts a 401 in every
+      visitor's console. Nothing breaks, but a console full of expected errors is how
+      a real one goes unnoticed.
+    */
+    canPersist: role !== "guest",
+  };
 }
 
 async function currentRole(): Promise<Role> {

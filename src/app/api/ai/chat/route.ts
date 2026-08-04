@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     told off — there is nothing to tell off, the panel is allowed to ask.
   */
   const { active, instructions, tools: toolNames } = assemble(role, body.skills);
-  const tools = toolsFor(role, toolNames);
+  const tools = toolsFor(role, { locale: body.locale }, toolNames);
 
   /*
     MCP is admin-only and additive. A server that is down contributes nothing and
