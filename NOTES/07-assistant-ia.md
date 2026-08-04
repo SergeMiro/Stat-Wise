@@ -324,9 +324,36 @@ lecteur du seul récit du chemin suivi.
 - **Plusieurs fils** : un seul est restauré, le plus récent. Les tables en acceptent
   autant qu'on veut.
 - **Précision de la recherche** — voir la section suivante. C'est la limite connue.
-- **Le schéma IA n'est pas dans le dépôt.** Huit migrations n'existent que sur le serveur
-  (comptes, documents, conversations, réglages, trigger de rôle). Reconstruire
-  l'environnement depuis le dépôt ne les recréerait pas.
+- **Le corpus n'est pas semé.** Le schéma y est (voir ci-dessous), les 48 fragments non :
+  ils se reconstruisent par le bouton de réindexation, qui est le mécanisme voulu. Une
+  base neuve démarre donc avec un index vide — et l'assistant le dit maintenant au lieu
+  de répondre « rien ne correspond ».
+
+## Le schéma, rapatrié dans le dépôt
+
+Les dix migrations appliquées n'existaient que sur le serveur : comptes, simulations
+enregistrées, documents, conversations, réglages, trigger de rôle. Reconstruire
+l'environnement depuis le dépôt n'en recréait rien. Elles sont maintenant dans
+`supabase/migrations/`, sous leur version d'origine, et **vérifiées au md5** contre ce qui
+a réellement été appliqué — les huit rapatriées sont identiques octet pour octet.
+
+### Cinq migrations écartées, et pourquoi c'était nécessaire
+
+`0001` à `0005` décrivaient un dessin antérieur et **n'ont jamais été appliquées à ce
+projet** : ni `postgis`, ni `reference.geo_communes`, ni `analytics.metric_values`, ni
+`public.simulation_inputs` n'existent en base.
+
+Elles ne pouvaient pas rester à côté des autres. Les migrations s'exécutent dans l'ordre
+des noms, donc `0004` passerait **avant** `20260802165414`, et les deux créent
+`public.profiles` en désaccord sur ce qu'est un profil : `display_name` d'un côté,
+`first_name`/`last_name`/`home_city_id`/`role` de l'autre. `0004` utilise `if not exists`,
+la migration appliquée non — un push sur une base vide créerait donc l'ancienne table puis
+échouerait sur la vraie. Pire encore si l'échec passait inaperçu : l'application lirait un
+`profiles` sans colonne `role`, celle dont dépend tout ce que l'assistant s'autorise.
+
+Déplacées dans `supabase/superseded/`, avec un README qui dit tout cela — pas supprimées,
+parce qu'elles sont le seul écrit sur les schémas `reference` et `analytics`, et que cet
+ETL peut revenir.
 
 ## Dette de dépendances constatée au passage
 
