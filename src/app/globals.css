@@ -226,6 +226,15 @@
   }
   body {
     @apply bg-background text-foreground;
+    /*
+      Room for the assistant panel rather than being covered by it. The variable is
+      set by the panel provider and is 0 when closed; only applied from `lg`, since
+      below that there is no width to give away and the panel overlays instead.
+    */
+    @media (width >= 64rem) {
+      padding-right: var(--ai-panel-width, 0px);
+      transition: padding-right 180ms ease;
+    }
   }
   html {
     @apply font-sans;

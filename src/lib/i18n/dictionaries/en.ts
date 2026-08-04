@@ -188,6 +188,28 @@ export const en: Dictionary = {
         "We keep your email, your first name and the simulations you saved, on servers located in France. Deleting a simulation deletes it for good.",
     },
   },
+  ai: {
+    title: "WhereWise assistant",
+    open: "Open the assistant",
+    skills: "Skills",
+    skillsHint:
+      "What the assistant can do depends on these switches and on your account. Untick to restrict it.",
+    resize: "Resize the panel",
+    placeholder: "Ask a question…",
+    send: "Send",
+    you: "You",
+    assistant: "Assistant",
+    thinking: "Looking through the data…",
+    empty: "Ask it to compare two cities, explain a line of the result, or say where a figure comes from.",
+    examples: [
+      "What would be left in Lyon on 3,000 € net?",
+      "Where does the water price in Dijon come from?",
+      "Which district of Bordeaux is cheapest?",
+    ],
+    notConfigured:
+      "The assistant is not wired to a model in this environment yet. One AI Gateway key switches it on.",
+    error: "The assistant could not answer. Try again.",
+  },
   categories: {
     housing: "Housing",
     mobility: "Mobility",

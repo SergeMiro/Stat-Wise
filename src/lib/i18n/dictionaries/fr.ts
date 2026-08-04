@@ -189,6 +189,28 @@ export const fr = {
         "Nous conservons votre e-mail, votre prénom et les simulations que vous avez enregistrées, sur des serveurs situés en France. Supprimer une simulation la supprime définitivement.",
     },
   },
+  ai: {
+    title: "Assistant WhereWise",
+    open: "Ouvrir l'assistant",
+    skills: "Compétences",
+    skillsHint:
+      "Ce que l'assistant peut faire dépend de ces cases et de votre compte. Décochez pour restreindre.",
+    resize: "Redimensionner le panneau",
+    placeholder: "Posez votre question…",
+    send: "Envoyer",
+    you: "Vous",
+    assistant: "Assistant",
+    thinking: "Recherche dans les données…",
+    empty: "Demandez-lui de comparer deux villes, d'expliquer une ligne du résultat ou de dire d'où vient un chiffre.",
+    examples: [
+      "Combien me resterait-il à Lyon avec 3 000 € net ?",
+      "D'où vient le prix de l'eau à Dijon ?",
+      "Quel quartier de Bordeaux est le moins cher ?",
+    ],
+    notConfigured:
+      "L'assistant n'est pas encore branché sur un modèle dans cet environnement. Une clé AI Gateway suffit à l'activer.",
+    error: "L'assistant n'a pas pu répondre. Réessayez.",
+  },
   categories: {
     housing: "Logement",
     mobility: "Mobilité",

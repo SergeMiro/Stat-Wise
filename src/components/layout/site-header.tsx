@@ -6,6 +6,7 @@ import { localePath, type Dictionary, type Locale } from "@/lib/i18n";
 import { LanguageSwitcher } from "./language-switcher";
 import { Button } from "@/components/ui/button";
 import { Wordmark } from "./wordmark";
+import { AiPanelButton } from "@/components/ai/ai-panel-button";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary }) {
@@ -47,6 +48,7 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
         </nav>
 
         <div className="flex items-center gap-2">
+          <AiPanelButton label={dict.ai.open} />
           <LanguageSwitcher locale={locale} />
           <Button
             variant="outline"
