@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { slug } from "@/lib/slug";
 import {
   Check,
   Gauge,
@@ -49,7 +50,10 @@ export default async function MethodologyPage({ params }: { params: Promise<{ lo
       {/* The promise and its limit, as one comparison rather than two paragraphs. */}
       <div className="grid gap-4 sm:grid-cols-2">
         {yes ? (
-          <section className="border-confidence-high/30 bg-confidence-high/5 rounded-xl border p-4 sm:p-5">
+          <section
+            id={slug(yes.title)}
+            className="border-confidence-high/30 bg-confidence-high/5 scroll-mt-24 rounded-xl border p-4 sm:p-5"
+          >
             <h2 className="flex items-start gap-2 text-sm font-semibold">
               <Check className="text-confidence-high mt-0.5 size-4 shrink-0" aria-hidden />
               {yes.title}
@@ -58,7 +62,10 @@ export default async function MethodologyPage({ params }: { params: Promise<{ lo
           </section>
         ) : null}
         {no ? (
-          <section className="border-confidence-low/30 bg-confidence-low/5 rounded-xl border p-4 sm:p-5">
+          <section
+            id={slug(no.title)}
+            className="border-confidence-low/30 bg-confidence-low/5 scroll-mt-24 rounded-xl border p-4 sm:p-5"
+          >
             <h2 className="flex items-start gap-2 text-sm font-semibold">
               <X className="text-confidence-low mt-0.5 size-4 shrink-0" aria-hidden />
               {no.title}
@@ -80,7 +87,13 @@ export default async function MethodologyPage({ params }: { params: Promise<{ lo
           return (
             <section
               key={section.key}
-              className={`rounded-xl border p-4 sm:p-5 ${spans ? "sm:col-span-2" : ""}`}
+              /*
+                The id the retrieval index cites. `scroll-mt` keeps the heading clear of
+                the sticky header, without which the link lands with the title hidden
+                behind it — arriving at the wrong place looks the same as not arriving.
+              */
+              id={slug(section.title)}
+              className={`scroll-mt-24 rounded-xl border p-4 sm:p-5 ${spans ? "sm:col-span-2" : ""}`}
             >
               <h2 className="flex items-start gap-2.5 text-sm font-semibold">
                 {Icon ? (

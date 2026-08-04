@@ -71,9 +71,9 @@ requête → rôle (cookie de session, jamais le corps)
 - **Ajouter une compétence** = une entrée dans `SKILLS` : un fragment d'instructions,
   ses outils, la capacité requise. Rien d'autre à toucher.
 - **Ajouter un serveur MCP** = une entrée JSON dans `AI_MCP_SERVERS`. Aucun déploiement.
-- **Changer de modèle** = une chaîne `fournisseur/modèle` dans `models.ts`. Passer de
-  Mistral à Claude à un Llama local est une ligne, sans nouvelle dépendance : c'est la
-  raison d'utiliser l'AI Gateway plutôt qu'un paquet par fournisseur.
+- **Changer de modèle** = trois lignes dans la console d'administration, sans déploiement.
+  **Ajouter une passerelle** = une entrée dans `GATEWAYS` : elles parlent toutes le format
+  OpenAI, donc pas de nouvelle dépendance par fournisseur.
 
 Les fragments d'instructions sont séparés pour une raison mesurable, pas par goût :
 un seul prompt long met chaque consigne en concurrence à chaque requête. Qui demande
@@ -101,13 +101,9 @@ d'étapes est borné à 6, sans quoi une boucle d'outils coûte de l'argent rée
 
 ### Une clé, et l'assistant parle
 
-`AI_GATEWAY_API_KEY` dans Vercel et dans `.env.local`. Sans elle la route répond 503
-et le panneau affiche une explication au lieu d'échouer. Sur Vercel, l'AI Gateway
-peut aussi s'authentifier par OIDC sans clé.
-
-Le modèle par défaut est `mistral/mistral-small-latest` : la plupart des questions ici
-sont « résoudre une ville, appeler un outil, relire le nombre », et payer un modèle
-frontière pour ça serait payer pour rien.
+`OPENROUTER_API_KEY` dans Vercel et dans `.env.local`. Sans aucune clé de passerelle la
+route répond 503 `no_model_available` et journalise le motif de chaque lien de la chaîne,
+au lieu d'échouer en silence.
 
 ## RAG : recherche plein texte, pas de vecteurs — et pourquoi
 
@@ -128,6 +124,67 @@ une question sur « SISPEA » trouve SISPEA, là où un plongement d'un nom prop
 
 L'interface `Retriever` dans `src/lib/ai/retrieval.ts` fait de ce basculement une
 nouvelle implémentation, pas une réécriture.
+
+### L'index était vide, et personne ne le voyait
+
+En sondant l'endpoint en direct : `ai_documents` contenait **zéro ligne**. L'assistant
+répondait donc « aucune page ne correspond » à toutes les questions, y compris celles dont
+la réponse est écrite sur nos pages. Le tableau ci-dessous, vérifié « en base » lors de la
+session précédente, avait été validé sur une table qui n'a jamais été peuplée : la
+vérification ne valait rien.
+
+Deux corrections, dont une qui compte plus que l'autre :
+
+1. **Peupler l'index** — 48 fragments, les deux langues.
+2. **Ne plus confondre trois choses.** `search()` renvoyait un tableau vide pour « rien ne
+   correspond », « rien n'est indexé » et « la recherche est cassée ». Un tableau vide ne
+   peut pas dire pourquoi il est vide, et les trois demandent des réponses différentes.
+   Le type est maintenant `ok | empty | unavailable`, et chaque cas donne au modèle une
+   consigne distincte — aucune n'autorisant de répondre de mémoire. Cinq tests le tiennent
+   (`src/lib/ai/retrieval.test.ts`), dont un qui vérifie que la raison technique n'est pas
+   récitée au lecteur.
+
+### Deux fragments qui n'auraient pas dû être indexés tels quels
+
+Trouvés en relisant le corpus avant de l'écrire, pas après :
+
+- **`{publisher}` en clair.** La page substitue le nom du responsable de traitement au
+  rendu ; le corpus indexait le gabarit. L'assistant pouvait donc citer « {publisher} »
+  comme nom du responsable. Ce fichier promettait qu'un index construit depuis le
+  dictionnaire ne peut pas diverger de ce que voit un lecteur : construire depuis la même
+  source n'en est que la moitié, le rendre pareillement est l'autre.
+- **Des titres coupés au milieu d'un mot.** La page couverture produisait trois fragments
+  dont le titre était `item.slice(0, 60)` — « Où WhereWise dispose de données suffisantes,
+  et où les résul » — et dont deux avaient un titre identique à leur propre contenu. Une
+  citation qui pointe une phrase tronquée est pire qu'aucune citation : elle a l'air d'une
+  vraie section. Remplacés par un fragment unique, chaque ligne sous le libellé que la
+  page lui donne.
+
+### La précision plafonne, et aucune constante n'y changera rien
+
+Un seuil de rang a été ajouté puis **retiré**. Il écartait de bonnes réponses :
+
+| Question | Meilleur fragment | Rang |
+| --- | --- | --- |
+| « Quand une donnée manque pour une ville… » | Données manquantes — **correct** | 0.08612 |
+| « combien coûte un vélo à Tokyo » | Combien de temps nous les gardons — bruit | 0.07295 |
+
+0.086 contre 0.073 : il n'y a pas de place pour une constante. La cause n'est pas le
+préfixe `:*` — chercher les mêmes lexèmes à l'identique rend les mêmes lignes. C'est le
+dictionnaire français : « données » et l'impératif « donne-moi » se réduisent au **même
+radical `don`**, présent dans 10 des 24 fragments français. « donne-moi une recette de
+gâteau » touche donc dix passages sur la protection des données, à des rangs
+indiscernables d'une vraie question mal formulée.
+
+La recall est donc conservée, et la précision est jugée là où elle peut l'être : le modèle
+reçoit les passages et leurs liens, avec la consigne de ne répondre que d'après ce qu'un
+passage dit. Vérifié en direct — interrogé sur le prix d'un vélo à Tokyo, il refuse et
+signale que la ville n'est pas couverte, au lieu de citer un paragraphe sur la
+conservation des journaux.
+
+Le vrai correctif est un test d'informativité (ignorer une correspondance portée par un
+radical présent dans une grande part du corpus — la moitié IDF du classement que Postgres
+ne fait pas) ou pgvector. À décider et mesurer, pas à régler au doigt.
 
 ### Un piège trouvé en testant, pas en réfléchissant
 
@@ -186,20 +243,79 @@ Trois choix à retenir :
 `/{locale}/app/admin`, réservée au rôle `admin`, qui répond **404** et non 403 : une
 page qui dit « interdit » confirme son existence.
 
-Elle est en **lecture seule**, sauf la réindexation. Compétences, outils et serveurs MCP
+Elle est en **lecture seule**, sauf la réindexation et le choix des trois modèles. Compétences, outils et serveurs MCP
 sont déclarés dans le code et l'environnement, donc versionnés et relisibles ; les
 déplacer dans des lignes de base éditables par un formulaire échangerait cela contre du
 confort, et ce qui est configuré ici, c'est ce qu'une IA peut faire au nom d'autrui.
 
+## Modèles : trois liens, et le passage au suivant
+
+L'administrateur choisit trois modèles dans la console ; si le premier ne répond pas, le
+suivant prend la requête. Les trois passerelles parlent le format OpenAI, donc une seule
+fabrique les couvre : `src/lib/ai/providers.ts`.
+
+Le point délicat n'est pas de choisir un modèle, c'est qu'**un flux engage**. Une fois
+les premiers octets partis vers le navigateur, on ne peut plus changer d'avis sans que le
+lecteur voie une réponse à deux voix. Chaque candidat est donc **sondé avant** d'être
+diffusé : on tire ses premières parties, et seulement s'il produit quelque chose de réel
+son flux devient la réponse — les parties consommées étant rejouées, sans quoi la réponse
+perdrait ses premiers mots (`src/lib/ai/fallback.ts`).
+
+Ne déclenche pas de bascule : une réponse de mauvaise qualité. Ce n'est pas jugeable ici,
+et réessayer doublerait le coût de chaque requête pour échanger un avis contre un autre.
+
+### Ce que les essais réels ont dit
+
+Trois identifiants avaient été écrits de mémoire. Les trois étaient faux : un modèle Zen
+inexistant, et deux gratuités OpenRouter supprimées depuis. La liste a donc été demandée
+à la passerelle, puis **chaque modèle a reçu une vraie requête** :
+
+| Passerelle | Modèle | Résultat |
+| --- | --- | --- |
+| OpenCode Zen | tous, y compris `/models` | **HTTP 403, Cloudflare 1010** |
+| OpenRouter | `nvidia/nemotron-3-nano-30b-a3b:free` | répond |
+| OpenRouter | `nvidia/nemotron-3-super-120b-a12b:free` | répond |
+| OpenRouter | `google/gemma-4-31b-it:free` | 429, limité |
+
+Le code 1010 est un refus de client : la même clé fonctionne depuis le CLI OpenCode, donc
+la clé est bonne et c'est l'appel serveur qui est rejeté. Zen reste sélectionnable dans la
+console, hors chaîne par défaut. **Kilo n'a aucune clé** — aucun compte dans
+`auth.json` — et une passerelle sans clé n'est pas proposée : elle mettrait dans le
+sélecteur un modèle qui répond 401 à tout.
+
+Gemma est en troisième position parce qu'il était limité au moment de l'essai : le mettre
+deuxième ferait payer à chaque requête un sondage voué à échouer.
+
+## Wiki links
+
+Les citations sont rendues cliquables (`src/components/ai/answer.tsx`) : un lien interne
+devient un `<Link>` Next dans le même onglet, un lien externe s'ouvre à côté avec
+`noopener`, et tout le reste est rendu en texte — un `href` inventé par un modèle ne doit
+pas devenir un lien.
+
+**Les ancres étaient mortes.** L'index promettait `/fr/methodology#donnees-manquantes`
+depuis le début, et la page ne posait **aucun `id`**. Le lien s'ouvrait, la page
+répondait 200, et rien ne défilait : arriver au mauvais endroit ressemble à ne pas
+arriver. Le calcul du slug est maintenant partagé (`src/lib/slug.ts`) entre la page et
+l'index — deux copies, c'était deux choses à garder d'accord, et l'écart était invisible.
+Vérifié : les 14 ancres citées existent dans le HTML servi.
+
+## Le raisonnement, replié
+
+Les modèles gratuits de cette chaîne pensent à voix haute, et beaucoup : une réponse
+mesurée a diffusé **653 fragments de raisonnement pour 14 de texte**. Le panneau les
+jetait. Ils sont maintenant dans un bloc replié, fermé par défaut : les afficher en clair
+enterrerait une réponse de deux lignes sous une page de délibération, les jeter privait le
+lecteur du seul récit du chemin suivi.
+
 ## Ce qui reste
 
-- **Wiki links.** L'index porte déjà l'ancre de chaque fragment
-  (`/fr/methodology#donnees-manquantes`), donc le socle est là ; il manque le rendu des
-  citations en liens cliquables dans le panneau.
-- **Choix du modèle dans l'interface** pour un administrateur : la capacité
-  `chooseModel` existe, le sélecteur non.
 - **Plusieurs fils** : un seul est restauré, le plus récent. Les tables en acceptent
   autant qu'on veut.
+- **Précision de la recherche** — voir la section suivante. C'est la limite connue.
+- **Le schéma IA n'est pas dans le dépôt.** Huit migrations n'existent que sur le serveur
+  (comptes, documents, conversations, réglages, trigger de rôle). Reconstruire
+  l'environnement depuis le dépôt ne les recréerait pas.
 
 ## Dette de dépendances constatée au passage
 

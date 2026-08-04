@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@ai-sdk/mcp": "^2.0.24",
+    "@ai-sdk/openai-compatible": "^3.0.22",
     "@ai-sdk/react": "^4.0.54",
     "@base-ui/react": "^1.6.0",
     "@supabase/ssr": "^0.12.0",

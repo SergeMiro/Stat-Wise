@@ -200,6 +200,7 @@ export const en: Dictionary = {
     you: "You",
     assistant: "Assistant",
     thinking: "Looking through the data…",
+    reasoning: "Model reasoning",
     empty: "Ask it to compare two cities, explain a line of the result, or say where a figure comes from.",
     examples: [
       "What would be left in Lyon on 3,000 € net?",
@@ -222,6 +223,20 @@ export const en: Dictionary = {
     on: "on",
     off: "off",
     none: "none",
+    gatewaysReady: "Gateways with a key",
+    chainTitle: "Model chain",
+    chainBody:
+      "Up to three models, in order. If the first refuses — quota, key, unknown model — the question goes to the next, and the visitor sees nothing but an answer. A model that answers badly does not trigger a fallback: quality is not measurable here.",
+    chainSlot: "Choice",
+    chainGateway: "Gateway",
+    chainModel: "Model",
+    chainPlaceholder: "e.g. meta-llama/llama-3.3-70b-instruct:free",
+    chainSave: "Save the chain",
+    chainSaving: "Saving…",
+    chainSaved: "Chain saved",
+    chainFailed: "Could not save.",
+    chainNoKey: "no key",
+    chainUsingDefault: "No chain saved: the code default is used.",
     reindexTitle: "Re-index the pages",
     reindexBody:
       "Rebuilds the index from the pages' own copy. Run it after changing the methodology, the sources or the privacy policy.",

@@ -1,4 +1,6 @@
-import type { Dictionary } from "@/lib/i18n";
+import { fill, type Dictionary } from "@/lib/i18n";
+import { SITE_PUBLISHER } from "@/lib/site-publisher";
+import { slug } from "@/lib/slug";
 
 /**
  * The corpus the assistant may quote from: the copy already on our own pages.
@@ -21,15 +23,6 @@ export type DocumentChunk = {
   locale: "fr" | "en";
   content: string;
 };
-
-/** Anchor slug, so a citation can link to the exact section. */
-const slug = (text: string): string =>
-  text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
 
 export function buildCorpus(locale: "fr" | "en", dict: Dictionary): DocumentChunk[] {
   const chunks: DocumentChunk[] = [];
@@ -56,7 +49,15 @@ export function buildCorpus(locale: "fr" | "en", dict: Dictionary): DocumentChun
       anchor: null,
       locale,
       content: [
-        section.body,
+        /*
+          Substituted exactly as the page substitutes it. Indexing the raw template
+          put the literal "{publisher}" into the corpus, so the assistant could quote
+          a placeholder back to a reader as the name of the data controller — and it
+          broke this file's own promise that an index built from the dictionary cannot
+          drift from what a reader sees. Building from the same source is only half of
+          that promise; rendering it the same way is the other half.
+        */
+        fill(section.body, { publisher: SITE_PUBLISHER.name }),
         ...items,
         // Flattened: a table row reads as a sentence to a search index.
         ...rows.map((r) => `${r.what} — ${r.data} — ${r.why} — ${r.basis}`),
@@ -75,16 +76,28 @@ export function buildCorpus(locale: "fr" | "en", dict: Dictionary): DocumentChun
     });
   }
 
-  for (const item of dict.pages.coverage
-    ? [dict.pages.coverage.intro, dict.pages.coverage.richDesc, dict.pages.coverage.limitedDesc]
-    : []) {
+  /*
+    Coverage as one chunk, with each line under the label the page gives it.
+
+    It used to be three chunks whose heading was `item.slice(0, 60)` — the body text
+    cut mid-word. That put "Où WhereWise dispose de données suffisantes, et où les
+    résul" into the index as a section name, and two of the three chunks had a heading
+    identical to their own content. A citation pointing at a truncated sentence is
+    worse than no citation, because it looks like a real section.
+  */
+  const coverage = dict.pages.coverage;
+  if (coverage) {
     chunks.push({
       source_path: `${prefix}/coverage`,
-      title: dict.pages.coverage.title,
-      heading: item.slice(0, 60),
+      title: coverage.title,
+      heading: coverage.title,
       anchor: null,
       locale,
-      content: item,
+      content: [
+        coverage.intro,
+        `${coverage.richTitle} — ${coverage.richDesc}`,
+        `${coverage.limitedTitle} — ${coverage.limitedDesc}`,
+      ].join("\n"),
     });
   }
 

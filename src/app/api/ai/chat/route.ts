@@ -1,7 +1,6 @@
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
-  streamText,
   toUIMessageStream,
   type UIMessage,
 } from "ai";
@@ -9,7 +8,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/server/supabase/server";
 import { isSupabaseConfigured } from "@/server/supabase/env";
-import { isAiConfigured, resolveModel, type ModelChoice } from "@/lib/ai/models";
+import { availableGateways, DEFAULT_CHAIN, gatewayById, type ModelRef } from "@/lib/ai/providers";
+import { streamWithFallback } from "@/lib/ai/fallback";
 import { can, type Role } from "@/lib/ai/roles";
 import { assemble } from "@/lib/ai/skills";
 import { toolsFor } from "@/lib/ai/tools";
@@ -40,7 +40,8 @@ const Body = z.object({
 });
 
 export async function POST(request: Request) {
-  if (!isAiConfigured()) {
+  // Configured means at least one gateway has a key; which one is the chain's business.
+  if (availableGateways().length === 0) {
     return NextResponse.json({ error: "ai_not_configured" }, { status: 503 });
   }
 
@@ -71,8 +72,9 @@ export async function POST(request: Request) {
     console.warn("MCP servers unreachable", mcp.failed);
   }
 
-  const result = streamText({
-    model: resolveModel(body.model as ModelChoice | undefined, can(role, "chooseModel")),
+  const chain = await resolveChain();
+
+  const attempt = await streamWithFallback(chain, {
     instructions: [
       BASE_INSTRUCTIONS[body.locale],
       instructions,
@@ -89,17 +91,65 @@ export async function POST(request: Request) {
       the first tool result alone; with an unbounded one a loop costs real money.
     */
     stopWhen: ({ steps }) => steps.length >= 6,
-    onFinish: async () => {
-      await mcp?.close();
-    },
-    onError: async (error) => {
-      // Close the transports even when the stream fails, or each error leaks one.
-      await mcp?.close();
-      console.error("ai chat failed", error);
-    },
   });
 
-  return createUIMessageStreamResponse({ stream: toUIMessageStream({ stream: result.stream }) });
+  if ("failed" in attempt) {
+    /*
+      Every model in the chain refused. Logged with each reason, because "the
+      assistant is broken" is unactionable and "all three returned 429" is not.
+    */
+    await mcp?.close();
+    console.error("every model in the chain failed", attempt.failed);
+    return NextResponse.json({ error: "no_model_available" }, { status: 503 });
+  }
+
+  if (attempt.skipped.length > 0) {
+    console.warn(
+      `fell back to ${attempt.used.gateway}/${attempt.used.model}`,
+      attempt.skipped,
+    );
+  }
+
+  return createUIMessageStreamResponse({
+    stream: toUIMessageStream({
+      stream: attempt.stream,
+      /*
+        Closed when the stream ends, not in a `streamText` callback: the fallback owns
+        the stream now, so a callback passed to `streamText` would fire on the probe's
+        copy and leave the real transports open.
+      */
+      onEnd: async () => {
+        await mcp?.close();
+      },
+    }),
+  });
+}
+
+/**
+ * The chain to try, admin's choice first.
+ *
+ * An empty or unreadable setting falls back to the code default rather than to
+ * nothing: a misconfigured row must not take the assistant offline. Entries naming a
+ * gateway we do not know are dropped here, so a stale setting degrades to whatever
+ * still resolves instead of failing the whole chain.
+ */
+async function resolveChain(): Promise<readonly ModelRef[]> {
+  if (!isSupabaseConfigured()) return DEFAULT_CHAIN;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase.from("ai_settings").select("model_chain").maybeSingle();
+    const raw = Array.isArray(data?.model_chain) ? data.model_chain : [];
+    const chain = (raw as unknown[]).flatMap((entry) => {
+      if (typeof entry !== "object" || entry === null) return [];
+      const { gateway, model } = entry as Record<string, unknown>;
+      if (typeof gateway !== "string" || typeof model !== "string") return [];
+      if (!gatewayById(gateway)) return [];
+      return [{ gateway, model } as ModelRef];
+    });
+    return chain.length > 0 ? chain : DEFAULT_CHAIN;
+  } catch {
+    return DEFAULT_CHAIN;
+  }
 }
 
 /**

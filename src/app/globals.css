@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+/* Streamdown's own styles, plus its classes so Tailwind v4 does not tree-shake them. */
+@import "streamdown/styles.css";
+@source "../../node_modules/streamdown/dist";
 
 @custom-variant dark (&:is(.dark *));
 

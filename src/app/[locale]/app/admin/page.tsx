@@ -2,7 +2,9 @@ import { notFound, redirect } from "next/navigation";
 import { getDictionary, isLocale, localePath } from "@/lib/i18n";
 import { createSupabaseServerClient } from "@/server/supabase/server";
 import { isSupabaseConfigured } from "@/server/supabase/env";
-import { isAiConfigured, MODELS } from "@/lib/ai/models";
+import { isAiConfigured } from "@/lib/ai/models";
+import { availableGateways, GATEWAYS } from "@/lib/ai/providers";
+import { AdminModelChain } from "@/components/admin/admin-model-chain";
 import { capabilitiesOf } from "@/lib/ai/roles";
 import { SKILLS } from "@/lib/ai/skills";
 import { TOOL_REGISTRY } from "@/lib/ai/tools";
@@ -52,13 +54,25 @@ export default async function AdminPage({ params }: { params: Promise<{ locale: 
     .select("*", { count: "exact", head: true });
 
   const mcpServers = configuredMcpServers();
+  const { data: settings } = await supabase
+    .from("ai_settings")
+    .select("model_chain, updated_at")
+    .maybeSingle();
+  const gateways = availableGateways();
 
   return (
     <PageShell title={t.title} intro={t.intro}>
       <div className="grid gap-4 sm:grid-cols-2">
         <Panel title={t.state}>
-          <Row label={t.model} value={MODELS.default} mono />
           <Row label={t.gateway} value={isAiConfigured() ? t.on : t.off} />
+          <Row
+            label={t.gatewaysReady}
+            value={
+              gateways.length
+                ? GATEWAYS.filter((g) => gateways.includes(g.id)).map((g) => g.label).join(", ")
+                : t.none
+            }
+          />
           <Row label={t.indexed} value={String(indexed ?? 0)} mono />
           <Row label={t.mcp} value={mcpServers.length ? mcpServers.map((s) => s.name).join(", ") : t.none} />
         </Panel>
@@ -70,6 +84,34 @@ export default async function AdminPage({ params }: { params: Promise<{ locale: 
           </div>
         </Panel>
       </div>
+
+      <section className="mt-8">
+        <h2 className="font-heading text-base font-semibold">{t.chainTitle}</h2>
+        <p className="text-muted-foreground mt-1 text-sm">{t.chainBody}</p>
+        <div className="mt-3">
+          <AdminModelChain
+            gateways={GATEWAYS.map((g) => ({
+              id: g.id,
+              label: g.label,
+              docs: g.docs,
+              ready: gateways.includes(g.id),
+            }))}
+            initial={(settings?.model_chain ?? []) as { gateway: string; model: string }[]}
+            labels={{
+              slot: t.chainSlot,
+              gateway: t.chainGateway,
+              model: t.chainModel,
+              placeholder: t.chainPlaceholder,
+              save: t.chainSave,
+              saving: t.chainSaving,
+              saved: t.chainSaved,
+              failed: t.chainFailed,
+              noKey: t.chainNoKey,
+              usingDefault: t.chainUsingDefault,
+            }}
+          />
+        </div>
+      </section>
 
       <section className="mt-8">
         <h2 className="font-heading text-base font-semibold">{t.skills}</h2>

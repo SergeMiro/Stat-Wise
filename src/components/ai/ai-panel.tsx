@@ -8,6 +8,7 @@ import type { Dictionary, Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { MAX_WIDTH, MIN_WIDTH, useAiPanel } from "./ai-panel-provider";
+import { Answer } from "./answer";
 
 /**
  * The assistant, down the right-hand side.
@@ -226,7 +227,14 @@ export function AiPanel({
                     <div className="mt-1 space-y-2 text-sm leading-relaxed">
                       {message.parts.map((part, index) => {
                         if (part.type === "text") {
-                          return (
+                          /*
+                            The reader's own words stay plain; only the assistant's are
+                            markdown. Rendering a person's message as markdown would let
+                            their own asterisks silently restyle their question.
+                          */
+                          return message.role === "assistant" ? (
+                            <Answer key={index} text={part.text} />
+                          ) : (
                             <p key={index} className="whitespace-pre-wrap">
                               {part.text}
                             </p>
@@ -238,6 +246,32 @@ export function AiPanel({
                           simulation would break that in the one place people are
                           most likely to trust it blindly.
                         */
+                        /*
+                          Reasoning, folded away.
+
+                          The free models this runs on think out loud, and a lot: one
+                          measured answer streamed 653 reasoning fragments against 14 of
+                          actual text. Dropping them silently threw away the only account
+                          of how the answer was reached; showing them inline would bury
+                          a two-line answer under a page of deliberation. So it is
+                          collapsed — closed by default, and the reader can open it.
+                        */
+                        if (part.type === "reasoning") {
+                          if (!part.text.trim()) return null;
+                          return (
+                            <details
+                              key={index}
+                              className="group border-l-2 pl-3 text-muted-foreground"
+                            >
+                              <summary className="cursor-pointer font-mono text-[10px] uppercase select-none">
+                                {t.reasoning}
+                              </summary>
+                              <p className="mt-1 text-xs whitespace-pre-wrap opacity-80">
+                                {part.text}
+                              </p>
+                            </details>
+                          );
+                        }
                         if (part.type.startsWith("tool-")) {
                           return (
                             <p

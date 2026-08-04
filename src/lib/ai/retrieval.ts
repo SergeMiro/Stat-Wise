@@ -32,14 +32,31 @@ export type RetrievedChunk = {
   content: string;
 };
 
+/**
+ * Why this is a result type and not just an array.
+ *
+ * An empty array cannot say *why* it is empty, and the three reasons need different
+ * answers: the question genuinely matches nothing, the index was never built, or the
+ * search itself broke. Collapsing them made the assistant tell a reader "nothing
+ * matched" while retrieval was in fact unreachable — a confident false statement,
+ * which is the one thing this whole feature is built to avoid. Found by probing the
+ * live endpoint: the index held zero rows and the answer still read like a finding.
+ */
+export type RetrievalOutcome =
+  | { status: "ok"; chunks: RetrievedChunk[] }
+  | { status: "empty" }
+  | { status: "unavailable"; reason: string };
+
 export interface Retriever {
-  search(query: string, locale: "fr" | "en", limit?: number): Promise<RetrievedChunk[]>;
+  search(query: string, locale: "fr" | "en", limit?: number): Promise<RetrievalOutcome>;
 }
 
 /** Ranked by Postgres, which owns both the index and the ranking. */
 export const postgresRetriever: Retriever = {
   async search(query, locale, limit = 5) {
-    if (!isSupabaseConfigured()) return [];
+    if (!isSupabaseConfigured()) {
+      return { status: "unavailable", reason: "no database configured" };
+    }
     try {
       const supabase = await createSupabaseServerClient();
       const { data, error } = await supabase.rpc("search_ai_documents", {
@@ -48,9 +65,10 @@ export const postgresRetriever: Retriever = {
         max_rows: limit,
       });
       if (error) {
-        // Retrieval failing must not fail the answer; it makes it less grounded.
+        // Retrieval failing must not fail the answer; it makes it ungrounded, and the
+        // model has to be told which of the two it is.
         console.warn("retrieval failed", error.message);
-        return [];
+        return { status: "unavailable", reason: error.message };
       }
       type Row = {
         title: string;
@@ -59,15 +77,33 @@ export const postgresRetriever: Retriever = {
         anchor: string | null;
         content: string;
       };
-      return ((data ?? []) as Row[]).map((row) => ({
+      const chunks = ((data ?? []) as Row[]).map((row) => ({
         title: row.title,
         heading: row.heading,
         path: row.source_path,
         anchor: row.anchor,
         content: row.content,
       }));
-    } catch {
-      return [];
+      if (chunks.length > 0) return { status: "ok", chunks };
+
+      /*
+        Nothing came back. Ask whether anything is indexed at all before calling it a
+        non-match: an unbuilt index answers every question with silence, and that is a
+        fact about us, not about the question.
+      */
+      const { count, error: countError } = await supabase
+        .from("ai_documents")
+        .select("*", { count: "exact", head: true })
+        .eq("locale", locale);
+      if (countError) return { status: "unavailable", reason: countError.message };
+      return count && count > 0
+        ? { status: "ok", chunks: [] }
+        : { status: "empty" };
+    } catch (error) {
+      return {
+        status: "unavailable",
+        reason: error instanceof Error ? error.message : String(error),
+      };
     }
   },
 };
@@ -90,15 +126,34 @@ export const searchDocsTool = (locale: "fr" | "en", retriever: Retriever = postg
       query: z.string().min(2).max(200).describe("the question, in the reader's own words"),
     }),
     execute: async ({ query }) => {
-      const passages = await retriever.search(query, locale);
-      if (passages.length === 0) {
+      const outcome = await retriever.search(query, locale);
+
+      if (outcome.status === "unavailable") {
+        return {
+          passages: [],
+          note:
+            "Document search is unavailable right now, so this answer cannot be " +
+            "grounded in our pages. Tell the reader that the search is down and " +
+            "point them at /methodology and /sources. Do not answer from memory.",
+        };
+      }
+      if (outcome.status === "empty") {
+        return {
+          passages: [],
+          note:
+            "The document index is empty — nothing has been indexed yet. This is not " +
+            "an answer about the question. Say the index is not built and point the " +
+            "reader at /methodology and /sources. Do not answer from memory.",
+        };
+      }
+      if (outcome.chunks.length === 0) {
         return {
           passages: [],
           note: "Nothing matched. Say so rather than answering from memory.",
         };
       }
       return {
-        passages: passages.map((p) => ({
+        passages: outcome.chunks.map((p) => ({
           title: p.title,
           heading: p.heading,
           link: p.anchor ? `${p.path}${p.anchor}` : p.path,

@@ -201,6 +201,7 @@ export const fr = {
     you: "Vous",
     assistant: "Assistant",
     thinking: "Recherche dans les données…",
+    reasoning: "Raisonnement du modèle",
     empty: "Demandez-lui de comparer deux villes, d'expliquer une ligne du résultat ou de dire d'où vient un chiffre.",
     examples: [
       "Combien me resterait-il à Lyon avec 3 000 € net ?",
@@ -223,6 +224,21 @@ export const fr = {
     on: "actif",
     off: "inactif",
     none: "aucun",
+    gatewaysReady: "Passerelles avec clé",
+    chainTitle: "Chaîne de modèles",
+    chainBody:
+      "Jusqu'à trois modèles, dans l'ordre. Si le premier refuse — quota, clé, modèle inconnu — la question part au suivant, sans que le visiteur voie autre chose qu'une réponse. Un modèle qui répond mal ne déclenche pas de repli : la qualité n'est pas mesurable ici.",
+    chainSlot: "Choix",
+    chainGateway: "Passerelle",
+    chainModel: "Modèle",
+    chainPlaceholder: "ex. meta-llama/llama-3.3-70b-instruct:free",
+    chainSave: "Enregistrer la chaîne",
+    chainSaving: "Enregistrement…",
+    chainSaved: "Chaîne enregistrée",
+    chainFailed: "Enregistrement impossible.",
+    chainNoKey: "clé absente",
+    chainUsingDefault:
+      "Aucune chaîne enregistrée : la valeur par défaut du code est utilisée.",
     reindexTitle: "Réindexer les pages",
     reindexBody:
       "Reconstruit l'index à partir du texte des pages. À lancer après avoir modifié la méthodologie, les sources ou la politique de confidentialité.",
