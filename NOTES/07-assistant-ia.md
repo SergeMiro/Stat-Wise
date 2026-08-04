@@ -293,6 +293,17 @@ devient un `<Link>` Next dans le même onglet, un lien externe s'ouvre à côté
 `noopener`, et tout le reste est rendu en texte — un `href` inventé par un modèle ne doit
 pas devenir un lien.
 
+**Un domaine inventé.** Vérifié en production, pas en local : l'outil rend
+`/fr/methodology#donnees-manquantes` et la réponse a cité
+`https://wherewise.com/fr/methodology#donnees-manquantes` — un domaine que personne ne
+possède. Rendu tel quel, c'est un lien qui sort du site vers un hôte que nous ne
+contrôlons pas, ce qui est pire qu'une ancre cassée : ça ressemble à notre documentation
+sans en être. `src/lib/own-path.ts` récupère le chemin quand il correspond à une de nos
+routes sous un préfixe de langue, et laisse tranquille une source externe dont le chemin
+commence par hasard par `/fr/` — réécrire celle-là casserait une vraie citation. La
+consigne demande aussi de reproduire le lien tel quel, mais une consigne n'est pas une
+garantie : cinq tests le sont.
+
 **Les ancres étaient mortes.** L'index promettait `/fr/methodology#donnees-manquantes`
 depuis le début, et la page ne posait **aucun `id`**. Le lien s'ouvrait, la page
 répondait 200, et rien ne défilait : arriver au mauvais endroit ressemble à ne pas

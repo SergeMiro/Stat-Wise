@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Streamdown } from "streamdown";
 import { ArrowUpRight } from "lucide-react";
+import { ownPath } from "@/lib/own-path";
 
 /**
  * An assistant answer, rendered as markdown while it streams.
@@ -23,6 +24,7 @@ import { ArrowUpRight } from "lucide-react";
  * comes from a model, and `javascript:` in a citation is exactly the case where being
  * strict costs nothing.
  */
+
 export function Answer({ text }: { text: string }) {
   return (
     <Streamdown
@@ -32,9 +34,10 @@ export function Answer({ text }: { text: string }) {
         a: ({ href, children }) => {
           const target = typeof href === "string" ? href : "";
 
-          if (target.startsWith("/")) {
+          const internal = target.startsWith("/") ? target : ownPath(target);
+          if (internal) {
             return (
-              <Link href={target} className="text-primary underline underline-offset-2">
+              <Link href={internal} className="text-primary underline underline-offset-2">
                 {children}
               </Link>
             );
