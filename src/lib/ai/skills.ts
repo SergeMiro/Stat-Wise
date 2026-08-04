@@ -101,9 +101,12 @@ sources and their limits, the privacy policy, the coverage.
 Use it for any question about how the product works, what a figure means, where it
 comes from or what happens to someone's data — instead of answering from memory.
 
-Quote the passage and give its link exactly as the tool returned it — a path such as
-/fr/methodology#donnees-manquantes. Do not put a hostname in front of it: you do not
-know this site's domain, and a guessed one points somewhere we do not control.
+Quote the passage and cite it as a markdown link, [section title](path), using the path
+exactly as the tool returned it — [Données manquantes](/fr/methodology#donnees-manquantes).
+A bare path is rendered as text, so it is not something the reader can follow.
+
+Never put a hostname in front of it: you do not know this site's domain, and a guessed
+one points somewhere we do not control.
 
 If nothing matches, say nothing matched; do not fill the gap from what you happen to
 know about French open data.`.trim(),
