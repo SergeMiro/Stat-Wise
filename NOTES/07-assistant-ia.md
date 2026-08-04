@@ -324,10 +324,35 @@ lecteur du seul récit du chemin suivi.
 - **Plusieurs fils** : un seul est restauré, le plus récent. Les tables en acceptent
   autant qu'on veut.
 - **Précision de la recherche** — voir la section suivante. C'est la limite connue.
-- **Le corpus n'est pas semé.** Le schéma y est (voir ci-dessous), les 48 fragments non :
-  ils se reconstruisent par le bouton de réindexation, qui est le mécanisme voulu. Une
-  base neuve démarre donc avec un index vide — et l'assistant le dit maintenant au lieu
-  de répondre « rien ne correspond ».
+## Le corpus semé, et pourquoi il est généré
+
+`supabase/seed.sql` est chargé par `supabase db reset` : une base neuve démarre avec les
+48 fragments, plus jamais avec un index vide.
+
+Il est **généré** depuis le dictionnaire (`npm run seed:corpus`), pas écrit à la main, et
+ce n'est pas du confort. Ce projet a déjà payé deux fois pour une deuxième copie de ce
+texte : le `{publisher}` indexé en clair et les titres coupés au milieu d'un mot venaient
+tous deux d'un corpus qui s'écartait de ce que la page affiche. Un seed maintenu à la main
+serait une troisième copie, et l'écart est invisible — l'assistant cite le texte périmé
+avec une référence qui a l'air juste.
+
+Ce que les tests tiennent (`src/lib/ai/documents.test.ts`, 10 cas) :
+
+- le fichier sur disque **correspond** au dictionnaire, sinon l'échec dit
+  « run `npm run seed:corpus` » ;
+- aucun gabarit `{…}` n'entre dans le corpus ;
+- aucun titre n'est le début de son propre contenu (le bug des titres tronqués) ;
+- la clé naturelle est unique — un doublon ferait *modifier* une ligne au lieu d'en
+  ajouter une, retirant silencieusement une section de l'index ;
+- rien de `NOTES` n'y entre ;
+- l'échappement des apostrophes est vérifié par aller-retour sur chaque fragment.
+
+Ce dernier test s'est trompé d'abord : il comptait les apostrophes par ligne et échouait
+sur du SQL parfaitement valide, le contenu étant multiligne. C'était le test qui avait
+tort, pas le générateur.
+
+Réindexer une base **en fonctionnement** reste le bouton de la console : pas de secret à
+faire circuler, pas de déploiement.
 
 ## Le schéma, rapatrié dans le dépôt
 

@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "check:vintages": "node scripts/check-vintages.mjs",
+    "seed:corpus": "npx tsx scripts/build-corpus-seed.ts",
     "test:watch": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
