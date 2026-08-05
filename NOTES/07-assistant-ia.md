@@ -279,12 +279,48 @@ inexistant, et deux gratuités OpenRouter supprimées depuis. La liste a donc é
 
 Le code 1010 est un refus de client : la même clé fonctionne depuis le CLI OpenCode, donc
 la clé est bonne et c'est l'appel serveur qui est rejeté. Zen reste sélectionnable dans la
-console, hors chaîne par défaut. **Kilo n'a aucune clé** — aucun compte dans
-`auth.json` — et une passerelle sans clé n'est pas proposée : elle mettrait dans le
-sélecteur un modèle qui répond 401 à tout.
+console, hors chaîne par défaut.
 
-Gemma est en troisième position parce qu'il était limité au moment de l'essai : le mettre
-deuxième ferait payer à chaque requête un sondage voué à échouer.
+### Kilo, vérifié à son tour
+
+Une clé Kilo existe depuis le 2026-08-05, donc la passerelle est réelle. L'URL de base
+avait été écrite de mémoire — la même façon dont les trois mauvais identifiants de modèle
+étaient arrivés ici — alors elle a été mesurée :
+
+| Base | `/models` |
+| --- | --- |
+| `api.kilo.ai/api/gateway` | **200, 347 modèles** |
+| `kilocode.ai/api/openrouter` | 308 |
+| `kilocode.ai/api/v1` | 308 |
+| `api.kilocode.ai/v1` | 404 |
+
+Celle du code était juste. 14 des 347 modèles sont gratuits, 11 acceptent les outils, et
+six d'entre eux ont reçu une vraie requête avec un outil : tous les six ont répondu et
+appelé l'outil.
+
+Deux ont ensuite été **écartés** sur une question en français :
+
+- `stepfun/step-3.7-flash:free` — contenu **vide** en 3,9 s, alors qu'il gère les outils ;
+- `cohere/north-mini-code:free` — bon français, mais invente `https://example.com` comme
+  nom d'hôte du site. `ownPath` récupérerait le lien, mais un modèle qui fabrique des
+  hôtes n'est pas à mettre devant des lecteurs par défaut.
+
+### Pourquoi le deuxième lien change de passerelle
+
+Les trois liens étaient sur OpenRouter, donc une mauvaise journée chez un seul
+fournisseur emportait toute la chaîne : un repli qui partage son point de défaillance
+unique est un ornement. Le deuxième est maintenant sur Kilo.
+
+| Position | Passerelle | Modèle | Mesuré |
+| --- | --- | --- | --- |
+| 1 | OpenRouter | nemotron-3-nano-30b | rapide, cite un lien relatif |
+| 2 | **Kilo** | nemotron-3-ultra-550b | français correct, lien correct, **~40 s** |
+| 3 | OpenRouter | nemotron-3-super-120b | répond |
+
+Quarante secondes est un mauvais premier choix et un deuxième acceptable : à ce
+moment-là, l'alternative est pas de réponse du tout. Vérifié à travers notre propre code
+et pas seulement en curl — Kilo placé temporairement en tête, l'assistant a appelé
+`searchDocs` et cité `/fr/methodology#donnees-manquantes`, sans repli dans le journal.
 
 ## Wiki links
 

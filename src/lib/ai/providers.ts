@@ -51,9 +51,16 @@ export const GATEWAYS: readonly Gateway[] = [
   {
     id: "kilo",
     label: "Kilo Gateway",
+    /*
+      Confirmed against the live endpoint, because this URL was first written from
+      memory and that is exactly how the three wrong model ids got here. `/models`
+      answers 347 models with this key; `kilocode.ai/api/openrouter` and
+      `kilocode.ai/api/v1` both 308, and `api.kilocode.ai/v1` 404. 14 of the 347 are
+      free and 11 of those take tool calls.
+    */
     baseURL: "https://api.kilo.ai/api/gateway",
     env: "KILO_API_KEY",
-    docs: "https://kilo.ai/docs/gateway",
+    docs: "https://kilocode.ai/docs",
   },
 ];
 
@@ -114,17 +121,31 @@ export function buildModel(ref: ModelRef): LanguageModel | null {
  */
 export const DEFAULT_CHAIN: readonly ModelRef[] = [
   /*
-    Chosen by asking the gateway what is actually free and actually supports tool
-    calling, then sending each one a real request — not from a list in my head. The
-    first attempt at this file named three models that were all wrong: one Zen id that
-    does not exist, and two OpenRouter slugs whose free tier had been withdrawn.
+    Chosen by asking each gateway what is actually free and actually takes tool calls,
+    then sending every candidate a real request — not from a list in my head. The first
+    version of this file named three models that were all wrong: one Zen id that does
+    not exist, and two OpenRouter slugs whose free tier had been withdrawn.
 
-    Order is reliability first. Nano answers in a fraction of the time and this
-    assistant mostly resolves a city and reads a number back. Gemma is last because it
-    was rate-limited when tested: keeping it second would make every request pay for a
-    failed probe before getting an answer.
+    The second link is on a *different gateway* on purpose. All three used to be
+    OpenRouter, which meant one provider having a bad afternoon took out the whole
+    chain — a fallback that shares its single point of failure is decoration.
+
+    Order is reliability first, and the measurements are why:
+
+      nano (OpenRouter)      fast, answers, cites a relative link      → first
+      ultra 550B (Kilo)      correct French, correct link, ~40 s       → second
+      super 120B (OpenRouter) answers                                 → third
+
+    Two other free Kilo models were tried and rejected: `stepfun/step-3.7-flash:free`
+    returned empty content for a plain question despite handling tool calls, and
+    `cohere/north-mini-code:free` invented `https://example.com` as this site's
+    hostname. `ownPath` would recover that link, but a model that fabricates hosts is
+    not one to put in front of readers by default.
+
+    Forty seconds is a poor first choice and an acceptable second: at that point the
+    alternative is no answer.
   */
   { gateway: "openrouter", model: "nvidia/nemotron-3-nano-30b-a3b:free" },
+  { gateway: "kilo", model: "nvidia/nemotron-3-ultra-550b-a55b:free" },
   { gateway: "openrouter", model: "nvidia/nemotron-3-super-120b-a12b:free" },
-  { gateway: "openrouter", model: "google/gemma-4-31b-it:free" },
 ];
