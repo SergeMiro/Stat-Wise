@@ -12,7 +12,7 @@ import { MobileBottomNavigation } from "@/components/layout/mobile-bottom-naviga
 import { AiPanelProvider } from "@/components/ai/ai-panel-provider";
 import { AiPanel } from "@/components/ai/ai-panel";
 import { isAiConfigured } from "@/lib/ai/models";
-import { visibleSkills } from "@/lib/ai/visible-skills";
+import { visibleSkills, currentRole } from "@/lib/ai/visible-skills";
 
 /*
   Two faces, each for what it is good at.
@@ -68,6 +68,7 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
   const panel = await visibleSkills();
+  const role = await currentRole();
 
   return (
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} ${heading.variable} h-full antialiased`}>
@@ -79,7 +80,7 @@ export default async function LocaleLayout({
             right padding is driven from it.
           */}
           <AiPanelProvider>
-            <SiteHeader locale={locale} dict={dict} />
+            <SiteHeader locale={locale} dict={dict} role={role} />
             <main className="flex-1 pb-20 md:pb-0">{children}</main>
             <SiteFooter locale={locale} dict={dict} />
             <MobileBottomNavigation locale={locale} labels={dict.nav} />

@@ -35,7 +35,15 @@ export async function visibleSkills(): Promise<{
   };
 }
 
-async function currentRole(): Promise<Role> {
+/**
+ * The visitor's role, from the session cookie.
+ *
+ * Exported because the header needs it too: it used to hard-code a "sign in" button, so
+ * a signed-in visitor was invited to sign in again and had no route to their account or
+ * to the console at all. Read here rather than in the client, for the same reason the
+ * panel reads it here — the client is not the authority on what it is allowed to see.
+ */
+export async function currentRole(): Promise<Role> {
   if (!isSupabaseConfigured()) return "guest";
   try {
     const supabase = await createSupabaseServerClient();

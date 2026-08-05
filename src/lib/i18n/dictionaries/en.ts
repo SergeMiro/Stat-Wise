@@ -12,6 +12,7 @@ export const en: Dictionary = {
     favorites: "Favorites",
     results: "Results",
     account: "Account",
+    admin: "Console",
     methodology: "Methodology",
     sources: "Sources",
     coverage: "Coverage",

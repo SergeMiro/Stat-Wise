@@ -10,6 +10,7 @@ export const fr = {
     favorites: "Favoris",
     results: "Résultats",
     account: "Compte",
+    admin: "Console",
     methodology: "Méthodologie",
     sources: "Sources",
     coverage: "Couverture",

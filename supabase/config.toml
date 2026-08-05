@@ -159,12 +159,22 @@ site_url = "https://wherewise-fr.vercel.app"
 # The callback is the only URL the app ever asks Supabase to redirect to. Anything
 # not on this list is refused and the visitor lands on `site_url` instead — which
 # is why the local port is here too, and why it is the port this project uses.
+#
+# Each entry ends in `**` because the app always asks to come back to
+# `/auth/callback?next=<where the visitor was heading>`, and a bare exact entry does not
+# match a URL carrying a query string. Found by watching the mail: with the exact entry
+# alone, Supabase refused the redirect and substituted `site_url`, so the link in the
+# email pointed at the home page. The code was then never exchanged and **sign-in could
+# not be completed at all** — which matches the one account in the cloud project having
+# `last_sign_in_at = null`. Verified both ways on a local stack: exact entry → the mail
+# carried `redirect_to=https://wherewise-fr.vercel.app`; with `**` → it carried
+# `http://localhost:3111/auth/callback?next=%2Ffr%2Fapp%2Faccount`.
 additional_redirect_urls = [
-  "https://wherewise-fr.vercel.app/auth/callback",
+  "https://wherewise-fr.vercel.app/auth/callback**",
   # The project was renamed but Vercel kept its first domain, and it still serves
   # the site. A link already sent to someone points at it, so it stays allowed.
-  "https://statwise-lime.vercel.app/auth/callback",
-  "http://localhost:3111/auth/callback",
+  "https://statwise-lime.vercel.app/auth/callback**",
+  "http://localhost:3111/auth/callback**",
 ]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600

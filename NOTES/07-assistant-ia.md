@@ -380,6 +380,61 @@ Déplacées dans `supabase/superseded/`, avec un README qui dit tout cela — pa
 parce qu'elles sont le seul écrit sur les schémas `reference` et `analytics`, et que cet
 ETL peut revenir.
 
+## La console vérifiée dans un navigateur, et ce que ça a révélé
+
+Vérifiée sur un stack local reconstruit depuis les migrations, avec un vrai compte, une
+vraie session obtenue en cliquant le lien reçu par courrier. Ce qui marche :
+
+| Vérification | Résultat |
+| --- | --- |
+| État : passerelles avec clé, fragments indexés, MCP | « OpenCode Zen, OpenRouter », 48, « aucun » |
+| Kilo sans clé | proposé désactivé, « clé absente » |
+| Enregistrer une chaîne de deux modèles | écrite en base, 3ᵉ ligne vide écartée, auteur noté |
+| Relecture de la chaîne enregistrée | reprise dans le formulaire |
+| Bouton Réindexer | les 48 lignes retouchées, sous la session admin, sans clé de service |
+| Repli avec un 1ᵉʳ modèle inexistant | le visiteur a sa réponse, journal : « fell back to … is not a valid model ID » |
+| `/app/admin` pour un membre | **404** |
+| `PUT /api/ai/settings` et `POST /api/ai/reindex` pour un membre | **403**, chaîne inchangée |
+
+### Trois défauts trouvés en le faisant
+
+**1. Personne ne pouvait devenir administrateur.** `protect_profile_role` ne fait
+confiance qu'à un JWT `service_role`. Hors PostgREST il n'y a pas de
+`request.jwt.claims`, donc un `update … set role = 'admin'` depuis l'éditeur SQL réussit
+et ne change rien. Il n'existait aucun chemin vers le premier admin sans faire circuler
+la clé de service — le secret que cette console existe pour éviter. Corrigé : une
+connexion base directe est reconnue, ce qui ne lui concède rien qu'elle n'ait déjà.
+
+**Et la première correction a ouvert un trou.** Elle testait `current_user` — qui, dans
+une fonction `SECURITY DEFINER`, est le *propriétaire* de la fonction, pas l'appelant. La
+condition était donc vraie pour tout le monde, et un membre connecté s'est promu
+administrateur du premier coup. Trouvé en tentant l'attaque, pas en relisant le code.
+`session_user` traverse le changement de propriétaire, lui. Mesuré :
+
+```
+psql en postgres     current_user=postgres  session_user=postgres       membre_du_proprio=t
+PostgREST, membre    current_user=postgres  session_user=authenticator  membre_du_proprio=f
+```
+
+`is_superuser` n'est pas utilisé : il vaut `off` même pour `postgres` chez Supabase, donc
+un test dessus ressemblerait à une garantie sans jamais être vrai. Les quatre sens sont
+vérifiés : l'opérateur promeut, le membre ne se promeut pas, le membre change toujours
+son prénom, le membre ne dégrade pas l'admin.
+
+**2. La connexion ne pouvait pas aboutir.** Le formulaire demande à revenir sur
+`/auth/callback?next=…`, et la liste d'URL autorisées contenait l'adresse **exacte**, sans
+query. Supabase refuse et substitue `site_url` : le lien du courriel pointait donc sur la
+page d'accueil, le code n'était jamais échangé. Ce qui explique le seul compte du projet
+cloud avec `last_sign_in_at = null` — **personne n'a jamais réussi à se connecter**. Vu
+dans le courrier, dans les deux sens : adresse exacte → `redirect_to=https://wherewise-fr.vercel.app` ;
+avec `**` → `http://localhost:3111/auth/callback?next=%2Ffr%2Fapp%2Faccount`, et la
+connexion aboutit.
+
+**3. L'en-tête ignorait la session.** Bouton « Se connecter » codé en dur : une personne
+déjà connectée était invitée à se connecter, et aucun chemin ne menait à son compte ni à
+la console — il fallait taper l'URL. Le rôle vient maintenant du serveur : invité →
+« Se connecter », membre → « Compte », administrateur → « Console » en plus.
+
 ## Dette de dépendances constatée au passage
 
 `npm audit` remonte 4 vulnérabilités **antérieures** à cette installation (`npm audit

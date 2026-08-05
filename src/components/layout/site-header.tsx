@@ -8,8 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Wordmark } from "./wordmark";
 import { AiPanelButton } from "@/components/ai/ai-panel-button";
 import { cn } from "@/lib/utils";
+import type { Role } from "@/lib/ai/roles";
 
-export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary }) {
+export function SiteHeader({
+  locale,
+  dict,
+  role,
+}: {
+  locale: Locale;
+  dict: Dictionary;
+  /* Resolved on the server from the session cookie, never guessed here. */
+  role: Role;
+}) {
   const pathname = usePathname();
   const nav = [
     { href: localePath(locale, "/methodology"), label: dict.nav.methodology },
@@ -50,13 +60,33 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
         <div className="flex items-center gap-2">
           <AiPanelButton label={dict.ai.open} />
           <LanguageSwitcher locale={locale} />
+          {/*
+            What the header offers depends on who is reading it. It used to offer "sign
+            in" unconditionally, so someone already signed in was invited to sign in
+            again — and had no way to reach their account, or the console, without typing
+            the URL.
+          */}
+          {role === "admin" ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden sm:inline-flex"
+              render={<Link href={localePath(locale, "/app/admin")} />}
+            >
+              {dict.nav.admin}
+            </Button>
+          ) : null}
           <Button
             variant="outline"
             size="sm"
             className="hidden sm:inline-flex"
-            render={<Link href={localePath(locale, "/sign-in")} />}
+            render={
+              <Link
+                href={localePath(locale, role === "guest" ? "/sign-in" : "/app/account")}
+              />
+            }
           >
-            {dict.nav.signIn}
+            {role === "guest" ? dict.nav.signIn : dict.nav.account}
           </Button>
         </div>
       </div>
