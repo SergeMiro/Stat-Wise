@@ -47,7 +47,17 @@ export default async function SourcesPage({ params }: { params: Promise<{ locale
           const Icon = ICONS[source.code] ?? Database;
           const limit = limits[source.code];
           return (
-            <li key={source.code} className="flex flex-col rounded-xl border p-4 sm:p-5">
+            <li
+              key={source.code}
+              /*
+                The id a citation points at. The assistant was seen citing
+                /fr/sources#carte_loyers in production while this page carried no ids at
+                all — it had guessed the fragment from the source code, and the link
+                landed at the top of the page. Guessing right is now enough.
+              */
+              id={source.code}
+              className="flex scroll-mt-24 flex-col rounded-xl border p-4 sm:p-5"
+            >
               <div className="flex items-start gap-3">
                 <span className="bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-lg">
                   <Icon className="size-4" aria-hidden />

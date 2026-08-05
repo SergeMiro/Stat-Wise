@@ -46,7 +46,8 @@ export function buildCorpus(locale: "fr" | "en", dict: Dictionary): DocumentChun
       source_path: `${prefix}/privacy`,
       title: dict.pages.privacy.title,
       heading: section.title,
-      anchor: null,
+      // Slugged from the heading, the same way the page ids are. See `@/lib/slug`.
+      anchor: `#${slug(section.title)}`,
       locale,
       content: [
         /*
@@ -70,7 +71,13 @@ export function buildCorpus(locale: "fr" | "en", dict: Dictionary): DocumentChun
       source_path: `${prefix}/sources`,
       title: dict.pages.sources.title,
       heading: code,
-      anchor: null,
+      /*
+        The source code *is* the id on the page, so the citation can be precise. It was
+        null here, which left the fragment to the model's imagination — and in production
+        it imagined `#carte_loyers`, which happened to be the right guess for a page that
+        had no ids to hit.
+      */
+      anchor: `#${code}`,
       locale,
       content: `${dict.pages.sources.limitTitle} (${code}) : ${limit}`,
     });

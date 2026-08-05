@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { slug } from "@/lib/slug";
 import { Check } from "lucide-react";
 import { fill, getDictionary, isLocale } from "@/lib/i18n";
 import { hasPublisherContact, SITE_PUBLISHER } from "@/lib/site-publisher";
@@ -36,7 +37,12 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
       </section>
 
       {p.sections.map((section) => (
-        <section key={section.title} className="mt-8">
+        <section
+          key={section.title}
+          /* The id the retrieval index cites; the slug is shared with the corpus. */
+          id={slug(section.title)}
+          className="mt-8 scroll-mt-24"
+        >
           <h2 className="font-heading text-base font-semibold">{section.title}</h2>
           <p className="text-muted-foreground mt-2 text-sm">
             {/* Only the controller line has a value substituted into it. */}

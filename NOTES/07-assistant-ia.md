@@ -340,6 +340,15 @@ commence par hasard par `/fr/` — réécrire celle-là casserait une vraie cita
 consigne demande aussi de reproduire le lien tel quel, mais une consigne n'est pas une
 garantie : cinq tests le sont.
 
+**Et un fragment inventé, vu en production.** L'assistant a cité
+`/fr/sources#carte_loyers` alors que la page ne portait **aucun `id`** : il avait deviné le
+fragment depuis le code de la source, et le lien retombait en haut de page. Les fragments
+`sources` et `privacy` valaient `null` dans le corpus, donc le fragment était laissé à
+l'imagination du modèle. Les deux pages posent maintenant leurs `id` — le code de source
+pour `sources`, le slug partagé pour `privacy` — et le corpus les porte. Deviner juste
+suffit désormais. Vérifié : **46 ancres sur 46** existent dans le HTML servi ; les deux
+fragments sans ancre sont ceux de `couverture`, qui est une seule section.
+
 **Les ancres étaient mortes.** L'index promettait `/fr/methodology#donnees-manquantes`
 depuis le début, et la page ne posait **aucun `id`**. Le lien s'ouvrait, la page
 répondait 200, et rien ne défilait : arriver au mauvais endroit ressemble à ne pas
