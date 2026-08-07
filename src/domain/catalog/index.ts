@@ -11,6 +11,8 @@ import { contexte } from "./domains/contexte";
 export type { Availability, Domaine, Flow, Mesure, Poste, Stat, Text, Tier } from "./types";
 export { CATALOG_SOURCES, catalogSource } from "./sources";
 export type { CatalogSource, CatalogSourceCode, GeoLevel, Licence } from "./sources";
+export { RELOCATION_SCOPE_BY_POSTE, relocationScope } from "./relocation";
+export type { RelocationScope } from "./relocation";
 
 /**
  * The catalogue, in the order it should be read.

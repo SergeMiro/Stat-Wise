@@ -1,6 +1,6 @@
 import { Fragment } from "react";
-import { CATALOG, catalogSource } from "@/domain/catalog";
-import type { Availability, Mesure, Poste } from "@/domain/catalog";
+import { CATALOG, catalogSource, relocationScope } from "@/domain/catalog";
+import type { Availability, Mesure, Poste, RelocationScope } from "@/domain/catalog";
 import type { Dictionary, Locale } from "@/lib/i18n";
 
 /**
@@ -30,6 +30,14 @@ const AVAILABILITY_STYLE: Record<Availability, string> = {
   third_party: "bg-violet-500/10 text-violet-700 dark:text-violet-400",
   hypothesis: "bg-orange-500/10 text-orange-700 dark:text-orange-400",
   unavailable: "bg-destructive/10 text-destructive",
+};
+
+const RELOCATION_STYLE: Record<RelocationScope, string> = {
+  monthly: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
+  one_off: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
+  baseline: "bg-muted text-muted-foreground",
+  mixed: "bg-cyan-500/10 text-cyan-800 dark:text-cyan-300",
+  context: "bg-violet-500/10 text-violet-700 dark:text-violet-400",
 };
 
 function Tag({ className, children }: { className: string; children: React.ReactNode }) {
@@ -79,8 +87,7 @@ function SourceCell({ poste, copy, locale }: { poste: Poste; copy: Copy; locale:
               {source.label}
             </a>
             <span className="text-muted-foreground block">
-              {source.publisher} · {source.vintage[locale]} ·{" "}
-              {copy.geoLevel[source.geoLevel]}
+              {source.publisher} · {source.vintage[locale]} · {copy.geoLevel[source.geoLevel]}
             </span>
           </li>
         );
@@ -123,15 +130,12 @@ export function VariablesTable({ copy, locale }: { copy: Copy; locale: Locale })
                 {domaine.postes.map((poste, posteIndex) => (
                   <Fragment key={poste.key}>
                     {poste.mesures.map((mesure, mesureIndex) => (
-                      <tr
-                        key={mesure.key}
-                        className="border-t align-top [&>td]:px-3 [&>td]:py-2.5"
-                      >
+                      <tr key={mesure.key} className="border-t align-top [&>td]:px-3 [&>td]:py-2.5">
                         {posteIndex === 0 && mesureIndex === 0 ? (
                           <td
                             rowSpan={domaineRows}
                             id={`domaine-${domaine.key}`}
-                            className="bg-muted/20 border-r scroll-mt-24"
+                            className="bg-muted/20 scroll-mt-24 border-r"
                           >
                             <div className="font-heading font-semibold">
                               {domaine.label[locale]}
@@ -147,6 +151,11 @@ export function VariablesTable({ copy, locale }: { copy: Copy; locale: Locale })
                             <div className="font-medium">{poste.label[locale]}</div>
                             <div className="text-muted-foreground mt-1.5 text-xs">
                               {copy.flow[poste.flow]} · {poste.tier}
+                            </div>
+                            <div className="mt-2">
+                              <Tag className={RELOCATION_STYLE[relocationScope(poste)]}>
+                                {copy.relocation.scope[relocationScope(poste)]}
+                              </Tag>
                             </div>
                           </td>
                         ) : null}

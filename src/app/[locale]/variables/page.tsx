@@ -5,6 +5,7 @@ import { CATALOG_SOURCES, countByAvailability } from "@/domain/catalog";
 import type { Availability, CatalogSourceCode } from "@/domain/catalog";
 import { PageShell } from "@/components/layout/page-shell";
 import { AVAILABILITY_STYLE, Tag, VariablesTable } from "@/components/variables/variables-table";
+import { RelocationFramework } from "@/components/variables/relocation-framework";
 
 /**
  * Every variable that decides what a household has left at the end of the month,
@@ -31,11 +32,7 @@ const ORDER: Availability[] = [
   "unavailable",
 ];
 
-export default async function VariablesPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+export default async function VariablesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
@@ -45,6 +42,8 @@ export default async function VariablesPage({
 
   return (
     <PageShell title={copy.title} intro={copy.intro} wide>
+      <RelocationFramework copy={copy.relocation} />
+
       <section aria-labelledby="counts" className="mb-8">
         <h2 id="counts" className="font-heading text-lg font-semibold">
           {copy.countsTitle}

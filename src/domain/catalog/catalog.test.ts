@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { CATALOG, CATALOG_SOURCES, allMesures, allPostes, countByAvailability } from ".";
+import {
+  CATALOG,
+  CATALOG_SOURCES,
+  RELOCATION_SCOPE_BY_POSTE,
+  allMesures,
+  allPostes,
+  countByAvailability,
+} from ".";
 import type { CatalogSourceCode } from "./sources";
 
 /**
@@ -41,6 +48,14 @@ describe("catalogue structure", () => {
       expect(text.fr.length).toBeGreaterThan(0);
       expect(text.en.length).toBeGreaterThan(0);
     }
+  });
+
+  it("classifies every item for the relocation comparison, with no stale entries", () => {
+    const posteKeys = allPostes()
+      .map((poste) => poste.key)
+      .sort();
+    const classifiedKeys = Object.keys(RELOCATION_SCOPE_BY_POSTE).sort();
+    expect(classifiedKeys).toEqual(posteKeys);
   });
 });
 

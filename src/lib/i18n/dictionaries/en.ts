@@ -203,7 +203,8 @@ export const en: Dictionary = {
     assistant: "Assistant",
     thinking: "Looking through the data…",
     reasoning: "Model reasoning",
-    empty: "Ask it to compare two cities, explain a line of the result, or say where a figure comes from.",
+    empty:
+      "Ask it to compare two cities, explain a line of the result, or say where a figure comes from.",
     examples: [
       "What would be left in Lyon on 3,000 € net?",
       "Where does the water price in Dijon come from?",
@@ -212,8 +213,7 @@ export const en: Dictionary = {
     notConfigured:
       "The assistant is not wired to a model in this environment yet. One AI Gateway key switches it on.",
     error: "The assistant could not answer. Try again.",
-    interrupted:
-      "The answer stopped before it was written. Ask again, or ask it in two parts.",
+    interrupted: "The answer stopped before it was written. Ask again, or ask it in two parts.",
   },
   admin: {
     title: "Assistant console",
@@ -396,22 +396,190 @@ export const en: Dictionary = {
       limits: {
         insee_bpe:
           "Records that a facility exists, not its quality, its capacity or its opening hours. A school that is counted may be full.",
-        dvf:
-          "What was sold, not what is for sale. Areas with too few transactions are withheld to protect statistical confidentiality.",
+        dvf: "What was sold, not what is for sale. Areas with too few transactions are withheld to protect statistical confidentiality.",
         carte_loyers:
           "Advertised rents, not rents actually paid, and at commune level: the indicator does not reach the district.",
         education_nationale:
           "Lists establishments and their addresses. Says nothing about catchment areas or your chances of getting a place.",
-        apl:
-          "Measures a supply of doctors against a demand, at commune level. It is not a guarantee of an appointment.",
+        apl: "Measures a supply of doctors against a demand, at commune level. It is not a guarantee of an appointment.",
         delinquance:
           "Offences recorded by the police and gendarmerie: depends as much on whether people report them and on police activity as on what actually happened.",
       },
     },
     variables: {
-      title: "The variables of everyday life",
+      title: "What moving really changes",
       intro:
-        "Everything that takes money out of a household, the exact quantity needed to put a figure on it, and where that quantity comes from. Including the rows nobody publishes: they are written down as absent, not filled in with a plausible number.",
+        "WhereWise compares only the income and expenses that change between your current address and your destination. An unchanged personal budget still matters to disposable income, but its relocation difference is zero.",
+      relocation: {
+        eyebrow: "Calculation principle",
+        ruleTitle: "An expense enters the result only when the move changes it",
+        ruleBody:
+          "For every local variable, WhereWise compares the current situation with the destination. A €50 subscription before and after the move remains in the full budget, but adds €0 to the impact of moving.",
+        monthlyTitle: "Monthly impact",
+        monthlyFormula: "Σ (destination cost − current cost)",
+        monthlyHelp:
+          "The recurring extra cost or saving each month. Income changes are shown separately in disposable income.",
+        oneOffTitle: "Initial cost",
+        oneOffFormula: "Σ costs caused by the move",
+        oneOffHelp:
+          "One-off expenses are shown separately and never spread artificially across monthly costs.",
+        exampleTitle: "Calculation example",
+        exampleIntro: "Net monthly effect at the destination",
+        exampleRows: [
+          { label: "Housing", value: "+€450", tone: "cost" },
+          { label: "Transport after employer reimbursement", value: "+€10", tone: "cost" },
+          { label: "Car", value: "−€80", tone: "saving" },
+          { label: "Childcare", value: "+€35", tone: "cost" },
+          { label: "Home energy", value: "−€20", tone: "saving" },
+        ],
+        exampleTotal: "Real impact of moving",
+        includedEyebrow: "Place A ↔ place B delta",
+        includedTitle: "What enters the monthly impact",
+        includedIntro:
+          "These are items whose price, quantity consumed or necessity can change with the address. Every line is calculated on both sides using the same method.",
+        monthlyGroups: [
+          {
+            title: "Housing",
+            items: [
+              "Rent or mortgage payment for a new purchase",
+              "Service charges, property tax, waste tax and home insurance",
+              "Parking, garage and the space the household actually needs",
+            ],
+          },
+          {
+            title: "Mobility",
+            items: [
+              "Public transport passes after employer reimbursement",
+              "Real distance for work, school, shopping, health and leisure",
+              "Fuel, tolls, parking, a second car and local car insurance",
+            ],
+          },
+          {
+            title: "Family and health",
+            items: [
+              "Nursery, childminder and private care when no public place is available",
+              "School meals, after-school care and school transport under local means testing",
+              "Local healthcare services, extra billing and required travel",
+            ],
+          },
+          {
+            title: "Local life",
+            items: [
+              "Restaurants, cafés, delivery and meals near work",
+              "Sport, culture, municipal services and domestic help",
+              "Veterinary care and other services at local prices",
+            ],
+          },
+          {
+            title: "Home and equipment",
+            items: [
+              "Energy based on the home, its rating and the climate",
+              "Water, sewerage and other local tariffs",
+              "Pool, garden, outbuildings or marina when relevant",
+            ],
+          },
+          {
+            title: "Access and private travel",
+            items: [
+              "Shops and food price gaps only where measurable",
+              "Regular journeys to family",
+              "Station or airport access, taxis, ride-hailing and car sharing",
+            ],
+          },
+        ],
+        baselineTitle: "The personal baseline does not inflate the destination cost",
+        baselineIntro:
+          "These expenses remain in disposable income, but stay out of the moving total while the contract or behaviour remains unchanged.",
+        baselineFormula: "same cost before and after → Δ = €0",
+        baselineGroups: [
+          {
+            title: "National subscriptions",
+            items: ["mobile", "internet", "streaming", "cloud", "software"],
+          },
+          {
+            title: "Existing commitments",
+            items: ["consumer credit", "car loan", "lease", "maintenance payments", "other debts"],
+          },
+          {
+            title: "Health and finance",
+            items: ["health plan", "regulated medicines", "banking", "life insurance", "savings"],
+          },
+          {
+            title: "National market",
+            items: ["clothing", "electronics", "tobacco", "online shopping", "pet food"],
+          },
+          {
+            title: "Personal choices",
+            items: ["family support", "usual holidays", "investments", "regular transfers"],
+          },
+          {
+            title: "Already financed assets",
+            items: ["car instalment", "boat loan", "equipment already owned"],
+          },
+        ],
+        setupTitle: "One-off costs remain separate and visible",
+        setupIntro:
+          "They determine the cash needed to move, but must not become a false monthly surcharge.",
+        setupItems: [
+          "Moving, storage and temporary accommodation",
+          "Security deposit and agency fees",
+          "Notary fees and financing a new purchase",
+          "Furniture, appliances and adaptations required by the home",
+          "Genuinely new connection and administrative fees",
+          "Overlapping rent or a second home during the transition",
+        ],
+        splitTitle: "Mixed categories are split before calculation",
+        splitIntro:
+          "One theme can contain an unchanged national expense and a variable local service. WhereWise never applies a blanket coefficient to both.",
+        splitRows: [
+          {
+            label: "Internet",
+            rule: "Plan in the baseline; fibre availability or a dearer solution in the local delta.",
+          },
+          {
+            label: "Car",
+            rule: "Loan or lease in the baseline; mileage, parking, tolls and local insurance in the delta.",
+          },
+          {
+            label: "Pets",
+            rule: "Food in the baseline; vets, boarding, sitting and grooming in the local delta.",
+          },
+          {
+            label: "Boat",
+            rule: "Finance in the baseline; marina, winter storage and travel to the berth in the delta.",
+          },
+          {
+            label: "Furniture",
+            rule: "Normal budget in the baseline; purchases made necessary by moving as one-off costs.",
+          },
+          {
+            label: "Travel",
+            rule: "Holidays in the baseline; family visits and transport hub access in the delta.",
+          },
+        ],
+        guardsTitle: "Three calculation safeguards",
+        guards: [
+          {
+            title: "An identical expense cancels out",
+            body: "It remains in the full budget, but is never counted twice as a destination cost.",
+          },
+          {
+            title: "Missing data never means zero",
+            body: "It is left unpriced or becomes an editable assumption, with its source and date.",
+          },
+          {
+            title: "Quantity matters more than unit price",
+            body: "For cars and energy, mileage and the new home drive most of the difference.",
+          },
+        ],
+        scope: {
+          monthly: "Enters the monthly delta",
+          one_off: "One-off cost",
+          baseline: "Baseline — zero delta",
+          mixed: "Split before calculation",
+          context: "Context — outside total",
+        },
+      },
       tableTitle: "Data",
       tableIntro:
         "A domain, an item, the measurable quantity, and the source. The statistic is part of the variable: a median and a mean are not interchangeable.",
@@ -539,7 +707,8 @@ export const en: Dictionary = {
               what: "Running a simulation without an account",
               data: "City, district, rent, salary, household, travel",
               why: "Producing the result you asked for",
-              basis: "Legitimate interest: without these answers there is nothing to compute. They stay in your browser.",
+              basis:
+                "Legitimate interest: without these answers there is nothing to compute. They stay in your browser.",
             },
             {
               what: "Computing tax and benefits",
@@ -557,7 +726,8 @@ export const en: Dictionary = {
               what: "Saving a simulation",
               data: "The contents of the simulation, including salary and rent",
               why: "Finding it again later",
-              basis: "Performance of the service, at your express request. Nothing is saved without a click from you.",
+              basis:
+                "Performance of the service, at your express request. Nothing is saved without a click from you.",
             },
             {
               what: "Security and operation",
@@ -592,7 +762,8 @@ export const en: Dictionary = {
               what: "Vercel",
               data: "Site requests, technical logs",
               why: "Hosting the site and the server functions",
-              basis: "Server functions run in Paris (cdg1). The delivery network is global; any transfers are covered by standard contractual clauses.",
+              basis:
+                "Server functions run in Paris (cdg1). The delivery network is global; any transfers are covered by standard contractual clauses.",
             },
             {
               what: "OpenFisca France",

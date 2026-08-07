@@ -204,7 +204,8 @@ export const fr = {
     assistant: "Assistant",
     thinking: "Recherche dans les données…",
     reasoning: "Raisonnement du modèle",
-    empty: "Demandez-lui de comparer deux villes, d'expliquer une ligne du résultat ou de dire d'où vient un chiffre.",
+    empty:
+      "Demandez-lui de comparer deux villes, d'expliquer une ligne du résultat ou de dire d'où vient un chiffre.",
     examples: [
       "Combien me resterait-il à Lyon avec 3 000 € net ?",
       "D'où vient le prix de l'eau à Dijon ?",
@@ -241,8 +242,7 @@ export const fr = {
     chainSaved: "Chaîne enregistrée",
     chainFailed: "Enregistrement impossible.",
     chainNoKey: "clé absente",
-    chainUsingDefault:
-      "Aucune chaîne enregistrée : la valeur par défaut du code est utilisée.",
+    chainUsingDefault: "Aucune chaîne enregistrée : la valeur par défaut du code est utilisée.",
     reindexTitle: "Réindexer les pages",
     reindexBody:
       "Reconstruit l'index à partir du texte des pages. À lancer après avoir modifié la méthodologie, les sources ou la politique de confidentialité.",
@@ -406,22 +406,207 @@ export const fr = {
       limits: {
         insee_bpe:
           "Recense la présence d'un équipement, pas sa qualité, sa capacité ni ses horaires. Une école comptée peut être pleine.",
-        dvf:
-          "Ce qui s'est vendu, pas ce qui est en vente. Les zones à trop peu de transactions sont masquées pour préserver le secret statistique.",
+        dvf: "Ce qui s'est vendu, pas ce qui est en vente. Les zones à trop peu de transactions sont masquées pour préserver le secret statistique.",
         carte_loyers:
           "Loyers d'annonce, pas des loyers réellement payés, et à l'échelle de la commune : l'indicateur ne descend pas au quartier.",
         education_nationale:
           "Liste les établissements et leur adresse. Ne dit rien de la sectorisation ni de vos chances d'y obtenir une place.",
-        apl:
-          "Mesure une offre de médecins face à une demande, à l'échelle communale. Ce n'est pas une garantie de rendez-vous.",
+        apl: "Mesure une offre de médecins face à une demande, à l'échelle communale. Ce n'est pas une garantie de rendez-vous.",
         delinquance:
           "Faits enregistrés par la police et la gendarmerie : dépend autant du dépôt de plainte et de l'activité des services que de ce qui s'est réellement produit.",
       },
     },
     variables: {
-      title: "Variables de la vie courante",
+      title: "Ce que le déménagement change vraiment",
       intro:
-        "Tout ce qui prend de l'argent à un ménage, la quantité exacte qu'il faut mesurer pour le chiffrer, et l'endroit d'où elle vient. Y compris les lignes que personne ne publie : elles sont écrites comme absentes, pas comblées par un chiffre plausible.",
+        "WhereWise compare uniquement les revenus et les dépenses qui changent entre votre adresse actuelle et votre destination. Le budget personnel inchangé reste utile au reste à vivre, mais sa différence de déménagement est nulle.",
+      relocation: {
+        eyebrow: "Principe de calcul",
+        ruleTitle: "Une dépense n'entre dans le résultat que si le déménagement la modifie",
+        ruleBody:
+          "Pour chaque variable locale, WhereWise compare la situation actuelle à la destination. Un abonnement à 50 € avant et après le déménagement reste dans le budget complet, mais ajoute 0 € à l'impact du déménagement.",
+        monthlyTitle: "Impact mensuel",
+        monthlyFormula: "Σ (coût destination − coût actuel)",
+        monthlyHelp:
+          "Le surcoût ou l'économie récurrente chaque mois. Les revenus qui changent sont présentés séparément dans le reste à vivre.",
+        oneOffTitle: "Coût initial",
+        oneOffFormula: "Σ coûts causés par le déménagement",
+        oneOffHelp:
+          "Dépenses ponctuelles affichées à part, jamais réparties artificiellement sur les mensualités.",
+        exampleTitle: "Exemple de calcul",
+        exampleIntro: "Effet mensuel net de la destination",
+        exampleRows: [
+          { label: "Logement", value: "+450 €", tone: "cost" },
+          { label: "Transport après participation employeur", value: "+10 €", tone: "cost" },
+          { label: "Voiture", value: "−80 €", tone: "saving" },
+          { label: "Crèche", value: "+35 €", tone: "cost" },
+          { label: "Énergie du logement", value: "−20 €", tone: "saving" },
+        ],
+        exampleTotal: "Impact réel du déménagement",
+        includedEyebrow: "Delta ville A ↔ ville B",
+        includedTitle: "Ce qui entre dans l'impact mensuel",
+        includedIntro:
+          "Ce sont les postes dont le prix, la quantité consommée ou la nécessité peut changer avec l'adresse. Chaque ligne est calculée des deux côtés avec la même méthode.",
+        monthlyGroups: [
+          {
+            title: "Logement",
+            items: [
+              "Loyer ou mensualité d'un nouvel achat",
+              "Charges, taxe foncière, TEOM et assurance habitation",
+              "Parking, garage et surface réellement nécessaire",
+            ],
+          },
+          {
+            title: "Mobilité",
+            items: [
+              "Abonnements après participation employeur",
+              "Kilomètres réels : travail, école, courses, santé et loisirs",
+              "Carburant, péages, stationnement, seconde voiture et assurance auto",
+            ],
+          },
+          {
+            title: "Famille et santé",
+            items: [
+              "Crèche, assistante maternelle et solution privée faute de place",
+              "Cantine, périscolaire et transport scolaire selon le quotient familial",
+              "Services de santé locaux, dépassements et trajets nécessaires",
+            ],
+          },
+          {
+            title: "Vie locale",
+            items: [
+              "Restaurants, cafés, livraison et repas près du travail",
+              "Sports, culture, services municipaux et aide à domicile",
+              "Services vétérinaires et autres services au prix local",
+            ],
+          },
+          {
+            title: "Logement et équipements",
+            items: [
+              "Énergie selon le logement, son DPE et le climat",
+              "Eau, assainissement et autres tarifs locaux",
+              "Piscine, jardin, annexes ou marina lorsqu'ils sont concernés",
+            ],
+          },
+          {
+            title: "Accès et déplacements privés",
+            items: [
+              "Commerces et écart alimentaire seulement lorsqu'il est mesurable",
+              "Trajets réguliers vers la famille",
+              "Accès gare ou aéroport, taxis, VTC et autopartage",
+            ],
+          },
+        ],
+        baselineTitle: "Le budget personnel ne gonfle pas le coût de la destination",
+        baselineIntro:
+          "Ces dépenses restent dans le reste à vivre, mais sont exclues de la somme du déménagement tant que le contrat ou le comportement ne change pas.",
+        baselineFormula: "même coût avant et après → Δ = 0 €",
+        baselineGroups: [
+          {
+            title: "Abonnements nationaux",
+            items: ["mobile", "internet", "streaming", "cloud", "logiciels"],
+          },
+          {
+            title: "Engagements existants",
+            items: [
+              "crédit conso",
+              "autocrédit",
+              "LOA / LLD",
+              "pension alimentaire",
+              "autres dettes",
+            ],
+          },
+          {
+            title: "Santé et finance",
+            items: ["mutuelle", "médicaments réglementés", "banque", "assurance vie", "épargne"],
+          },
+          {
+            title: "Marché national",
+            items: [
+              "vêtements",
+              "électronique",
+              "tabac",
+              "achats en ligne",
+              "alimentation animale",
+            ],
+          },
+          {
+            title: "Choix personnels",
+            items: [
+              "aide aux proches",
+              "vacances habituelles",
+              "investissements",
+              "transferts réguliers",
+            ],
+          },
+          {
+            title: "Biens déjà financés",
+            items: ["mensualité d'une voiture", "crédit d'un bateau", "équipement déjà possédé"],
+          },
+        ],
+        setupTitle: "Les coûts ponctuels restent visibles à part",
+        setupIntro:
+          "Ils déterminent la trésorerie nécessaire pour partir, mais ne doivent pas devenir un faux surcoût mensuel.",
+        setupItems: [
+          "Déménagement, stockage et logement temporaire",
+          "Dépôt de garantie et frais d'agence",
+          "Frais de notaire et financement d'un nouvel achat",
+          "Mobilier, électroménager et adaptations imposés par le logement",
+          "Raccordement et frais administratifs réellement nouveaux",
+          "Double loyer ou double résidence pendant la transition",
+        ],
+        splitTitle: "Les catégories mixtes sont séparées avant le calcul",
+        splitIntro:
+          "Un même thème peut contenir une dépense nationale inchangée et un service local variable. WhereWise ne leur applique jamais un coefficient global.",
+        splitRows: [
+          {
+            label: "Internet",
+            rule: "Abonnement au baseline ; éligibilité fibre ou solution plus chère dans le delta local.",
+          },
+          {
+            label: "Voiture",
+            rule: "Crédit ou LOA au baseline ; kilomètres, parking, péages et assurance locale dans le delta.",
+          },
+          {
+            label: "Animaux",
+            rule: "Nourriture au baseline ; vétérinaire, pension, garde et toilettage dans le delta local.",
+          },
+          {
+            label: "Bateau",
+            rule: "Financement au baseline ; port, hivernage, stockage et trajets vers la marina dans le delta.",
+          },
+          {
+            label: "Mobilier",
+            rule: "Budget courant au baseline ; achats rendus nécessaires par le déménagement en ponctuel.",
+          },
+          {
+            label: "Voyages",
+            rule: "Vacances au baseline ; visites à la famille et accès aux hubs de transport dans le delta.",
+          },
+        ],
+        guardsTitle: "Trois garde-fous du calcul",
+        guards: [
+          {
+            title: "Une dépense identique s'annule",
+            body: "Elle reste dans le budget complet, mais n'est jamais comptée deux fois dans le coût de la destination.",
+          },
+          {
+            title: "Une donnée absente n'est jamais zéro",
+            body: "Elle est non chiffrée ou devient une hypothèse modifiable, avec sa source et sa date.",
+          },
+          {
+            title: "La quantité compte plus que le prix unitaire",
+            body: "Pour la voiture ou l'énergie, le kilométrage et le nouveau logement déterminent l'essentiel de l'écart.",
+          },
+        ],
+        scope: {
+          monthly: "Entre dans le delta mensuel",
+          one_off: "Coût ponctuel",
+          baseline: "Baseline — delta nulle",
+          mixed: "À séparer avant calcul",
+          context: "Contexte — hors total",
+        },
+      },
       tableTitle: "Données",
       tableIntro:
         "Un domaine, un poste, la quantité mesurable, et la source. La statistique fait partie de la variable : une médiane et une moyenne ne se remplacent pas.",
@@ -550,13 +735,15 @@ export const fr = {
               what: "Lancer une simulation sans compte",
               data: "Ville, quartier, loyer, salaire, composition du foyer, déplacements",
               why: "Produire le résultat que vous demandez",
-              basis: "Intérêt légitime : sans ces réponses il n'y a rien à calculer. Elles restent dans votre navigateur.",
+              basis:
+                "Intérêt légitime : sans ces réponses il n'y a rien à calculer. Elles restent dans votre navigateur.",
             },
             {
               what: "Calculer l'impôt et les prestations",
               data: "Salaire, loyer, nombre d'enfants, code commune",
               why: "Interroger OpenFisca, le moteur de règles socio-fiscales public",
-              basis: "Intérêt légitime. Aucun identifiant n'est transmis : ni nom, ni e-mail, ni adresse.",
+              basis:
+                "Intérêt légitime. Aucun identifiant n'est transmis : ni nom, ni e-mail, ni adresse.",
             },
             {
               what: "Créer un compte",
@@ -568,7 +755,8 @@ export const fr = {
               what: "Enregistrer une simulation",
               data: "Le contenu de la simulation, y compris salaire et loyer",
               why: "La retrouver plus tard",
-              basis: "Exécution du service, sur votre demande expresse. Rien n'est enregistré sans un clic de votre part.",
+              basis:
+                "Exécution du service, sur votre demande expresse. Rien n'est enregistré sans un clic de votre part.",
             },
             {
               what: "Sécurité et bon fonctionnement",
@@ -603,13 +791,15 @@ export const fr = {
               what: "Vercel",
               data: "Requêtes du site, journaux techniques",
               why: "Hébergement du site et des fonctions serveur",
-              basis: "Fonctions serveur exécutées à Paris (cdg1). Le réseau de diffusion est mondial ; les transferts éventuels sont encadrés par les clauses contractuelles types.",
+              basis:
+                "Fonctions serveur exécutées à Paris (cdg1). Le réseau de diffusion est mondial ; les transferts éventuels sont encadrés par les clauses contractuelles types.",
             },
             {
               what: "OpenFisca France",
               data: "Salaire, loyer, nombre d'enfants, code commune — sans aucun identifiant",
               why: "Calculer l'impôt sur le revenu et les prestations",
-              basis: "Moteur de règles public. Les données envoyées ne permettent pas de vous identifier.",
+              basis:
+                "Moteur de règles public. Les données envoyées ne permettent pas de vous identifier.",
             },
           ],
         },
@@ -633,7 +823,8 @@ export const fr = {
               what: "Simulations enregistrées",
               data: "Tant que vous les conservez",
               why: "Les relire et les comparer",
-              basis: "Supprimables une par une depuis votre compte, immédiatement et définitivement.",
+              basis:
+                "Supprimables une par une depuis votre compte, immédiatement et définitivement.",
             },
             {
               what: "Journaux techniques",
@@ -657,7 +848,8 @@ export const fr = {
               what: "Stockage local du navigateur",
               data: "Brouillon de simulation, langue choisie",
               why: "Ne pas vous faire ressaisir vos réponses",
-              basis: "Reste sur votre appareil, jamais envoyé à un serveur tant que vous n'enregistrez pas.",
+              basis:
+                "Reste sur votre appareil, jamais envoyé à un serveur tant que vous n'enregistrez pas.",
             },
           ],
         },
