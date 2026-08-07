@@ -212,6 +212,8 @@ export const fr = {
     notConfigured:
       "L'assistant n'est pas encore branché sur un modèle dans cet environnement. Une clé AI Gateway suffit à l'activer.",
     error: "L'assistant n'a pas pu répondre. Réessayez.",
+    interrupted:
+      "La réponse s'est arrêtée avant d'être écrite. Reposez la question, ou demandez-la en deux fois.",
   },
   admin: {
     title: "Console de l'assistant",

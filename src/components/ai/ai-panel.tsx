@@ -91,6 +91,21 @@ export function AiPanel({
     }).catch(() => undefined);
   }, [canPersist, status, messages]);
 
+  /*
+    An answer that never arrived, said out loud.
+
+    A stream can end without producing a word — the run hit its deadline, or the
+    connection went. `useChat` treats a closed stream as a finished one, so nothing
+    marks it: the panel showed the tool calls and then simply stopped, which reads as
+    the assistant ignoring the question. Checking the last message for text catches
+    that whatever the cause, rather than only the one cause we know about.
+  */
+  const last = messages[messages.length - 1];
+  const interrupted =
+    status === "ready" &&
+    last?.role === "assistant" &&
+    !last.parts.some((part) => part.type === "text" && part.text.trim().length > 0);
+
   const scroller = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = scroller.current;
@@ -296,6 +311,10 @@ export function AiPanel({
             {error ? (
               <p className="text-confidence-low mt-3 text-sm" role="alert">
                 {t.error}
+              </p>
+            ) : interrupted ? (
+              <p className="text-confidence-low mt-3 text-sm" role="alert">
+                {t.interrupted}
               </p>
             ) : null}
           </div>

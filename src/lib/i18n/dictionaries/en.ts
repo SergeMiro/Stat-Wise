@@ -211,6 +211,8 @@ export const en: Dictionary = {
     notConfigured:
       "The assistant is not wired to a model in this environment yet. One AI Gateway key switches it on.",
     error: "The assistant could not answer. Try again.",
+    interrupted:
+      "The answer stopped before it was written. Ask again, or ask it in two parts.",
   },
   admin: {
     title: "Assistant console",

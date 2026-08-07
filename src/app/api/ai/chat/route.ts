@@ -29,7 +29,28 @@ import { BASE_INSTRUCTIONS } from "@/lib/ai/instructions";
  * the role does not already carry.
  */
 
-export const maxDuration = 60;
+/**
+ * Two minutes, which is neither the old value nor the largest one available.
+ *
+ * Sixty seconds was the old ceiling and it was below the cost of a correct answer:
+ * the two-city comparison takes the leading free model 24 to 54 seconds across three
+ * measured runs, so one run in three died with nothing to show. The plan allows 300
+ * with fluid compute, and 300 would be the wrong kind of fix — a reader kept waiting
+ * five minutes has not been served, they have been stalled. This clears the slowest
+ * measured answer with room to spare, and anything beyond it is a run that has gone
+ * wrong and should be ended and said so.
+ */
+export const maxDuration = 120;
+
+/**
+ * How much of `maxDuration` we keep back for ourselves.
+ *
+ * The platform kills the function at `maxDuration` with no warning and no way to say
+ * anything to the reader. Finishing a few seconds early buys the room to close the
+ * stream properly instead, and the number is derived from `maxDuration` rather than
+ * written twice so raising one cannot silently leave the other behind.
+ */
+const RESERVE_MS = 6_000;
 
 const Body = z.object({
   messages: z.array(z.any()).max(80),
@@ -40,6 +61,8 @@ const Body = z.object({
 });
 
 export async function POST(request: Request) {
+  const deadline = Date.now() + maxDuration * 1000 - RESERVE_MS;
+
   // Configured means at least one gateway has a key; which one is the chain's business.
   if (availableGateways().length === 0) {
     return NextResponse.json({ error: "ai_not_configured" }, { status: 503 });
@@ -91,6 +114,7 @@ export async function POST(request: Request) {
       the first tool result alone; with an unbounded one a loop costs real money.
     */
     stopWhen: ({ steps }) => steps.length >= 6,
+    deadline,
   });
 
   if ("failed" in attempt) {
