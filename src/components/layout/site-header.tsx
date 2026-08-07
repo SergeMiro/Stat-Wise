@@ -23,6 +23,7 @@ export function SiteHeader({
   const pathname = usePathname();
   const nav = [
     { href: localePath(locale, "/methodology"), label: dict.nav.methodology },
+    { href: localePath(locale, "/variables"), label: dict.nav.variables },
     { href: localePath(locale, "/sources"), label: dict.nav.sources },
     { href: localePath(locale, "/coverage"), label: dict.nav.coverage },
   ];

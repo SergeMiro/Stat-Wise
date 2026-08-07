@@ -31,6 +31,7 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
       title: f.data,
       links: [
         { href: localePath(locale, "/methodology"), label: dict.nav.methodology },
+        { href: localePath(locale, "/variables"), label: dict.nav.variables },
         { href: localePath(locale, "/sources"), label: dict.nav.sources },
         { href: localePath(locale, "/coverage"), label: dict.nav.coverage },
       ],

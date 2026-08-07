@@ -12,6 +12,7 @@ export const fr = {
     account: "Compte",
     admin: "Console",
     methodology: "Méthodologie",
+    variables: "Variables",
     sources: "Sources",
     coverage: "Couverture",
     privacy: "Confidentialité",
@@ -416,6 +417,99 @@ export const fr = {
         delinquance:
           "Faits enregistrés par la police et la gendarmerie : dépend autant du dépôt de plainte et de l'activité des services que de ce qui s'est réellement produit.",
       },
+    },
+    variables: {
+      title: "Variables de la vie courante",
+      intro:
+        "Tout ce qui prend de l'argent à un ménage, la quantité exacte qu'il faut mesurer pour le chiffrer, et l'endroit d'où elle vient. Y compris les lignes que personne ne publie : elles sont écrites comme absentes, pas comblées par un chiffre plausible.",
+      tableTitle: "Données",
+      tableIntro:
+        "Un domaine, un poste, la quantité mesurable, et la source. La statistique fait partie de la variable : une médiane et une moyenne ne se remplacent pas.",
+      columns: {
+        domaine: "Domaine",
+        poste: "Ce qui coûte",
+        mesure: "Donnée à obtenir",
+        source: "Où l'obtenir",
+      },
+      countsTitle: "État des données",
+      countsIntro:
+        "Le nombre de lignes qu'on ne sait pas calculer est la distance entre ce que coûte une vie et ce qu'on peut prouver. Il est affiché, pas rangé dans un document.",
+      availability: {
+        open_data: {
+          label: "Donnée ouverte",
+          help: "Publiée, téléchargeable, réutilisable.",
+        },
+        official_rule: {
+          label: "Règle officielle",
+          help: "Un barème ou une loi : le calcul est exact, mais quelqu'un doit le tenir à jour.",
+        },
+        curated: {
+          label: "Relevé à la main",
+          help: "Existe officiellement, mais éparpillé : relevé source par source, avec sa date.",
+        },
+        user_input: {
+          label: "Saisie de l'utilisateur",
+          help: "Seul le ménage la connaît. Demandée, jamais devinée ni remplacée par une moyenne.",
+        },
+        third_party: {
+          label: "Tiers nommé",
+          help: "Publiée par un tiers qui n'est pas une autorité publique. Citée, pas recopiée.",
+        },
+        hypothesis: {
+          label: "Hypothèse",
+          help: "Aucune mesure n'existe. Valeur par défaut affichée, et modifiable par le lecteur.",
+        },
+        unavailable: {
+          label: "Non disponible",
+          help: "N'existe nulle part. Affichée comme absente : une absence n'est jamais un zéro.",
+        },
+      },
+      stat: {
+        min: "minimum",
+        max: "maximum",
+        mean: "moyenne",
+        median: "médiane",
+        p25: "1er quartile",
+        p75: "3e quartile",
+        count: "effectif",
+        value: "valeur",
+        coefficient: "coefficient",
+        rule: "calcul par règle",
+      },
+      flow: {
+        revenu: "Revenu",
+        contrainte: "Dépense contrainte",
+        pilotable: "Dépense pilotable",
+        ponctuel: "Dépense ponctuelle",
+        contexte: "Contexte",
+      },
+      sourcesTitle: "Les sources, et ce que chacune ne dit pas",
+      sourcesIntro:
+        "Chaque source porte le millésime qu'elle décrit — pas la date à laquelle nous l'avons téléchargée — le niveau auquel elle est réellement mesurée, et la limite qu'il faut connaître avant de lui faire confiance.",
+      sourceVintage: "Millésime",
+      sourceRefresh: "Mise à jour",
+      sourceLevel: "Niveau",
+      sourceLicence: "Licence",
+      licence: {
+        open: "Licence ouverte",
+        odbl: "ODbL",
+        public_rule: "Texte public",
+        restricted: "Usage restreint",
+        none: "Non publiée",
+      },
+      geoLevel: {
+        national: "National",
+        region: "Région",
+        departement: "Département",
+        zone_emploi: "Zone d'emploi",
+        commune: "Commune",
+        iris: "Quartier (IRIS)",
+        point: "Adresse",
+        user: "Saisie",
+      },
+      noSourceUrl: "Pas de page publique stable : à chercher sur le portail de l'éditeur.",
+      openInNewTab: "Ouvre le site de l'éditeur dans un nouvel onglet",
+      backToTable: "Revenir au tableau",
     },
     coverage: {
       title: "Couverture",

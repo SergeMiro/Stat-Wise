@@ -14,6 +14,7 @@ export const en: Dictionary = {
     account: "Account",
     admin: "Console",
     methodology: "Methodology",
+    variables: "Variables",
     sources: "Sources",
     coverage: "Coverage",
     privacy: "Privacy",
@@ -406,6 +407,99 @@ export const en: Dictionary = {
         delinquance:
           "Offences recorded by the police and gendarmerie: depends as much on whether people report them and on police activity as on what actually happened.",
       },
+    },
+    variables: {
+      title: "The variables of everyday life",
+      intro:
+        "Everything that takes money out of a household, the exact quantity needed to put a figure on it, and where that quantity comes from. Including the rows nobody publishes: they are written down as absent, not filled in with a plausible number.",
+      tableTitle: "Data",
+      tableIntro:
+        "A domain, an item, the measurable quantity, and the source. The statistic is part of the variable: a median and a mean are not interchangeable.",
+      columns: {
+        domaine: "Domain",
+        poste: "What costs money",
+        mesure: "Quantity to obtain",
+        source: "Where to get it",
+      },
+      countsTitle: "State of the data",
+      countsIntro:
+        "The number of rows we cannot compute is the distance between what a life costs and what we can prove it costs. It is shown, not filed away in a document.",
+      availability: {
+        open_data: {
+          label: "Open data",
+          help: "Published, downloadable, reusable.",
+        },
+        official_rule: {
+          label: "Official rule",
+          help: "A scale or a law: the calculation is exact, but somebody has to keep it current.",
+        },
+        curated: {
+          label: "Read by hand",
+          help: "Officially available but scattered: collected source by source, with its date.",
+        },
+        user_input: {
+          label: "User's own figure",
+          help: "Only the household knows it. Asked for, never guessed or replaced by an average.",
+        },
+        third_party: {
+          label: "Named third party",
+          help: "Published by a third party that is not a public authority. Cited, not copied.",
+        },
+        hypothesis: {
+          label: "Assumption",
+          help: "No measurement exists. The default is shown, and the reader can change it.",
+        },
+        unavailable: {
+          label: "Unavailable",
+          help: "Exists nowhere. Shown as absent: an absence is never a zero.",
+        },
+      },
+      stat: {
+        min: "minimum",
+        max: "maximum",
+        mean: "mean",
+        median: "median",
+        p25: "first quartile",
+        p75: "third quartile",
+        count: "count",
+        value: "value",
+        coefficient: "coefficient",
+        rule: "computed from rules",
+      },
+      flow: {
+        revenu: "Income",
+        contrainte: "Committed spending",
+        pilotable: "Discretionary spending",
+        ponctuel: "One-off spending",
+        contexte: "Context",
+      },
+      sourcesTitle: "The sources, and what each one does not tell you",
+      sourcesIntro:
+        "Every source carries the vintage it describes — not the day we downloaded it — the level at which it is actually measured, and the limitation to know before trusting it.",
+      sourceVintage: "Vintage",
+      sourceRefresh: "Updated",
+      sourceLevel: "Level",
+      sourceLicence: "Licence",
+      licence: {
+        open: "Open licence",
+        odbl: "ODbL",
+        public_rule: "Public text",
+        restricted: "Restricted use",
+        none: "Not published",
+      },
+      geoLevel: {
+        national: "National",
+        region: "Region",
+        departement: "Département",
+        zone_emploi: "Employment zone",
+        commune: "Commune",
+        iris: "Neighbourhood (IRIS)",
+        point: "Address",
+        user: "Entered",
+      },
+      noSourceUrl: "No stable public page: search the publisher's portal.",
+      openInNewTab: "Opens the publisher's site in a new tab",
+      backToTable: "Back to the table",
     },
     coverage: {
       title: "Coverage",
